@@ -116,12 +116,14 @@ class InventoryItemCreate(BaseModel):
     sku: str
     name: str
     category: str
+    gender: Gender
     color: str
     color_code: Optional[str] = None
     fabric_specs: FabricSpecs
     size: str
     design: str
-    price: float
+    mrp: float
+    selling_price: float
     cost_price: Optional[float] = None
     quantity: int
     low_stock_threshold: int = 10
