@@ -527,6 +527,113 @@
                 <div id="itemsList"></div>
             </div>
         </div>
+        
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>✏️ Edit Inventory Item</h2>
+                    <button class="close-modal" onclick="closeEditModal()">Close</button>
+                </div>
+                <div id="editItemMessage"></div>
+                <form onsubmit="updateItem(event)">
+                    <input type="hidden" id="editItemId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>SKU *</label>
+                            <input type="text" id="editSku" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" id="editName" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <input type="text" id="editCategory" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Design *</label>
+                            <input type="text" id="editDesign" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Color *</label>
+                            <input type="text" id="editColor" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Color Code</label>
+                            <input type="text" id="editColorCode">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Size *</label>
+                            <select id="editSize" required>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="editStatus">
+                                <option value="active">Active</option>
+                                <option value="discontinued">Discontinued</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Material *</label>
+                            <input type="text" id="editMaterial" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight</label>
+                            <input type="text" id="editWeight">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Composition</label>
+                        <input type="text" id="editComposition">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Price (₹) *</label>
+                            <input type="number" id="editPrice" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cost Price (₹)</label>
+                            <input type="number" id="editCostPrice" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" id="editQuantity" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Low Stock Threshold</label>
+                            <input type="number" id="editLowStockThreshold">
+                        </div>
+                    </div>
+                    
+                    <button type="submit">Update Item</button>
+                </form>
+            </div>
+        </div>
     </div>
     
     <script>
