@@ -44,6 +44,10 @@ class UserRole(str, Enum):
     STAFF = "staff"
     VIEWER = "viewer"
 
+class Gender(str, Enum):
+    MALE = "male"
+    FEMALE = "female"
+
 class ItemStatus(str, Enum):
     ACTIVE = "active"
     DISCONTINUED = "discontinued"
