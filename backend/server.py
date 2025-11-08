@@ -370,9 +370,11 @@ async def update_inventory_item(
         update_data["last_modified_by"] = current_user["email"]
         update_data["sync_status"] = SyncStatus.PENDING_SYNC.value
         
-        # Handle nested fabric_specs
+        # Handle nested fabric_specs - convert to dict if it's a Pydantic model
         if "fabric_specs" in update_data:
-            update_data["fabric_specs"] = update_data["fabric_specs"].model_dump()
+            if hasattr(update_data["fabric_specs"], "model_dump"):
+                update_data["fabric_specs"] = update_data["fabric_specs"].model_dump()
+            # If it's already a dict, keep it as is
         
         await db.inventory.update_one(
             {"id": item_id},
