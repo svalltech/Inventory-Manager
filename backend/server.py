@@ -431,6 +431,11 @@ async def get_inventory_stats(
 async def health_check():
     return {"status": "healthy", "service": "inventory-api", "version": "1.0.0"}
 
+# Test UI endpoint
+@api_router.get("/test-ui")
+async def serve_test_ui():
+    return FileResponse(str(ROOT_DIR / "static" / "test.html"))
+
 # Include the router in the main app
 app.include_router(api_router)
 
