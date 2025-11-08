@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management - Backend Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .user-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .sections {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .items-list {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .items-list h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .filters input,
+        .filters select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .item-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .item-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .item-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .item-detail {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .item-detail strong {
+            color: #333;
+        }
+        
+        .item-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .item-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+            width: auto;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            margin-top: 10px;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Inventory Management System - Backend Test</h1>
+            <div class="user-info" id="userInfo">Not logged in</div>
+            <button class="logout-btn hidden" id="logoutBtn" onclick="logout()">Logout</button>
+        </div>
+        
+        <!-- Login/Register Section -->
+        <div id="authSection" class="sections">
+            <div class="section">
+                <h2>🔐 Login</h2>
+                <div id="loginMessage"></div>
+                <form onsubmit="login(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>📝 Register</h2>
+                <div id="registerMessage"></div>
+                <form onsubmit="register(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="registerRole">
+                            <option value="viewer">Viewer</option>
+                            <option value="staff">Staff</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Main Content (hidden until logged in) -->
+        <div id="mainContent" class="hidden">
+            <!-- Add Inventory Section -->
+            <div class="section" style="margin-bottom: 20px;">
+                <h2>➕ Add New Inventory Item</h2>
+                <div id="addItemMessage"></div>
+                <form onsubmit="addItem(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>SKU *</label>
+                            <input type="text" id="sku" required placeholder="e.g., TSH-BLU-M-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" id="name" required placeholder="e.g., Premium Cotton T-Shirt">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <input type="text" id="category" required placeholder="e.g., T-Shirt">
+                        </div>
+                        <div class="form-group">
+                            <label>Design *</label>
+                            <input type="text" id="design" required placeholder="e.g., Solid">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Color *</label>
+                            <input type="text" id="color" required placeholder="e.g., Navy Blue">
+                        </div>
+                        <div class="form-group">
+                            <label>Color Code</label>
+                            <input type="text" id="colorCode" placeholder="e.g., #001F3F">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Size *</label>
+                            <select id="size" required>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M" selected>M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="status">
+                                <option value="active" selected>Active</option>
+                                <option value="discontinued">Discontinued</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Material *</label>
+                            <input type="text" id="material" required placeholder="e.g., 100% Cotton">
+                        </div>
+                        <div class="form-group">
+                            <label>Weight</label>
+                            <input type="text" id="weight" placeholder="e.g., 180 GSM">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Composition</label>
+                        <input type="text" id="composition" placeholder="e.g., Cotton 95%, Spandex 5%">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Price (₹) *</label>
+                            <input type="number" id="price" step="0.01" required placeholder="e.g., 599">
+                        </div>
+                        <div class="form-group">
+                            <label>Cost Price (₹)</label>
+                            <input type="number" id="costPrice" step="0.01" placeholder="e.g., 350">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" id="quantity" required placeholder="e.g., 100">
+                        </div>
+                        <div class="form-group">
+                            <label>Low Stock Threshold</label>
+                            <input type="number" id="lowStockThreshold" value="10">
+                        </div>
+                    </div>
+                    
+                    <button type="submit">Add Item</button>
+                </form>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="section" style="margin-bottom: 20px;">
+                <h2>📊 Dashboard Stats</h2>
+                <div class="stats" id="stats">
+                    <div class="stat-card">
+                        <div class="value" id="totalItems">0</div>
+                        <div class="label">Total Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="totalQuantity">0</div>
+                        <div class="label">Total Quantity</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="lowStockItems">0</div>
+                        <div class="label">Low Stock Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="categoriesCount">0</div>
+                        <div class="label">Categories</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="totalValue">₹0</div>
+                        <div class="label">Total Value</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Inventory List Section -->
+            <div class="items-list">
+                <h2>📦 Inventory Items</h2>
+                
+                <div class="filters">
+                    <input type="text" id="searchFilter" placeholder="Search..." onkeyup="loadItems()">
+                    <input type="text" id="categoryFilter" placeholder="Category" onkeyup="loadItems()">
+                    <input type="text" id="colorFilter" placeholder="Color" onkeyup="loadItems()">
+                    <input type="text" id="sizeFilter" placeholder="Size" onkeyup="loadItems()">
+                    <select id="statusFilter" onchange="loadItems()">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="discontinued">Discontinued</option>
+                    </select>
+                    <button onclick="clearFilters()">Clear Filters</button>
+                </div>
+                
+                <div id="itemsList"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = window.location.origin + '/api';
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = null;
+        
+        // Initialize
+        if (authToken) {
+            checkAuth();
+        }
+        
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    currentUser = await response.json();
+                    showMainContent();
+                } else {
+                    localStorage.removeItem('authToken');
+                    authToken = null;
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+        
+        async function register(event) {
+            event.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password, role })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('registerMessage', 'Registration successful! Please login.', 'success');
+                    document.getElementById('loginEmail').value = email;
+                    event.target.reset();
+                } else {
+                    showMessage('registerMessage', data.detail || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showMessage('registerMessage', 'Network error', 'error');
+            }
+        }
+        
+        async function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.access_token;
+                    currentUser = data.user;
+                    localStorage.setItem('authToken', authToken);
+                    showMainContent();
+                } else {
+                    showMessage('loginMessage', data.detail || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showMessage('loginMessage', 'Network error', 'error');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('authToken');
+            authToken = null;
+            currentUser = null;
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('mainContent').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('userInfo').textContent = 'Not logged in';
+        }
+        
+        function showMainContent() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('userInfo').textContent = `Logged in as: ${currentUser.email} (${currentUser.role})`;
+            loadStats();
+            loadItems();
+        }
+        
+        async function addItem(event) {
+            event.preventDefault();
+            
+            const itemData = {
+                sku: document.getElementById('sku').value,
+                name: document.getElementById('name').value,
+                category: document.getElementById('category').value,
+                color: document.getElementById('color').value,
+                color_code: document.getElementById('colorCode').value || null,
+                design: document.getElementById('design').value,
+                size: document.getElementById('size').value,
+                status: document.getElementById('status').value,
+                fabric_specs: {
+                    material: document.getElementById('material').value,
+                    weight: document.getElementById('weight').value || null,
+                    composition: document.getElementById('composition').value || null
+                },
+                price: parseFloat(document.getElementById('price').value),
+                cost_price: document.getElementById('costPrice').value ? parseFloat(document.getElementById('costPrice').value) : null,
+                quantity: parseInt(document.getElementById('quantity').value),
+                low_stock_threshold: parseInt(document.getElementById('lowStockThreshold').value),
+                images: []
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/inventory`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(itemData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('addItemMessage', 'Item added successfully!', 'success');
+                    event.target.reset();
+                    loadStats();
+                    loadItems();
+                } else {
+                    showMessage('addItemMessage', data.detail || 'Failed to add item', 'error');
+                }
+            } catch (error) {
+                showMessage('addItemMessage', 'Network error', 'error');
+            }
+        }
+        
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_URL}/inventory/stats/summary`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('totalItems').textContent = stats.total_items;
+                    document.getElementById('totalQuantity').textContent = stats.total_quantity;
+                    document.getElementById('lowStockItems').textContent = stats.low_stock_items;
+                    document.getElementById('categoriesCount').textContent = stats.categories_count;
+                    document.getElementById('totalValue').textContent = `₹${stats.total_value.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+        
+        async function loadItems() {
+            const search = document.getElementById('searchFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            const color = document.getElementById('colorFilter').value;
+            const size = document.getElementById('sizeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            let url = `${API_URL}/inventory?`;
+            if (search) url += `search=${encodeURIComponent(search)}&`;
+            if (category) url += `category=${encodeURIComponent(category)}&`;
+            if (color) url += `color=${encodeURIComponent(color)}&`;
+            if (size) url += `size=${encodeURIComponent(size)}&`;
+            if (status) url += `status=${status}&`;
+            
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const items = await response.json();
+                    displayItems(items);
+                }
+            } catch (error) {
+                console.error('Failed to load items:', error);
+            }
+        }
+        
+        function displayItems(items) {
+            const container = document.getElementById('itemsList');
+            
+            if (items.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No items found</p>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="item-card">
+                    <h3>${item.name} (${item.sku})</h3>
+                    <div class="item-details">
+                        <div class="item-detail">
+                            <span><strong>Category:</strong></span>
+                            <span>${item.category}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span><strong>Color:</strong></span>
+                            <span>${item.color}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span><strong>Size:</strong></span>
+                            <span>${item.size}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span><strong>Design:</strong></span>
+                            <span>${item.design}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span><strong>Material:</strong></span>
+                            <span>${item.fabric_specs.material}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span><strong>Price:</strong></span>
+                            <span>₹${item.price}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span><strong>Quantity:</strong></span>
+                            <span>${item.quantity}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span><strong>Status:</strong></span>
+                            <span>${item.status}</span>
+                        </div>
+                    </div>
+                    ${currentUser.role !== 'viewer' ? `
+                    <div class="item-actions">
+                        ${currentUser.role === 'admin' ? `<button class="btn-danger" onclick="deleteItem('${item.id}')">Delete</button>` : ''}
+                    </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+        
+        async function deleteItem(itemId) {
+            if (!confirm('Are you sure you want to delete this item?')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/inventory/${itemId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    loadStats();
+                    loadItems();
+                } else {
+                    const data = await response.json();
+                    alert(data.detail || 'Failed to delete item');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+        
+        function clearFilters() {
+            document.getElementById('searchFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('colorFilter').value = '';
+            document.getElementById('sizeFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            loadItems();
+        }
+        
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

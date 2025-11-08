@@ -1,14 +1,20 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from typing import List, Optional
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import bcrypt
+import jwt
+from enum import Enum
 
 
 ROOT_DIR = Path(__file__).parent
@@ -19,55 +25,421 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# JWT Configuration
+JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
+JWT_ALGORITHM = 'HS256'
+JWT_EXPIRATION_HOURS = 24
+
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(title="Inventory Management API", version="1.0.0")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+security = HTTPBearer()
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
+# Enums
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    STAFF = "staff"
+    VIEWER = "viewer"
+
+class ItemStatus(str, Enum):
+    ACTIVE = "active"
+    DISCONTINUED = "discontinued"
+
+class SyncStatus(str, Enum):
+    SYNCED = "synced"
+    PENDING_SYNC = "pending_sync"
+    CONFLICT = "conflict"
+
+# Models
+class User(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    email: EmailStr
+    role: UserRole
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    role: UserRole = UserRole.VIEWER
 
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    user: User
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+class FabricSpecs(BaseModel):
+    material: str
+    weight: Optional[str] = None
+    composition: Optional[str] = None
+
+class InventoryItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    sku: str
+    name: str
+    category: str
+    color: str
+    color_code: Optional[str] = None
+    fabric_specs: FabricSpecs
+    size: str
+    design: str
+    price: float
+    cost_price: Optional[float] = None
+    quantity: int
+    low_stock_threshold: int = 10
+    images: List[str] = []
+    status: ItemStatus = ItemStatus.ACTIVE
+    sync_status: SyncStatus = SyncStatus.SYNCED
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_by: str
+    last_modified_by: str
+    last_synced_at: Optional[datetime] = None
+
+class InventoryItemCreate(BaseModel):
+    sku: str
+    name: str
+    category: str
+    color: str
+    color_code: Optional[str] = None
+    fabric_specs: FabricSpecs
+    size: str
+    design: str
+    price: float
+    cost_price: Optional[float] = None
+    quantity: int
+    low_stock_threshold: int = 10
+    images: List[str] = []
+    status: ItemStatus = ItemStatus.ACTIVE
+
+class InventoryItemUpdate(BaseModel):
+    sku: Optional[str] = None
+    name: Optional[str] = None
+    category: Optional[str] = None
+    color: Optional[str] = None
+    color_code: Optional[str] = None
+    fabric_specs: Optional[FabricSpecs] = None
+    size: Optional[str] = None
+    design: Optional[str] = None
+    price: Optional[float] = None
+    cost_price: Optional[float] = None
+    quantity: Optional[int] = None
+    low_stock_threshold: Optional[int] = None
+    images: Optional[List[str]] = None
+    status: Optional[ItemStatus] = None
+
+class InventoryStats(BaseModel):
+    total_items: int
+    total_quantity: int
+    low_stock_items: int
+    categories_count: int
+    total_value: float
+
+# Helper Functions
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def verify_password(password: str, hashed: str) -> bool:
+    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+
+def create_access_token(user_id: str, email: str, role: str) -> str:
+    expiration = datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
+    payload = {
+        'user_id': user_id,
+        'email': email,
+        'role': role,
+        'exp': expiration
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+def require_role(allowed_roles: List[UserRole]):
+    async def role_checker(current_user: dict = Depends(get_current_user)):
+        if current_user['role'] not in [role.value for role in allowed_roles]:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Access denied. Required roles: {[role.value for role in allowed_roles]}"
+            )
+        return current_user
+    return role_checker
+
+# Auth Routes
+@api_router.post("/auth/register", response_model=User)
+async def register(user_data: UserCreate):
+    # Check if user already exists
+    existing_user = await db.users.find_one({"email": user_data.email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
     
-    return status_checks
+    # Create user
+    user_dict = {
+        "id": str(uuid.uuid4()),
+        "email": user_data.email,
+        "password_hash": hash_password(user_data.password),
+        "role": user_data.role.value,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.users.insert_one(user_dict)
+    
+    return User(
+        id=user_dict["id"],
+        email=user_dict["email"],
+        role=user_dict["role"],
+        created_at=datetime.fromisoformat(user_dict["created_at"])
+    )
+
+@api_router.post("/auth/login", response_model=Token)
+async def login(credentials: UserLogin):
+    # Find user
+    user_doc = await db.users.find_one({"email": credentials.email})
+    if not user_doc:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Verify password
+    if not verify_password(credentials.password, user_doc["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Create token
+    access_token = create_access_token(user_doc["id"], user_doc["email"], user_doc["role"])
+    
+    user = User(
+        id=user_doc["id"],
+        email=user_doc["email"],
+        role=user_doc["role"],
+        created_at=datetime.fromisoformat(user_doc["created_at"])
+    )
+    
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
+        user=user
+    )
+
+@api_router.get("/auth/me", response_model=User)
+async def get_me(current_user: dict = Depends(get_current_user)):
+    user_doc = await db.users.find_one({"id": current_user["user_id"]})
+    if not user_doc:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return User(
+        id=user_doc["id"],
+        email=user_doc["email"],
+        role=user_doc["role"],
+        created_at=datetime.fromisoformat(user_doc["created_at"])
+    )
+
+# Inventory Routes
+@api_router.post("/inventory", response_model=InventoryItem)
+async def create_inventory_item(
+    item_data: InventoryItemCreate,
+    current_user: dict = Depends(require_role([UserRole.ADMIN, UserRole.STAFF]))
+):
+    # Check if SKU already exists
+    existing_item = await db.inventory.find_one({"sku": item_data.sku})
+    if existing_item:
+        raise HTTPException(status_code=400, detail=f"SKU '{item_data.sku}' already exists")
+    
+    # Create item
+    item = InventoryItem(
+        **item_data.model_dump(),
+        created_by=current_user["email"],
+        last_modified_by=current_user["email"]
+    )
+    
+    item_dict = item.model_dump()
+    # Serialize datetime fields
+    item_dict["created_at"] = item_dict["created_at"].isoformat()
+    item_dict["updated_at"] = item_dict["updated_at"].isoformat()
+    if item_dict.get("last_synced_at"):
+        item_dict["last_synced_at"] = item_dict["last_synced_at"].isoformat()
+    
+    await db.inventory.insert_one(item_dict)
+    
+    return item
+
+@api_router.get("/inventory", response_model=List[InventoryItem])
+async def get_inventory(
+    category: Optional[str] = None,
+    color: Optional[str] = None,
+    size: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    status: Optional[ItemStatus] = None,
+    search: Optional[str] = None,
+    sort_by: Optional[str] = "created_at",
+    sort_order: Optional[str] = "desc",
+    current_user: dict = Depends(get_current_user)
+):
+    # Build query
+    query = {}
+    
+    if category:
+        query["category"] = category
+    if color:
+        query["color"] = color
+    if size:
+        query["size"] = size
+    if status:
+        query["status"] = status.value
+    if min_price is not None or max_price is not None:
+        query["price"] = {}
+        if min_price is not None:
+            query["price"]["$gte"] = min_price
+        if max_price is not None:
+            query["price"]["$lte"] = max_price
+    
+    if search:
+        query["$or"] = [
+            {"sku": {"$regex": search, "$options": "i"}},
+            {"name": {"$regex": search, "$options": "i"}},
+            {"design": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Sort order
+    sort_direction = -1 if sort_order == "desc" else 1
+    
+    # Fetch items
+    items = await db.inventory.find(query, {"_id": 0}).sort(sort_by, sort_direction).to_list(1000)
+    
+    # Convert datetime strings back
+    for item in items:
+        if isinstance(item["created_at"], str):
+            item["created_at"] = datetime.fromisoformat(item["created_at"])
+        if isinstance(item["updated_at"], str):
+            item["updated_at"] = datetime.fromisoformat(item["updated_at"])
+        if item.get("last_synced_at") and isinstance(item["last_synced_at"], str):
+            item["last_synced_at"] = datetime.fromisoformat(item["last_synced_at"])
+    
+    return items
+
+@api_router.get("/inventory/{item_id}", response_model=InventoryItem)
+async def get_inventory_item(
+    item_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    item = await db.inventory.find_one({"id": item_id}, {"_id": 0})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    # Convert datetime strings
+    if isinstance(item["created_at"], str):
+        item["created_at"] = datetime.fromisoformat(item["created_at"])
+    if isinstance(item["updated_at"], str):
+        item["updated_at"] = datetime.fromisoformat(item["updated_at"])
+    if item.get("last_synced_at") and isinstance(item["last_synced_at"], str):
+        item["last_synced_at"] = datetime.fromisoformat(item["last_synced_at"])
+    
+    return item
+
+@api_router.put("/inventory/{item_id}", response_model=InventoryItem)
+async def update_inventory_item(
+    item_id: str,
+    item_data: InventoryItemUpdate,
+    current_user: dict = Depends(require_role([UserRole.ADMIN, UserRole.STAFF]))
+):
+    # Check if item exists
+    existing_item = await db.inventory.find_one({"id": item_id})
+    if not existing_item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    # Prepare update data
+    update_data = {k: v for k, v in item_data.model_dump(exclude_unset=True).items() if v is not None}
+    
+    if update_data:
+        update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        update_data["last_modified_by"] = current_user["email"]
+        update_data["sync_status"] = SyncStatus.PENDING_SYNC.value
+        
+        # Handle nested fabric_specs
+        if "fabric_specs" in update_data:
+            update_data["fabric_specs"] = update_data["fabric_specs"].model_dump()
+        
+        await db.inventory.update_one(
+            {"id": item_id},
+            {"$set": update_data}
+        )
+    
+    # Fetch and return updated item
+    updated_item = await db.inventory.find_one({"id": item_id}, {"_id": 0})
+    
+    # Convert datetime strings
+    if isinstance(updated_item["created_at"], str):
+        updated_item["created_at"] = datetime.fromisoformat(updated_item["created_at"])
+    if isinstance(updated_item["updated_at"], str):
+        updated_item["updated_at"] = datetime.fromisoformat(updated_item["updated_at"])
+    if updated_item.get("last_synced_at") and isinstance(updated_item["last_synced_at"], str):
+        updated_item["last_synced_at"] = datetime.fromisoformat(updated_item["last_synced_at"])
+    
+    return updated_item
+
+@api_router.delete("/inventory/{item_id}")
+async def delete_inventory_item(
+    item_id: str,
+    current_user: dict = Depends(require_role([UserRole.ADMIN]))
+):
+    result = await db.inventory.delete_one({"id": item_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    return {"message": "Item deleted successfully", "id": item_id}
+
+@api_router.get("/inventory/stats/summary", response_model=InventoryStats)
+async def get_inventory_stats(
+    current_user: dict = Depends(get_current_user)
+):
+    # Get all items
+    all_items = await db.inventory.find({}, {"_id": 0}).to_list(10000)
+    
+    total_items = len(all_items)
+    total_quantity = sum(item["quantity"] for item in all_items)
+    low_stock_items = len([item for item in all_items if item["quantity"] <= item.get("low_stock_threshold", 10)])
+    categories = set(item["category"] for item in all_items)
+    categories_count = len(categories)
+    total_value = sum(item["price"] * item["quantity"] for item in all_items)
+    
+    return InventoryStats(
+        total_items=total_items,
+        total_quantity=total_quantity,
+        low_stock_items=low_stock_items,
+        categories_count=categories_count,
+        total_value=round(total_value, 2)
+    )
+
+# Health check
+@api_router.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "inventory-api", "version": "1.0.0"}
 
 # Include the router in the main app
 app.include_router(api_router)
+
+# Serve static files for test UI
+app.mount("/static", StaticFiles(directory=str(ROOT_DIR / "static")), name="static")
+
+@app.get("/test")
+async def serve_test_page():
+    return FileResponse(str(ROOT_DIR / "static" / "test.html"))
 
 app.add_middleware(
     CORSMiddleware,
