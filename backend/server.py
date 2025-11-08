@@ -134,12 +134,14 @@ class InventoryItemUpdate(BaseModel):
     sku: Optional[str] = None
     name: Optional[str] = None
     category: Optional[str] = None
+    gender: Optional[Gender] = None
     color: Optional[str] = None
     color_code: Optional[str] = None
     fabric_specs: Optional[FabricSpecs] = None
     size: Optional[str] = None
     design: Optional[str] = None
-    price: Optional[float] = None
+    mrp: Optional[float] = None
+    selling_price: Optional[float] = None
     cost_price: Optional[float] = None
     quantity: Optional[int] = None
     low_stock_threshold: Optional[int] = None
