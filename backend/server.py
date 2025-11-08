@@ -428,7 +428,7 @@ async def get_inventory_stats(
     low_stock_items = len([item for item in all_items if item["quantity"] <= item.get("low_stock_threshold", 10)])
     categories = set(item["category"] for item in all_items)
     categories_count = len(categories)
-    total_value = sum(item["price"] * item["quantity"] for item in all_items)
+    total_value = sum(item.get("mrp", item.get("price", 0)) * item["quantity"] for item in all_items)
     
     return InventoryStats(
         total_items=total_items,
