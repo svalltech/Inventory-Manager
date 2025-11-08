@@ -930,6 +930,101 @@
             loadItems();
         }
         
+        async function openEditModal(itemId) {
+            try {
+                const response = await fetch(`${API_URL}/inventory/${itemId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const item = await response.json();
+                    
+                    // Populate form
+                    document.getElementById('editItemId').value = item.id;
+                    document.getElementById('editSku').value = item.sku;
+                    document.getElementById('editName').value = item.name;
+                    document.getElementById('editCategory').value = item.category;
+                    document.getElementById('editDesign').value = item.design;
+                    document.getElementById('editColor').value = item.color;
+                    document.getElementById('editColorCode').value = item.color_code || '';
+                    document.getElementById('editSize').value = item.size;
+                    document.getElementById('editStatus').value = item.status;
+                    document.getElementById('editMaterial').value = item.fabric_specs.material;
+                    document.getElementById('editWeight').value = item.fabric_specs.weight || '';
+                    document.getElementById('editComposition').value = item.fabric_specs.composition || '';
+                    document.getElementById('editPrice').value = item.price;
+                    document.getElementById('editCostPrice').value = item.cost_price || '';
+                    document.getElementById('editQuantity').value = item.quantity;
+                    document.getElementById('editLowStockThreshold').value = item.low_stock_threshold;
+                    
+                    // Show modal
+                    document.getElementById('editModal').classList.add('show');
+                } else {
+                    alert('Failed to load item details');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            document.getElementById('editItemMessage').innerHTML = '';
+        }
+        
+        async function updateItem(event) {
+            event.preventDefault();
+            
+            const itemId = document.getElementById('editItemId').value;
+            const itemData = {
+                sku: document.getElementById('editSku').value,
+                name: document.getElementById('editName').value,
+                category: document.getElementById('editCategory').value,
+                color: document.getElementById('editColor').value,
+                color_code: document.getElementById('editColorCode').value || null,
+                design: document.getElementById('editDesign').value,
+                size: document.getElementById('editSize').value,
+                status: document.getElementById('editStatus').value,
+                fabric_specs: {
+                    material: document.getElementById('editMaterial').value,
+                    weight: document.getElementById('editWeight').value || null,
+                    composition: document.getElementById('editComposition').value || null
+                },
+                price: parseFloat(document.getElementById('editPrice').value),
+                cost_price: document.getElementById('editCostPrice').value ? parseFloat(document.getElementById('editCostPrice').value) : null,
+                quantity: parseInt(document.getElementById('editQuantity').value),
+                low_stock_threshold: parseInt(document.getElementById('editLowStockThreshold').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/inventory/${itemId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(itemData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('editItemMessage', 'Item updated successfully!', 'success');
+                    setTimeout(() => {
+                        closeEditModal();
+                        loadStats();
+                        loadItems();
+                    }, 1500);
+                } else {
+                    showMessage('editItemMessage', data.detail || 'Failed to update item', 'error');
+                }
+            } catch (error) {
+                showMessage('editItemMessage', 'Network error', 'error');
+            }
+        }
+        
         function showMessage(elementId, message, type) {
             const element = document.getElementById(elementId);
             element.innerHTML = `<div class="message ${type}">${message}</div>`;
