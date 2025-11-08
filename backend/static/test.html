@@ -890,6 +890,7 @@
                     </div>
                     ${currentUser.role !== 'viewer' ? `
                     <div class="item-actions">
+                        <button class="btn-edit" onclick="openEditModal('${item.id}')">Edit</button>
                         ${currentUser.role === 'admin' ? `<button class="btn-danger" onclick="deleteItem('${item.id}')">Delete</button>` : ''}
                     </div>
                     ` : ''}
