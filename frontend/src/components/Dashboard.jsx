@@ -31,7 +31,7 @@ const Dashboard = ({ user, onLogout }) => {
 
   useEffect(() => {
     applyFilters();
-  }, [inventory, selectedBrand, selectedWarehouse]);
+  }, [inventory, selectedBrand, selectedWarehouse, searchQuery]);
 
   const fetchData = async () => {
     try {
