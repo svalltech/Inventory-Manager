@@ -177,7 +177,7 @@ const ExportModal = ({ onClose, onExport }) => {
           {/* Template Selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-slate-700 mb-3">
-              Select Template (Optional)
+              Select Saved Template (Optional)
             </label>
             <div className="flex space-x-2">
               <select
@@ -185,42 +185,37 @@ const ExportModal = ({ onClose, onExport }) => {
                 onChange={(e) => handleTemplateChange(e.target.value)}
                 className="flex-1 px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
-                <option value="">Custom Selection</option>
-                <optgroup label="Default Templates">
-                  {defaultTemplates.map(template => (
+                <option value="">-- Select a Template --</option>
+                {templates.length > 0 ? (
+                  templates.map(template => (
                     <option key={template.id} value={template.id}>
-                      {template.name}
+                      {template.name} {template.is_default ? '(Default)' : ''}
                     </option>
-                  ))}
-                </optgroup>
-                {templates.length > 0 && (
-                  <optgroup label="My Templates">
-                    {templates.map(template => (
-                      <option key={template.id} value={template.id}>
-                        {template.name}
-                      </option>
-                    ))}
-                  </optgroup>
+                  ))
+                ) : (
+                  <option disabled>No saved templates</option>
                 )}
               </select>
               <button
                 onClick={() => setShowSaveTemplate(!showSaveTemplate)}
-                className="px-4 py-2.5 text-sm font-medium text-green-700 bg-green-50 border border-green-300 hover:bg-green-100 rounded-lg transition"
+                className="px-4 py-2.5 text-sm font-medium text-green-700 bg-green-50 border border-green-300 hover:bg-green-100 rounded-lg transition flex items-center space-x-1"
                 title="Save current selection as template"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                 </svg>
+                <span className="hidden sm:inline">Save</span>
               </button>
-              {selectedTemplate && !selectedTemplate.startsWith('default_') && (
+              {selectedTemplate && (
                 <button
                   onClick={() => handleDeleteTemplate(selectedTemplate)}
-                  className="px-4 py-2.5 text-sm font-medium text-red-700 bg-red-50 border border-red-300 hover:bg-red-100 rounded-lg transition"
+                  className="px-4 py-2.5 text-sm font-medium text-red-700 bg-red-50 border border-red-300 hover:bg-red-100 rounded-lg transition flex items-center space-x-1"
                   title="Delete template"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
+                  <span className="hidden sm:inline">Delete</span>
                 </button>
               )}
             </div>
