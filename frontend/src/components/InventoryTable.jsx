@@ -202,6 +202,12 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                     <td className="px-6 py-4 text-sm text-slate-900">{item.category}</td>
                     <td className="px-6 py-4 text-sm font-medium text-slate-900">{item.name}</td>
                     <td className="px-6 py-4 text-sm text-slate-600 font-mono">{item.sku}</td>
+                    <td className="px-6 py-4 text-sm text-slate-700 font-medium">{item.brand}</td>
+                    <td className="px-6 py-4 text-sm text-slate-700 font-medium">
+                      <span className="inline-flex items-center px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-medium border border-blue-200">
+                        📦 {item.warehouse}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 text-sm text-slate-600">{item.design}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{item.size}</td>
                     <td className="px-6 py-4 text-sm font-semibold">
