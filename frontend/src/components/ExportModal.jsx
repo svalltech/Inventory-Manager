@@ -1,4 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'sonner';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const ExportModal = ({ onClose, onExport }) => {
   const [selectedFormat, setSelectedFormat] = useState('excel');
@@ -6,6 +11,13 @@ const ExportModal = ({ onClose, onExport }) => {
     'sku', 'name', 'brand', 'warehouse', 'category', 'gender', 
     'size', 'design', 'color', 'mrp', 'selling_price', 'quantity'
   ]);
+  
+  // Template management
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [newTemplateName, setNewTemplateName] = useState('');
+  const [isDefaultTemplate, setIsDefaultTemplate] = useState(false);
 
   const allFields = [
     { key: 'sku', label: 'SKU' },
