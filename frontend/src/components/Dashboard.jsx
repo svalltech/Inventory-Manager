@@ -164,12 +164,25 @@ const Dashboard = ({ user, onLogout }) => {
                 <p className="text-xs text-slate-500">{user?.email} ({user?.role})</p>
               </div>
             </div>
-            <button
-              onClick={onLogout}
-              className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-            >
-              Logout
-            </button>
+            <div className="flex items-center space-x-3">
+              {(user?.role === 'admin' || user?.role === 'staff') && (
+                <button
+                  onClick={handleAddNew}
+                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 rounded-lg transition flex items-center space-x-2 shadow-md"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Inventory</span>
+                </button>
+              )}
+              <button
+                onClick={onLogout}
+                className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </header>
