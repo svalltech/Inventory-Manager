@@ -59,11 +59,20 @@ const Dashboard = ({ user, onLogout }) => {
       setBrands(optionsRes.data.brands || []);
       setWarehouses(optionsRes.data.warehouses || []);
       
-      // Extract unique categories and sizes from inventory data
+      // Extract unique values from inventory data
       const uniqueCategories = [...new Set(inventoryRes.data.map(item => item.category))].filter(Boolean);
       const uniqueSizes = [...new Set(inventoryRes.data.map(item => item.size))].filter(Boolean);
+      const uniqueColors = [...new Set(inventoryRes.data.map(item => item.color))].filter(Boolean);
+      const uniqueMaterials = [...new Set(inventoryRes.data.map(item => item.fabric_specs?.material))].filter(Boolean);
+      const uniqueDesigns = [...new Set(inventoryRes.data.map(item => item.design))].filter(Boolean);
+      const uniqueWeights = [...new Set(inventoryRes.data.map(item => item.fabric_specs?.weight))].filter(Boolean);
+      
       setCategories(uniqueCategories);
       setSizes(uniqueSizes);
+      setColors(uniqueColors);
+      setMaterials(uniqueMaterials);
+      setDesigns(uniqueDesigns);
+      setWeights(uniqueWeights);
 
       setLoading(false);
     } catch (error) {
