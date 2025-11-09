@@ -356,15 +356,15 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
                 Size <span className="text-red-500">*</span>
               </label>
               {showNewSizeInput ? (
-                <div className="flex space-x-2">
+                <div className="space-y-2">
                   <input
                     type="text"
                     name="size"
                     value={formData.size}
                     onChange={handleChange}
-                    placeholder="Enter custom size"
+                    placeholder="Enter custom size (e.g., XXL(46), 3XL)"
                     required
-                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
                   />
                   <button
                     type="button"
@@ -372,27 +372,35 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
                       setShowNewSizeInput(false);
                       setFormData(prev => ({ ...prev, size: '' }));
                     }}
-                    className="px-3 py-2 text-sm bg-slate-200 hover:bg-slate-300 rounded-lg"
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
                   >
-                    Cancel
+                    ← Select from standard sizes
                   </button>
                 </div>
               ) : (
-                <select
-                  value={formData.size}
-                  onChange={handleSizeChange}
-                  required
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select Size</option>
-                  {sizeOptions.map(size => (
-                    <option key={size} value={size}>{size}</option>
-                  ))}
-                  {sizes.filter(s => !sizeOptions.includes(s)).map(size => (
-                    <option key={size} value={size}>{size}</option>
-                  ))}
-                  <option value="__new__">+ Custom Size</option>
-                </select>
+                <div className="space-y-2">
+                  <select
+                    value={formData.size}
+                    onChange={handleSizeChange}
+                    required
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select Size --</option>
+                    <optgroup label="Standard Sizes">
+                      {sizeOptions.map(size => (
+                        <option key={size} value={size}>{size}</option>
+                      ))}
+                    </optgroup>
+                    {sizes.filter(s => !sizeOptions.includes(s)).length > 0 && (
+                      <optgroup label="Other Sizes">
+                        {sizes.filter(s => !sizeOptions.includes(s)).map(size => (
+                          <option key={size} value={size}>{size}</option>
+                        ))}
+                      </optgroup>
+                    )}
+                    <option value="__new__" className="font-semibold text-blue-600">➕ Enter Custom Size</option>
+                  </select>
+                </div>
               )}
             </div>
 
