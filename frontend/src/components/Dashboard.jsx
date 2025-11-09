@@ -16,6 +16,10 @@ const Dashboard = ({ user, onLogout }) => {
   const [warehouses, setWarehouses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [sizes, setSizes] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [materials, setMaterials] = useState([]);
+  const [designs, setDesigns] = useState([]);
+  const [weights, setWeights] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Filters
