@@ -184,33 +184,58 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                 </td>
               </tr>
             ) : (
-              currentData.map((item, index) => (
-                <tr key={item.id} className="hover:bg-slate-50 transition">
-                  <td className="px-6 py-4 text-sm text-slate-900">{item.category}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-slate-900">{item.name}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 font-mono">{item.sku}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{item.design}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{item.size}</td>
-                  <td className="px-6 py-4 text-sm text-slate-900 font-semibold">{item.quantity}</td>
-                  <td className="px-6 py-4 text-sm text-green-600 font-semibold">
-                    ₹{item.selling_price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-900 font-semibold">
-                    ₹{(item.selling_price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => onEdit(item)}
-                      className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-lg transition"
-                      title="Edit item"
-                    >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-              ))
+              currentData.map((item, index) => {
+                const isLowStock = item.quantity <= (item.low_stock_threshold || 10);
+                return (
+                  <tr 
+                    key={item.id} 
+                    className={`transition ${
+                      isLowStock 
+                        ? 'bg-orange-50 hover:bg-orange-100' 
+                        : 'hover:bg-slate-50'
+                    }`}
+                  >
+                    <td className="px-6 py-4 text-sm text-slate-900">{item.category}</td>
+                    <td className="px-6 py-4 text-sm font-medium text-slate-900">{item.name}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600 font-mono">{item.sku}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{item.design}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{item.size}</td>
+                    <td className="px-6 py-4 text-sm font-semibold">
+                      <div className="flex items-center space-x-2">
+                        <span className={isLowStock ? 'text-orange-600' : 'text-slate-900'}>
+                          {item.quantity}
+                        </span>
+                        {isLowStock && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-200 text-orange-800" title={`Critical level: ${item.low_stock_threshold || 10}`}>
+                            <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            Low
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-green-600 font-semibold">
+                      ₹{item.selling_price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-900 font-semibold">
+                      ₹{(item.selling_price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => onEdit(item)}
+                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-lg transition"
+                        title="Edit item"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            )
             )}
           </tbody>
           {/* Totals Footer */}
