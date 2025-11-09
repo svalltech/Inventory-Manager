@@ -363,6 +363,7 @@ const Dashboard = ({ user, onLogout }) => {
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           onEdit={handleEdit}
+          onDelete={handleDelete}
         />
       </main>
 
