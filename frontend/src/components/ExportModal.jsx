@@ -223,29 +223,37 @@ const ExportModal = ({ onClose, onExport }) => {
 
           {/* Save Template Form */}
           {showSaveTemplate && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <h3 className="text-sm font-semibold text-green-800 mb-3">Save as New Template</h3>
+            <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-lg shadow-sm">
+              <div className="flex items-center space-x-2 mb-3">
+                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                <h3 className="text-sm font-semibold text-green-800">Save Current Selection as Template</h3>
+              </div>
               <div className="space-y-3">
-                <input
-                  type="text"
-                  value={newTemplateName}
-                  onChange={(e) => setNewTemplateName(e.target.value)}
-                  placeholder="Enter template name"
-                  className="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-                <label className="flex items-center space-x-2 text-sm text-green-800">
+                <div>
+                  <label className="block text-xs font-medium text-green-700 mb-1">Template Name *</label>
+                  <input
+                    type="text"
+                    value={newTemplateName}
+                    onChange={(e) => setNewTemplateName(e.target.value)}
+                    placeholder="e.g., Monthly Stock Report, Full Inventory Export"
+                    className="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                </div>
+                <label className="flex items-center space-x-2 text-sm text-green-800 cursor-pointer hover:bg-green-100 p-2 rounded">
                   <input
                     type="checkbox"
                     checked={isDefaultTemplate}
                     onChange={(e) => setIsDefaultTemplate(e.target.checked)}
                     className="w-4 h-4 text-green-600 border-green-300 rounded focus:ring-green-500"
                   />
-                  <span>Set as my default template</span>
+                  <span>Set as my default template (auto-loads on open)</span>
                 </label>
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 pt-2">
                   <button
                     onClick={handleSaveTemplate}
-                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition"
+                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-lg transition shadow-md"
                   >
                     Save Template
                   </button>
