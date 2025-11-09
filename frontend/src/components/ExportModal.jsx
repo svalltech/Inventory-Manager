@@ -51,6 +51,13 @@ const ExportModal = ({ onClose, onExport }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTemplates(response.data);
+      
+      // Auto-load default template if exists
+      const defaultTemplate = response.data.find(t => t.is_default);
+      if (defaultTemplate) {
+        setSelectedTemplate(defaultTemplate.id);
+        setSelectedFields(defaultTemplate.fields);
+      }
     } catch (error) {
       console.error('Failed to fetch templates:', error);
     }
