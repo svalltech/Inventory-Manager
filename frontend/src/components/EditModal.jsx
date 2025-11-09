@@ -289,41 +289,45 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Category <span className="text-red-500">*</span>
               </label>
-              {showNewCategoryInput ? (
-                <div className="flex space-x-2">
+              {showNewCategoryInput || (categories.length === 0 && isCreateMode) ? (
+                <div className="space-y-2">
                   <input
                     type="text"
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    placeholder="Enter new category"
+                    placeholder="Enter category (e.g., T-Shirts, Jackets, Pants)"
                     required
-                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowNewCategoryInput(false);
-                      setFormData(prev => ({ ...prev, category: categories[0] || '' }));
-                    }}
-                    className="px-3 py-2 text-sm bg-slate-200 hover:bg-slate-300 rounded-lg"
-                  >
-                    Cancel
-                  </button>
+                  {categories.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewCategoryInput(false);
+                        setFormData(prev => ({ ...prev, category: '' }));
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      ← Select from existing categories
+                    </button>
+                  )}
                 </div>
               ) : (
-                <select
-                  value={formData.category}
-                  onChange={handleCategoryChange}
-                  required
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select Category</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                  <option value="__new__">+ Add New Category</option>
-                </select>
+                <div className="space-y-2">
+                  <select
+                    value={formData.category}
+                    onChange={handleCategoryChange}
+                    required
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select Category --</option>
+                    {categories.map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                    <option value="__new__" className="font-semibold text-blue-600">➕ Add New Category</option>
+                  </select>
+                </div>
               )}
             </div>
 
