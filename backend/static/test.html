@@ -397,6 +397,19 @@
                     
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Brand *</label>
+                            <input type="text" id="brand" list="brandList" required placeholder="e.g., Nike" onchange="updateWarehouseOptions()">
+                            <datalist id="brandList"></datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>Warehouse *</label>
+                            <input type="text" id="warehouse" list="warehouseList" required placeholder="e.g., Main Warehouse">
+                            <datalist id="warehouseList"></datalist>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
                             <label>Category *</label>
                             <input type="text" id="category" list="categoryList" required placeholder="e.g., T-Shirt">
                             <datalist id="categoryList"></datalist>
