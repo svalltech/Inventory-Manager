@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 
-const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onEdit }) => {
+const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onEdit, onDelete }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [columnFilters, setColumnFilters] = useState({
     category: '',
