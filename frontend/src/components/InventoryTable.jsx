@@ -6,10 +6,10 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
     category: '',
     name: '',
     sku: '',
-    design: '',
-    size: '',
     brand: '',
     warehouse: '',
+    design: '',
+    size: '',
     quantity: '',
     selling_price: ''
   });
