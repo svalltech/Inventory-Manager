@@ -1076,8 +1076,11 @@
         }
         
         function clearFilters() {
+            document.getElementById('searchByFilter').value = '';
             document.getElementById('searchFilter').value = '';
+            document.getElementById('searchFilter').style.display = 'none';
             document.getElementById('categoryFilter').value = '';
+            document.getElementById('genderFilter').value = '';
             document.getElementById('colorFilter').value = '';
             document.getElementById('sizeFilter').value = '';
             document.getElementById('statusFilter').value = '';
