@@ -124,6 +124,62 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
     }
   };
 
+  const handleColorChange = (e) => {
+    const value = e.target.value;
+    if (value === '__new__') {
+      setShowNewColorInput(true);
+      setFormData(prev => ({ ...prev, color: '' }));
+    } else {
+      setShowNewColorInput(false);
+      setFormData(prev => ({ ...prev, color: value }));
+    }
+  };
+
+  const handleDesignChange = (e) => {
+    const value = e.target.value;
+    if (value === '__new__') {
+      setShowNewDesignInput(true);
+      setFormData(prev => ({ ...prev, design: '' }));
+    } else {
+      setShowNewDesignInput(false);
+      setFormData(prev => ({ ...prev, design: value }));
+    }
+  };
+
+  const handleMaterialChange = (e) => {
+    const value = e.target.value;
+    if (value === '__new__') {
+      setShowNewMaterialInput(true);
+      setFormData(prev => ({
+        ...prev,
+        fabric_specs: { ...prev.fabric_specs, material: '' }
+      }));
+    } else {
+      setShowNewMaterialInput(false);
+      setFormData(prev => ({
+        ...prev,
+        fabric_specs: { ...prev.fabric_specs, material: value }
+      }));
+    }
+  };
+
+  const handleWeightChange = (e) => {
+    const value = e.target.value;
+    if (value === '__new__') {
+      setShowNewWeightInput(true);
+      setFormData(prev => ({
+        ...prev,
+        fabric_specs: { ...prev.fabric_specs, weight: '' }
+      }));
+    } else {
+      setShowNewWeightInput(false);
+      setFormData(prev => ({
+        ...prev,
+        fabric_specs: { ...prev.fabric_specs, weight: value }
+      }));
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
