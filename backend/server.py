@@ -117,6 +117,8 @@ class InventoryItem(BaseModel):
 class InventoryItemCreate(BaseModel):
     sku: str
     name: str
+    brand: str
+    warehouse: str
     category: str
     gender: Gender
     color: str
