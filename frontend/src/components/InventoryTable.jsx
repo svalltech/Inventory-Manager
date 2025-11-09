@@ -119,7 +119,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage }) =
           <tbody className="divide-y divide-slate-200">
             {currentData.length === 0 ? (
               <tr>
-                <td colSpan="7" className="px-6 py-12 text-center text-slate-500">
+                <td colSpan="8" className="px-6 py-12 text-center text-slate-500">
                   No inventory items found
                 </td>
               </tr>
@@ -132,6 +132,9 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage }) =
                   <td className="px-6 py-4 text-sm text-slate-600">{item.design}</td>
                   <td className="px-6 py-4 text-sm text-slate-600">{item.size}</td>
                   <td className="px-6 py-4 text-sm text-slate-900 font-semibold">{item.quantity}</td>
+                  <td className="px-6 py-4 text-sm text-green-600 font-semibold">
+                    ₹{item.selling_price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </td>
                   <td className="px-6 py-4 text-sm text-slate-900 font-semibold">
                     ₹{(item.selling_price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
