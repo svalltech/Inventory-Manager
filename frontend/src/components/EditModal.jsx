@@ -343,7 +343,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
                 required
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">Select Gender</option>
+                <option value="">-- Select Gender --</option>
                 {genderOptions.map(gender => (
                   <option key={gender} value={gender}>{gender.charAt(0).toUpperCase() + gender.slice(1)}</option>
                 ))}
