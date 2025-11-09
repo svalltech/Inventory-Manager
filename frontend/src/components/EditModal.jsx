@@ -274,7 +274,18 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Warehouse <span className="text-red-500">*</span>
               </label>
-              {showNewWarehouseInput || (warehouses.length === 0 && isCreateMode) ? (
+              {!isCreateMode ? (
+                <div>
+                  <input
+                    type="text"
+                    name="warehouse"
+                    value={formData.warehouse}
+                    disabled
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-100 text-slate-600 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-slate-500 mt-1">Same SKU can exist in different warehouses</p>
+                </div>
+              ) : showNewWarehouseInput || (warehouses.length === 0) ? (
                 <div className="space-y-2">
                   <input
                     type="text"
@@ -312,6 +323,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
                     ))}
                     <option value="__new__" className="font-semibold text-blue-600">➕ Add New Warehouse</option>
                   </select>
+                  <p className="text-xs text-slate-500 mt-1">Tip: Same SKU can be added to different warehouses</p>
                 </div>
               )}
             </div>
