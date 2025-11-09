@@ -526,10 +526,25 @@
                 <h2>📦 Inventory Items</h2>
                 
                 <div class="filters">
-                    <input type="text" id="searchFilter" placeholder="Search..." onkeyup="loadItems()">
-                    <input type="text" id="categoryFilter" placeholder="Category" onkeyup="loadItems()">
-                    <input type="text" id="colorFilter" placeholder="Color" onkeyup="loadItems()">
-                    <input type="text" id="sizeFilter" placeholder="Size" onkeyup="loadItems()">
+                    <select id="searchByFilter" onchange="updateSearchOptions()">
+                        <option value="">Search By...</option>
+                        <option value="sku">SKU</option>
+                        <option value="name">Name</option>
+                        <option value="design">Design</option>
+                    </select>
+                    <input type="text" id="searchFilter" placeholder="Enter search term..." onkeyup="loadItems()" style="display:none;">
+                    <select id="categoryFilter" onchange="loadItems()">
+                        <option value="">All Categories</option>
+                    </select>
+                    <select id="genderFilter" onchange="loadItems()">
+                        <option value="">All Genders</option>
+                    </select>
+                    <select id="colorFilter" onchange="loadItems()">
+                        <option value="">All Colors</option>
+                    </select>
+                    <select id="sizeFilter" onchange="loadItems()">
+                        <option value="">All Sizes</option>
+                    </select>
                     <select id="statusFilter" onchange="loadItems()">
                         <option value="">All Status</option>
                         <option value="active">Active</option>
