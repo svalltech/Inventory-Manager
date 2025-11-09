@@ -365,7 +365,7 @@ async def get_filter_options(
 ):
     """Get all unique values for filter dropdowns"""
     # Get all items
-    all_items = await db.inventory.find({}, {"_id": 0, "category": 1, "gender": 1, "color": 1, "size": 1, "design": 1}).to_list(10000)
+    all_items = await db.inventory.find({}, {"_id": 0, "category": 1, "gender": 1, "color": 1, "size": 1, "design": 1, "fabric_specs": 1}).to_list(10000)
     
     categories = sorted(list(set(item.get("category") for item in all_items if item.get("category"))))
     genders = sorted(list(set(item.get("gender") for item in all_items if item.get("gender"))))
@@ -373,12 +373,27 @@ async def get_filter_options(
     sizes = sorted(list(set(item.get("size") for item in all_items if item.get("size"))))
     designs = sorted(list(set(item.get("design") for item in all_items if item.get("design"))))
     
+    # Extract materials and weights from fabric_specs
+    materials = []
+    weights = []
+    for item in all_items:
+        fabric = item.get("fabric_specs", {})
+        if fabric.get("material"):
+            materials.append(fabric["material"])
+        if fabric.get("weight"):
+            weights.append(fabric["weight"])
+    
+    materials = sorted(list(set(materials)))
+    weights = sorted(list(set(weights)))
+    
     return {
         "categories": categories,
         "genders": genders,
         "colors": colors,
         "sizes": sizes,
-        "designs": designs
+        "designs": designs,
+        "materials": materials,
+        "weights": weights
     }
 
 @api_router.get("/inventory/{item_id}", response_model=InventoryItem)
