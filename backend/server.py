@@ -438,6 +438,28 @@ async def get_inventory_stats(
         total_value=round(total_value, 2)
     )
 
+@api_router.get("/inventory/filter-options")
+async def get_filter_options(
+    current_user: dict = Depends(get_current_user)
+):
+    """Get all unique values for filter dropdowns"""
+    # Get all items
+    all_items = await db.inventory.find({}, {"_id": 0, "category": 1, "gender": 1, "color": 1, "size": 1, "design": 1}).to_list(10000)
+    
+    categories = sorted(list(set(item.get("category") for item in all_items if item.get("category"))))
+    genders = sorted(list(set(item.get("gender") for item in all_items if item.get("gender"))))
+    colors = sorted(list(set(item.get("color") for item in all_items if item.get("color"))))
+    sizes = sorted(list(set(item.get("size") for item in all_items if item.get("size"))))
+    designs = sorted(list(set(item.get("design") for item in all_items if item.get("design"))))
+    
+    return {
+        "categories": categories,
+        "genders": genders,
+        "colors": colors,
+        "sizes": sizes,
+        "designs": designs
+    }
+
 # Health check
 @api_router.get("/health")
 async def health_check():
