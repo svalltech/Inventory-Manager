@@ -130,6 +130,33 @@ const Dashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handleDelete = async (item) => {
+    // Confirmation dialog
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete this item?\n\n` +
+      `SKU: ${item.sku}\n` +
+      `Name: ${item.name}\n` +
+      `Brand: ${item.brand}\n\n` +
+      `This action cannot be undone.`
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.delete(`${API}/inventory/${item.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      toast.success(`Item "${item.name}" deleted successfully!`);
+      fetchData(); // Refresh data
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to delete item');
+    }
+  };
+
   const handleBrandChange = (brand) => {
     setSelectedBrand(brand);
     // Reset warehouse if changing brand
