@@ -164,41 +164,45 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Brand <span className="text-red-500">*</span>
               </label>
-              {showNewBrandInput ? (
-                <div className="flex space-x-2">
+              {showNewBrandInput || (brands.length === 0 && isCreateMode) ? (
+                <div className="space-y-2">
                   <input
                     type="text"
                     name="brand"
                     value={formData.brand}
                     onChange={handleChange}
-                    placeholder="Enter new brand"
+                    placeholder="Enter brand name (e.g., Nike, Adidas)"
                     required
-                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowNewBrandInput(false);
-                      setFormData(prev => ({ ...prev, brand: brands[0] || '' }));
-                    }}
-                    className="px-3 py-2 text-sm bg-slate-200 hover:bg-slate-300 rounded-lg"
-                  >
-                    Cancel
-                  </button>
+                  {brands.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewBrandInput(false);
+                        setFormData(prev => ({ ...prev, brand: '' }));
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      ← Select from existing brands
+                    </button>
+                  )}
                 </div>
               ) : (
-                <select
-                  value={formData.brand}
-                  onChange={handleBrandChange}
-                  required
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select Brand</option>
-                  {brands.map(brand => (
-                    <option key={brand} value={brand}>{brand}</option>
-                  ))}
-                  <option value="__new__">+ Add New Brand</option>
-                </select>
+                <div className="space-y-2">
+                  <select
+                    value={formData.brand}
+                    onChange={handleBrandChange}
+                    required
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select Brand --</option>
+                    {brands.map(brand => (
+                      <option key={brand} value={brand}>{brand}</option>
+                    ))}
+                    <option value="__new__" className="font-semibold text-blue-600">➕ Add New Brand</option>
+                  </select>
+                </div>
               )}
             </div>
 
