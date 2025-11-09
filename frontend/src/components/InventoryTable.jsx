@@ -183,7 +183,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
           <tbody className="divide-y divide-slate-200">
             {currentData.length === 0 ? (
               <tr>
-                <td colSpan="9" className="px-6 py-12 text-center text-slate-500">
+                <td colSpan="11" className="px-6 py-12 text-center text-slate-500">
                   No inventory items found
                 </td>
               </tr>
