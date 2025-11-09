@@ -598,6 +598,18 @@
                     
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Brand *</label>
+                            <input type="text" id="editBrand" list="brandList" required onchange="updateEditWarehouseOptions()">
+                        </div>
+                        <div class="form-group">
+                            <label>Warehouse *</label>
+                            <input type="text" id="editWarehouse" list="editWarehouseList" required>
+                            <datalist id="editWarehouseList"></datalist>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
                             <label>Category *</label>
                             <input type="text" id="editCategory" list="categoryList" required>
                         </div>
