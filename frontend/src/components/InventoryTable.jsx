@@ -62,18 +62,26 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
   }, [data, sortConfig, columnFilters]);
 
   // Pagination
-  const totalPages = Math.ceil(sortedData.length / entriesPerPage);
+  const totalPages = Math.ceil(filteredAndSortedData.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
   const endIndex = startIndex + entriesPerPage;
-  const currentData = sortedData.slice(startIndex, endIndex);
+  const currentData = filteredAndSortedData.slice(startIndex, endIndex);
 
   // Calculate totals
   const totals = useMemo(() => {
-    const totalCount = sortedData.length;
-    const totalValue = sortedData.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
-    const totalQuantity = sortedData.reduce((sum, item) => sum + item.quantity, 0);
+    const totalCount = filteredAndSortedData.length;
+    const totalValue = filteredAndSortedData.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
+    const totalQuantity = filteredAndSortedData.reduce((sum, item) => sum + item.quantity, 0);
     return { totalCount, totalValue, totalQuantity };
-  }, [sortedData]);
+  }, [filteredAndSortedData]);
+
+  const handleColumnFilterChange = (column, value) => {
+    setColumnFilters(prev => ({
+      ...prev,
+      [column]: value
+    }));
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
 
   const handleSort = (key) => {
     if (!sortableColumns.includes(key)) return;
