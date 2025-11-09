@@ -541,7 +541,10 @@
             
             <!-- Inventory List Section -->
             <div class="items-list">
-                <h2>📦 Inventory Items</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="margin: 0;">📦 Inventory Items</h2>
+                    <button onclick="openExportModal()" style="width: auto; background: #28a745;">📥 Export Data</button>
+                </div>
                 
                 <div class="filters">
                     <select id="searchByFilter" onchange="updateSearchOptions()">
