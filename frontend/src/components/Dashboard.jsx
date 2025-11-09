@@ -348,6 +348,10 @@ const Dashboard = ({ user, onLogout }) => {
           warehouses={warehouses}
           categories={categories}
           sizes={sizes}
+          colors={colors}
+          materials={materials}
+          designs={designs}
+          weights={weights}
           onClose={() => setShowModal(false)}
           onSave={handleSaveItem}
         />
