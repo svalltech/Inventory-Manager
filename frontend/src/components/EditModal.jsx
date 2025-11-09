@@ -16,6 +16,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
     selling_price: '',
     cost_price: '',
     quantity: '',
+    low_stock_threshold: '10',
     fabric_specs: {
       material: '',
       weight: '',
