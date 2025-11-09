@@ -194,6 +194,30 @@ frontend:
         agent: "main"
         comment: "Added button in header (top right) that opens modal in create mode. Only visible for admin/staff roles."
 
+  - task: "Export data functionality (Excel, PDF, Word)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/Dashboard.jsx, /app/frontend/src/components/ExportModal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added Export button with modal for format selection (Excel/PDF/Word) and field selection. Respects current filters."
+
+  - task: "Import data functionality (Excel upload)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/Dashboard.jsx, /app/frontend/src/components/ImportModal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added Import button with drag-and-drop Excel upload. Shows required/optional columns. Updates existing items by SKU or inserts new."
+
   - task: "Modal dual mode (create/edit)"
     implemented: true
     working: "NA"
