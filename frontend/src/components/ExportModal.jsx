@@ -19,34 +19,6 @@ const ExportModal = ({ onClose, onExport }) => {
   const [newTemplateName, setNewTemplateName] = useState('');
   const [isDefaultTemplate, setIsDefaultTemplate] = useState(false);
 
-  // Default templates
-  const defaultTemplates = [
-    {
-      id: 'default_basic',
-      name: 'Basic Info',
-      fields: ['sku', 'name', 'brand', 'warehouse', 'category', 'quantity'],
-      is_default: true
-    },
-    {
-      id: 'default_detailed',
-      name: 'Detailed Report',
-      fields: ['sku', 'name', 'brand', 'warehouse', 'category', 'gender', 'size', 'design', 'color', 'mrp', 'selling_price', 'cost_price', 'quantity', 'material', 'weight'],
-      is_default: true
-    },
-    {
-      id: 'default_pricing',
-      name: 'Pricing Report',
-      fields: ['sku', 'name', 'brand', 'category', 'mrp', 'selling_price', 'cost_price', 'quantity'],
-      is_default: true
-    },
-    {
-      id: 'default_stock',
-      name: 'Stock Report',
-      fields: ['sku', 'name', 'warehouse', 'category', 'size', 'quantity', 'status'],
-      is_default: true
-    }
-  ];
-
   const allFields = [
     { key: 'sku', label: 'SKU' },
     { key: 'name', label: 'Product Name' },
