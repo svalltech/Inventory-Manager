@@ -211,41 +211,45 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Warehouse <span className="text-red-500">*</span>
               </label>
-              {showNewWarehouseInput ? (
-                <div className="flex space-x-2">
+              {showNewWarehouseInput || (warehouses.length === 0 && isCreateMode) ? (
+                <div className="space-y-2">
                   <input
                     type="text"
                     name="warehouse"
                     value={formData.warehouse}
                     onChange={handleChange}
-                    placeholder="Enter new warehouse"
+                    placeholder="Enter warehouse name (e.g., Main Warehouse, Godown A)"
                     required
-                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowNewWarehouseInput(false);
-                      setFormData(prev => ({ ...prev, warehouse: warehouses[0] || '' }));
-                    }}
-                    className="px-3 py-2 text-sm bg-slate-200 hover:bg-slate-300 rounded-lg"
-                  >
-                    Cancel
-                  </button>
+                  {warehouses.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewWarehouseInput(false);
+                        setFormData(prev => ({ ...prev, warehouse: '' }));
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      ← Select from existing warehouses
+                    </button>
+                  )}
                 </div>
               ) : (
-                <select
-                  value={formData.warehouse}
-                  onChange={handleWarehouseChange}
-                  required
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select Warehouse</option>
-                  {warehouses.map(warehouse => (
-                    <option key={warehouse} value={warehouse}>{warehouse}</option>
-                  ))}
-                  <option value="__new__">+ Add New Warehouse</option>
-                </select>
+                <div className="space-y-2">
+                  <select
+                    value={formData.warehouse}
+                    onChange={handleWarehouseChange}
+                    required
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select Warehouse --</option>
+                    {warehouses.map(warehouse => (
+                      <option key={warehouse} value={warehouse}>{warehouse}</option>
+                    ))}
+                    <option value="__new__" className="font-semibold text-blue-600">➕ Add New Warehouse</option>
+                  </select>
+                </div>
               )}
             </div>
 
