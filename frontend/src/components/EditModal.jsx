@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, onClose, onSave }) => {
+const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, colors, materials, designs, weights, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     id: '',
     sku: '',
@@ -27,6 +27,10 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
   const [showNewWarehouseInput, setShowNewWarehouseInput] = useState(false);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [showNewSizeInput, setShowNewSizeInput] = useState(false);
+  const [showNewColorInput, setShowNewColorInput] = useState(false);
+  const [showNewMaterialInput, setShowNewMaterialInput] = useState(false);
+  const [showNewDesignInput, setShowNewDesignInput] = useState(false);
+  const [showNewWeightInput, setShowNewWeightInput] = useState(false);
 
   // Predefined size options
   const sizeOptions = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)'];
