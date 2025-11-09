@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 
-const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage }) => {
+const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onEdit }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   // Sortable columns
