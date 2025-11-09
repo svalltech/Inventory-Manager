@@ -4,7 +4,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage }) =
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   // Sortable columns
-  const sortableColumns = ['category', 'name', 'sku', 'design', 'size', 'quantity', 'totalValue'];
+  const sortableColumns = ['category', 'name', 'sku', 'design', 'size', 'quantity', 'selling_price', 'totalValue'];
 
   // Sort data
   const sortedData = useMemo(() => {
