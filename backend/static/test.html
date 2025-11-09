@@ -775,6 +775,56 @@
             document.getElementById('userInfo').textContent = 'Not logged in';
         }
         
+        async function loadFilterOptions() {
+            try {
+                const response = await fetch(`${API_URL}/inventory`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const items = await response.json();
+                    
+                    // Get unique values for each filter
+                    const categories = [...new Set(items.map(item => item.category))].sort();
+                    const genders = [...new Set(items.map(item => item.gender))].sort();
+                    const colors = [...new Set(items.map(item => item.color))].sort();
+                    const sizes = [...new Set(items.map(item => item.size))].sort();
+                    
+                    // Populate category dropdown
+                    const categoryFilter = document.getElementById('categoryFilter');
+                    categoryFilter.innerHTML = '<option value="">All Categories</option>';
+                    categories.forEach(category => {
+                        categoryFilter.innerHTML += `<option value="${category}">${category}</option>`;
+                    });
+                    
+                    // Populate gender dropdown
+                    const genderFilter = document.getElementById('genderFilter');
+                    genderFilter.innerHTML = '<option value="">All Genders</option>';
+                    genders.forEach(gender => {
+                        genderFilter.innerHTML += `<option value="${gender}">${gender.charAt(0).toUpperCase() + gender.slice(1)}</option>`;
+                    });
+                    
+                    // Populate color dropdown
+                    const colorFilter = document.getElementById('colorFilter');
+                    colorFilter.innerHTML = '<option value="">All Colors</option>';
+                    colors.forEach(color => {
+                        colorFilter.innerHTML += `<option value="${color}">${color}</option>`;
+                    });
+                    
+                    // Populate size dropdown
+                    const sizeFilter = document.getElementById('sizeFilter');
+                    sizeFilter.innerHTML = '<option value="">All Sizes</option>';
+                    sizes.forEach(size => {
+                        sizeFilter.innerHTML += `<option value="${size}">${size}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load filter options:', error);
+            }
+        }
+        
         function showMainContent() {
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('mainContent').classList.remove('hidden');
