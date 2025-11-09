@@ -3,6 +3,8 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import InventoryTable from './InventoryTable';
 import EditModal from './EditModal';
+import ExportModal from './ExportModal';
+import ImportModal from './ImportModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
