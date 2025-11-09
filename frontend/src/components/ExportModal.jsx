@@ -353,9 +353,19 @@ const ExportModal = ({ onClose, onExport }) => {
 
           {/* Info */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-blue-800">
-              <strong>Note:</strong> Export will include data based on currently applied filters (Brand, Warehouse).
-            </p>
+            <div className="flex items-start space-x-2">
+              <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="text-sm text-blue-800">
+                <p className="font-semibold mb-1">Export Information:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Export includes data based on currently applied filters (Brand, Warehouse)</li>
+                  <li>Save frequently used field combinations as templates for quick reuse</li>
+                  <li>Your default template will auto-load when opening export modal</li>
+                </ul>
+              </div>
+            </div>
           </div>
 
           {/* Buttons */}
