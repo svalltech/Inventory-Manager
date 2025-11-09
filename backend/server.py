@@ -893,8 +893,11 @@ async def import_inventory(
                     "composition": str(item_data.get("composition", "")) if item_data.get("composition") else None
                 }
                 
-                # Check if item exists (by SKU)
-                existing_item = await db.inventory.find_one({"sku": item_data["sku"]})
+                # Check if item exists (by SKU + Warehouse combination)
+                existing_item = await db.inventory.find_one({
+                    "sku": item_data["sku"],
+                    "warehouse": item_data["warehouse"]
+                })
                 
                 if existing_item:
                     # Update existing item
@@ -920,7 +923,10 @@ async def import_inventory(
                     }
                     
                     await db.inventory.update_one(
-                        {"sku": item_data["sku"]},
+                        {
+                            "sku": item_data["sku"],
+                            "warehouse": item_data["warehouse"]
+                        },
                         {"$set": update_data}
                     )
                     updated += 1
