@@ -84,25 +84,103 @@ const ExportModal = ({ onClose, onExport }) => {
     }
   };
 
+  const handleTemplateChange = (templateId) => {
+    setSelectedTemplate(templateId);
+    
+    if (!templateId) {
+      return;
+    }
+
+    // Check default templates
+    const defaultTemplate = defaultTemplates.find(t => t.id === templateId);
+    if (defaultTemplate) {
+      setSelectedFields(defaultTemplate.fields);
+      return;
+    }
+
+    // Check custom templates
+    const customTemplate = templates.find(t => t.id === templateId);
+    if (customTemplate) {
+      setSelectedFields(customTemplate.fields);
+    }
+  };
+
   const handleFieldToggle = (field) => {
     if (selectedFields.includes(field)) {
       setSelectedFields(selectedFields.filter(f => f !== field));
     } else {
       setSelectedFields([...selectedFields, field]);
     }
+    setSelectedTemplate(''); // Clear template selection when manually changing fields
   };
 
   const handleSelectAll = () => {
     setSelectedFields(allFields.map(f => f.key));
+    setSelectedTemplate('');
   };
 
   const handleDeselectAll = () => {
     setSelectedFields([]);
+    setSelectedTemplate('');
+  };
+
+  const handleSaveTemplate = async () => {
+    if (!newTemplateName.trim()) {
+      toast.error('Please enter a template name');
+      return;
+    }
+
+    if (selectedFields.length === 0) {
+      toast.error('Please select at least one field');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.post(
+        `${API}/export-templates`,
+        {
+          name: newTemplateName,
+          fields: selectedFields,
+          is_default: isDefaultTemplate
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success('Template saved successfully!');
+      setNewTemplateName('');
+      setIsDefaultTemplate(false);
+      setShowSaveTemplate(false);
+      fetchTemplates();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to save template');
+    }
+  };
+
+  const handleDeleteTemplate = async (templateId) => {
+    if (!window.confirm('Are you sure you want to delete this template?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.delete(`${API}/export-templates/${templateId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      toast.success('Template deleted successfully!');
+      fetchTemplates();
+      if (selectedTemplate === templateId) {
+        setSelectedTemplate('');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to delete template');
+    }
   };
 
   const handleExport = () => {
     if (selectedFields.length === 0) {
-      alert('Please select at least one field to export');
+      toast.error('Please select at least one field to export');
       return;
     }
     onExport(selectedFormat, selectedFields);
