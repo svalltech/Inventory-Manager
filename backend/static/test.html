@@ -1400,6 +1400,124 @@
             loadItems();
         }
         
+        function openImportModal() {
+            document.getElementById('importModal').classList.add('show');
+            document.getElementById('importMessage').innerHTML = '';
+            document.getElementById('importResults').innerHTML = '';
+            document.getElementById('importFile').value = '';
+        }
+        
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('show');
+        }
+        
+        async function downloadTemplate() {
+            try {
+                const response = await fetch(`${API_URL}/inventory/download-template`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'inventory_import_template.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showMessage('importMessage', 'Template downloaded successfully!', 'success');
+                } else {
+                    showMessage('importMessage', 'Failed to download template', 'error');
+                }
+            } catch (error) {
+                showMessage('importMessage', 'Network error', 'error');
+            }
+        }
+        
+        async function uploadFile() {
+            const fileInput = document.getElementById('importFile');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showMessage('importMessage', 'Please select an Excel file to upload', 'error');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            
+            if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+                showMessage('importMessage', 'Please upload an Excel file (.xlsx or .xls)', 'error');
+                return;
+            }
+            
+            showMessage('importMessage', 'Processing file, please wait...', 'success');
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch(`${API_URL}/inventory/import`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Show results
+                    let resultsHTML = `
+                        <div style="padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; margin-top: 15px;">
+                            <h3 style="margin: 0 0 10px 0; color: #155724;">✅ Import Completed!</h3>
+                            <div style="color: #155724;">
+                                <p style="margin: 5px 0;"><strong>Total Rows:</strong> ${result.total_rows}</p>
+                                <p style="margin: 5px 0;"><strong>✅ Successful:</strong> ${result.successful}</p>
+                                <p style="margin: 5px 0;"><strong>➕ Inserted:</strong> ${result.inserted}</p>
+                                <p style="margin: 5px 0;"><strong>🔄 Updated:</strong> ${result.updated}</p>
+                                <p style="margin: 5px 0;"><strong>❌ Failed:</strong> ${result.failed}</p>
+                            </div>
+                    `;
+                    
+                    if (result.errors.length > 0) {
+                        resultsHTML += `
+                            <div style="margin-top: 15px;">
+                                <h4 style="color: #721c24; margin-bottom: 10px;">Errors:</h4>
+                                <div style="max-height: 200px; overflow-y: auto;">
+                        `;
+                        
+                        result.errors.forEach(error => {
+                            resultsHTML += `
+                                <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 8px; margin-bottom: 5px; border-radius: 3px; font-size: 13px;">
+                                    <strong>Row ${error.row} (SKU: ${error.sku}):</strong> ${error.error}
+                                </div>
+                            `;
+                        });
+                        
+                        resultsHTML += `</div></div>`;
+                    }
+                    
+                    resultsHTML += `</div>`;
+                    
+                    document.getElementById('importResults').innerHTML = resultsHTML;
+                    showMessage('importMessage', '', 'success');
+                    
+                    // Refresh inventory list
+                    loadStats();
+                    loadItems();
+                } else {
+                    showMessage('importMessage', result.detail || 'Import failed', 'error');
+                }
+            } catch (error) {
+                showMessage('importMessage', 'Network error during import', 'error');
+            }
+        }
+        
         async function openExportModal() {
             await loadExportTemplates();
             document.getElementById('exportModal').classList.add('show');
