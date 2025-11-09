@@ -1357,6 +1357,216 @@
             loadItems();
         }
         
+        async function openExportModal() {
+            await loadExportTemplates();
+            document.getElementById('exportModal').classList.add('show');
+        }
+        
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('show');
+        }
+        
+        function openSaveTemplateModal() {
+            loadTemplatesList();
+            document.getElementById('saveTemplateModal').classList.add('show');
+        }
+        
+        function closeSaveTemplateModal() {
+            document.getElementById('saveTemplateModal').classList.remove('show');
+            document.getElementById('saveTemplateMessage').innerHTML = '';
+        }
+        
+        async function loadExportTemplates() {
+            try {
+                const response = await fetch(`${API_URL}/export-templates`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    exportTemplates = await response.json();
+                    const select = document.getElementById('templateSelect');
+                    select.innerHTML = '<option value="">-- Select Fields Manually --</option>';
+                    
+                    exportTemplates.forEach(template => {
+                        const defaultLabel = template.is_default ? ' (Default)' : '';
+                        select.innerHTML += `<option value="${template.id}">${template.name}${defaultLabel}</option>`;
+                    });
+                    
+                    // Auto-select default template
+                    const defaultTemplate = exportTemplates.find(t => t.is_default);
+                    if (defaultTemplate) {
+                        select.value = defaultTemplate.id;
+                        loadTemplate();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load templates:', error);
+            }
+        }
+        
+        function loadTemplate() {
+            const templateId = document.getElementById('templateSelect').value;
+            const checkboxes = document.querySelectorAll('.export-field');
+            
+            if (!templateId) {
+                // Reset to default selection
+                checkboxes.forEach(cb => {
+                    cb.checked = ['sku', 'name', 'brand', 'warehouse', 'category', 'mrp', 'selling_price', 'quantity'].includes(cb.value);
+                });
+                return;
+            }
+            
+            const template = exportTemplates.find(t => t.id === templateId);
+            if (template) {
+                checkboxes.forEach(cb => {
+                    cb.checked = template.fields.includes(cb.value);
+                });
+            }
+        }
+        
+        async function saveTemplate(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('templateName').value;
+            const isDefault = document.getElementById('setAsDefault').checked;
+            const checkboxes = document.querySelectorAll('.export-field:checked');
+            const fields = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (fields.length === 0) {
+                showMessage('saveTemplateMessage', 'Please select at least one field', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/export-templates`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        fields: fields,
+                        is_default: isDefault
+                    })
+                });
+                
+                if (response.ok) {
+                    showMessage('saveTemplateMessage', 'Template saved successfully!', 'success');
+                    document.getElementById('templateName').value = '';
+                    document.getElementById('setAsDefault').checked = false;
+                    await loadExportTemplates();
+                    await loadTemplatesList();
+                } else {
+                    const data = await response.json();
+                    showMessage('saveTemplateMessage', data.detail || 'Failed to save template', 'error');
+                }
+            } catch (error) {
+                showMessage('saveTemplateMessage', 'Network error', 'error');
+            }
+        }
+        
+        async function loadTemplatesList() {
+            try {
+                const response = await fetch(`${API_URL}/export-templates`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const templates = await response.json();
+                    const container = document.getElementById('templatesList');
+                    
+                    if (templates.length === 0) {
+                        container.innerHTML = '<p style="color: #666; font-size: 14px;">No templates saved yet</p>';
+                        return;
+                    }
+                    
+                    container.innerHTML = templates.map(template => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 5px; margin-bottom: 8px;">
+                            <span style="font-weight: 500;">${template.name}${template.is_default ? ' <span style="color: #28a745;">(Default)</span>' : ''}</span>
+                            <button onclick="deleteTemplate('${template.id}')" style="width: auto; padding: 6px 12px; background: #dc3545; font-size: 12px;">Delete</button>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load templates list:', error);
+            }
+        }
+        
+        async function deleteTemplate(templateId) {
+            if (!confirm('Are you sure you want to delete this template?')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/export-templates/${templateId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    await loadExportTemplates();
+                    await loadTemplatesList();
+                }
+            } catch (error) {
+                console.error('Failed to delete template:', error);
+            }
+        }
+        
+        async function exportData(format) {
+            const checkboxes = document.querySelectorAll('.export-field:checked');
+            const fields = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (fields.length === 0) {
+                alert('Please select at least one field to export');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/inventory/export`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        format: format,
+                        fields: fields,
+                        filters: {}
+                    })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    
+                    const contentDisposition = response.headers.get('Content-Disposition');
+                    const filename = contentDisposition 
+                        ? contentDisposition.split('filename=')[1].replace(/"/g, '')
+                        : `inventory_report.${format === 'excel' ? 'xlsx' : format === 'word' ? 'docx' : 'pdf'}`;
+                    
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    closeExportModal();
+                } else {
+                    alert('Failed to export data');
+                }
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Network error during export');
+            }
+        }
+        
         function showMessage(elementId, message, type) {
             const element = document.getElementById(elementId);
             element.innerHTML = `<div class="message ${type}">${message}</div>`;
