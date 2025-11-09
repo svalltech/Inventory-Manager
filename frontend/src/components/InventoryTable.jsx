@@ -226,10 +226,10 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-green-600 font-semibold">
-                      ₹{item.selling_price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ₹{Math.round(item.selling_price).toLocaleString('en-IN')}
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-900 font-semibold">
-                      ₹{(item.selling_price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ₹{Math.round(item.selling_price * item.quantity).toLocaleString('en-IN')}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
