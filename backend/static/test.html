@@ -712,6 +712,46 @@
             </div>
         </div>
         
+        <!-- Import Modal -->
+        <div id="importModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📤 Import Inventory Data</h2>
+                    <button class="close-modal" onclick="closeImportModal()">Close</button>
+                </div>
+                
+                <div id="importMessage"></div>
+                
+                <div style="margin-bottom: 20px; padding: 15px; background: #e7f3ff; border-left: 4px solid #007bff; border-radius: 5px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #004085;">📋 How to Import:</h3>
+                    <ol style="margin: 0; padding-left: 20px; color: #004085; font-size: 14px;">
+                        <li>Download the Excel template</li>
+                        <li>Fill in your inventory data (one item per row)</li>
+                        <li><strong>Insert:</strong> Use unique SKU for new items</li>
+                        <li><strong>Update:</strong> Use existing SKU to update items</li>
+                        <li>Upload the completed file</li>
+                    </ol>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <button onclick="downloadTemplate()" style="width: 100%; background: #17a2b8;">
+                        📄 Download Import Template
+                    </button>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Upload Excel File:</label>
+                    <input type="file" id="importFile" accept=".xlsx,.xls" style="width: 100%; padding: 10px; border: 2px dashed #ddd; border-radius: 5px; cursor: pointer;">
+                </div>
+                
+                <button onclick="uploadFile()" style="background: #007bff;">
+                    ⬆️ Upload and Process
+                </button>
+                
+                <div id="importResults" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+        
         <!-- Export Modal -->
         <div id="exportModal" class="modal">
             <div class="modal-content">
