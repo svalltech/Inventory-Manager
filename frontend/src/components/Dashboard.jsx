@@ -123,6 +123,70 @@ const Dashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handleExport = async (format, selectedFields) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.post(
+        `${API}/inventory/export`,
+        {
+          format: format,
+          fields: selectedFields,
+          filters: {
+            ...(selectedBrand !== 'ALL' && { brand: selectedBrand }),
+            ...(selectedWarehouse !== 'ALL' && { warehouse: selectedWarehouse })
+          }
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: 'blob'
+        }
+      );
+
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      const extension = format === 'excel' ? 'xlsx' : format === 'pdf' ? 'pdf' : 'docx';
+      link.setAttribute('download', `inventory_export_${Date.now()}.${extension}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
+      toast.success('Data exported successfully!');
+      setShowExportModal(false);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Export failed');
+    }
+  };
+
+  const handleImport = async (file) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(
+        `${API}/inventory/import`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      toast.success(
+        `Import complete! Inserted: ${response.data.inserted}, Updated: ${response.data.updated}, Failed: ${response.data.failed}`
+      );
+      
+      setShowImportModal(false);
+      fetchData(); // Refresh data
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Import failed');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
