@@ -271,7 +271,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                 -
               </td>
               <td className="px-6 py-4 text-sm font-bold text-blue-600">
-                ₹{totals.totalValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ₹{Math.round(totals.totalValue).toLocaleString('en-IN')}
               </td>
               <td className="px-6 py-4"></td>
             </tr>
