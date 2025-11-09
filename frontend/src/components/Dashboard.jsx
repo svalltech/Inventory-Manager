@@ -65,8 +65,49 @@ const Dashboard = ({ user, onLogout }) => {
       filtered = filtered.filter(item => item.warehouse === selectedWarehouse);
     }
 
+    // Apply search
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(item => {
+        return (
+          item.category?.toLowerCase().includes(query) ||
+          item.name?.toLowerCase().includes(query) ||
+          item.sku?.toLowerCase().includes(query) ||
+          item.design?.toLowerCase().includes(query) ||
+          item.size?.toLowerCase().includes(query) ||
+          item.brand?.toLowerCase().includes(query) ||
+          item.warehouse?.toLowerCase().includes(query) ||
+          item.color?.toLowerCase().includes(query) ||
+          String(item.quantity).includes(query) ||
+          String(item.selling_price).includes(query)
+        );
+      });
+    }
+
     setFilteredInventory(filtered);
     setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  const handleEdit = (item) => {
+    setEditItem(item);
+    setShowEditModal(true);
+  };
+
+  const handleUpdateItem = async (updatedItem) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.put(
+        `${API}/inventory/${updatedItem.id}`,
+        updatedItem,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      toast.success('Item updated successfully!');
+      setShowEditModal(false);
+      fetchData(); // Refresh data
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to update item');
+    }
   };
 
   const handleBrandChange = (brand) => {
