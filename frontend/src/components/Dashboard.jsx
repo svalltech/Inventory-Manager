@@ -286,12 +286,17 @@ const Dashboard = ({ user, onLogout }) => {
         />
       </main>
 
-      {/* Edit Modal */}
-      {showEditModal && (
+      {/* Item Modal (Create/Edit) */}
+      {showModal && (
         <EditModal
           item={editItem}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleUpdateItem}
+          isCreateMode={isCreateMode}
+          brands={brands}
+          warehouses={warehouses}
+          categories={categories}
+          sizes={sizes}
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveItem}
         />
       )}
     </div>
