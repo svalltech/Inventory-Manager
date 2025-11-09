@@ -235,7 +235,6 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                   </tr>
                 );
               })
-            )
             )}
           </tbody>
           {/* Totals Footer */}
