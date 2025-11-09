@@ -153,6 +153,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Returns brands and warehouses for dropdowns"
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: GET /api/inventory/filter-options returns all required fields (brands, warehouses, categories, genders, colors, sizes, designs, materials, weights). Currently has 3 brands and 2 warehouses available for dropdowns."
 
 frontend:
   - task: "Inline search in table columns"
