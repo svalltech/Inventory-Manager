@@ -91,6 +91,8 @@ class InventoryItem(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     sku: str
     name: str
+    brand: str
+    warehouse: str
     category: str
     gender: Gender
     color: str
