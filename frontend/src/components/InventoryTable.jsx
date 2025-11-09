@@ -98,6 +98,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage }) =
                 { key: 'design', label: 'Design' },
                 { key: 'size', label: 'Size' },
                 { key: 'quantity', label: 'Quantity' },
+                { key: 'selling_price', label: 'Selling Price' },
                 { key: 'totalValue', label: 'Total Value' }
               ].map(({ key, label }) => (
                 <th
