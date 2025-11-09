@@ -604,14 +604,47 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
             {/* Weight (grams) */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Weight (grams)</label>
-              <input
-                type="text"
-                name="fabric_weight"
-                value={formData.fabric_specs.weight}
-                onChange={handleChange}
-                placeholder="e.g., 250g"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              {showNewWeightInput || (weights.length === 0 && isCreateMode) ? (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    name="fabric_weight"
+                    value={formData.fabric_specs.weight}
+                    onChange={handleChange}
+                    placeholder="Enter weight (e.g., 250g, 180g)"
+                    className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
+                  />
+                  {weights.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewWeightInput(false);
+                        setFormData(prev => ({
+                          ...prev,
+                          fabric_specs: { ...prev.fabric_specs, weight: '' }
+                        }));
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      ← Select from existing weights
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <select
+                    value={formData.fabric_specs.weight}
+                    onChange={handleWeightChange}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select Weight --</option>
+                    {weights.map(weight => (
+                      <option key={weight} value={weight}>{weight}</option>
+                    ))}
+                    <option value="__new__" className="font-semibold text-blue-600">➕ Add New Weight</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* MRP */}
