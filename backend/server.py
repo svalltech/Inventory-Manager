@@ -290,12 +290,16 @@ async def create_inventory_item(
 @api_router.get("/inventory", response_model=List[InventoryItem])
 async def get_inventory(
     category: Optional[str] = None,
+    gender: Optional[str] = None,
     color: Optional[str] = None,
     size: Optional[str] = None,
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     status: Optional[ItemStatus] = None,
     search: Optional[str] = None,
+    sku: Optional[str] = None,
+    name: Optional[str] = None,
+    design: Optional[str] = None,
     sort_by: Optional[str] = "created_at",
     sort_order: Optional[str] = "desc",
     current_user: dict = Depends(get_current_user)
@@ -305,6 +309,8 @@ async def get_inventory(
     
     if category:
         query["category"] = category
+    if gender:
+        query["gender"] = gender
     if color:
         query["color"] = color
     if size:
@@ -312,13 +318,24 @@ async def get_inventory(
     if status:
         query["status"] = status.value
     if min_price is not None or max_price is not None:
-        query["price"] = {}
+        price_query = {}
         if min_price is not None:
-            query["price"]["$gte"] = min_price
+            price_query["$gte"] = min_price
         if max_price is not None:
-            query["price"]["$lte"] = max_price
+            price_query["$lte"] = max_price
+        query["$or"] = [
+            {"mrp": price_query},
+            {"price": price_query}
+        ]
     
-    if search:
+    # Specific field search
+    if sku:
+        query["sku"] = {"$regex": sku, "$options": "i"}
+    elif name:
+        query["name"] = {"$regex": name, "$options": "i"}
+    elif design:
+        query["design"] = {"$regex": design, "$options": "i"}
+    elif search:
         query["$or"] = [
             {"sku": {"$regex": search, "$options": "i"}},
             {"name": {"$regex": search, "$options": "i"}},
