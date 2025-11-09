@@ -26,6 +26,10 @@ const Dashboard = ({ user, onLogout }) => {
   const [editItem, setEditItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isCreateMode, setIsCreateMode] = useState(false);
+  
+  // Import/Export
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
 
   useEffect(() => {
     fetchData();
