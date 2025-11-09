@@ -195,6 +195,14 @@ class ExportRequest(BaseModel):
     fields: List[str]
     filters: Optional[Dict] = None
 
+class ImportResult(BaseModel):
+    total_rows: int
+    successful: int
+    failed: int
+    errors: List[Dict]
+    inserted: int
+    updated: int
+
 # Helper Functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
