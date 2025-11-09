@@ -858,14 +858,18 @@
         
         async function loadItems() {
             const search = document.getElementById('searchFilter').value;
+            const searchBy = document.getElementById('searchByFilter').value;
             const category = document.getElementById('categoryFilter').value;
+            const gender = document.getElementById('genderFilter').value;
             const color = document.getElementById('colorFilter').value;
             const size = document.getElementById('sizeFilter').value;
             const status = document.getElementById('statusFilter').value;
             
             let url = `${API_URL}/inventory?`;
-            if (search) url += `search=${encodeURIComponent(search)}&`;
+            if (search && searchBy) url += `${searchBy}=${encodeURIComponent(search)}&`;
+            else if (search) url += `search=${encodeURIComponent(search)}&`;
             if (category) url += `category=${encodeURIComponent(category)}&`;
+            if (gender) url += `gender=${encodeURIComponent(gender)}&`;
             if (color) url += `color=${encodeURIComponent(color)}&`;
             if (size) url += `size=${encodeURIComponent(size)}&`;
             if (status) url += `status=${status}&`;
