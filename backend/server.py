@@ -557,6 +557,255 @@ async def get_inventory_stats(
         total_value=round(total_value, 2)
     )
 
+# Export Templates
+@api_router.post("/export-templates", response_model=ExportTemplate)
+async def create_export_template(
+    template_data: ExportTemplateCreate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Create a new export template"""
+    template = ExportTemplate(
+        **template_data.model_dump(),
+        created_by=current_user["email"]
+    )
+    
+    template_dict = template.model_dump()
+    template_dict["created_at"] = template_dict["created_at"].isoformat()
+    
+    await db.export_templates.insert_one(template_dict)
+    
+    return template
+
+@api_router.get("/export-templates", response_model=List[ExportTemplate])
+async def get_export_templates(
+    current_user: dict = Depends(get_current_user)
+):
+    """Get all export templates for current user"""
+    templates = await db.export_templates.find(
+        {"created_by": current_user["email"]},
+        {"_id": 0}
+    ).to_list(100)
+    
+    for template in templates:
+        if isinstance(template["created_at"], str):
+            template["created_at"] = datetime.fromisoformat(template["created_at"])
+    
+    return templates
+
+@api_router.delete("/export-templates/{template_id}")
+async def delete_export_template(
+    template_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete an export template"""
+    result = await db.export_templates.delete_one({
+        "id": template_id,
+        "created_by": current_user["email"]
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    return {"message": "Template deleted successfully"}
+
+# Export Functions
+def generate_excel(items: List[dict], fields: List[str]) -> BytesIO:
+    """Generate Excel file"""
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Inventory Report"
+    
+    # Header style
+    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    
+    # Write headers
+    for col_idx, field in enumerate(fields, 1):
+        cell = ws.cell(row=1, column=col_idx, value=field.replace("_", " ").title())
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+    
+    # Write data
+    for row_idx, item in enumerate(items, 2):
+        for col_idx, field in enumerate(fields, 1):
+            value = item.get(field, "")
+            if field == "fabric_specs":
+                value = item.get("fabric_specs", {}).get("material", "")
+            ws.cell(row=row_idx, column=col_idx, value=str(value))
+    
+    # Auto-adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+        ws.column_dimensions[column].width = min(max_length + 2, 50)
+    
+    # Save to BytesIO
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+    return output
+
+def generate_word(items: List[dict], fields: List[str]) -> BytesIO:
+    """Generate Word document"""
+    doc = Document()
+    
+    # Title
+    title = doc.add_heading('Inventory Report', 0)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    # Add metadata
+    doc.add_paragraph(f'Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+    doc.add_paragraph(f'Total Items: {len(items)}')
+    doc.add_paragraph('')
+    
+    # Create table
+    table = doc.add_table(rows=1, cols=len(fields))
+    table.style = 'Light Grid Accent 1'
+    
+    # Header row
+    header_cells = table.rows[0].cells
+    for idx, field in enumerate(fields):
+        header_cells[idx].text = field.replace("_", " ").title()
+        # Bold header
+        for paragraph in header_cells[idx].paragraphs:
+            for run in paragraph.runs:
+                run.font.bold = True
+    
+    # Data rows
+    for item in items:
+        row_cells = table.add_row().cells
+        for idx, field in enumerate(fields):
+            value = item.get(field, "")
+            if field == "fabric_specs":
+                value = item.get("fabric_specs", {}).get("material", "")
+            row_cells[idx].text = str(value)
+    
+    # Save to BytesIO
+    output = BytesIO()
+    doc.save(output)
+    output.seek(0)
+    return output
+
+def generate_pdf(items: List[dict], fields: List[str]) -> BytesIO:
+    """Generate PDF document"""
+    output = BytesIO()
+    doc = SimpleDocTemplate(output, pagesize=A4)
+    elements = []
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        textColor=colors.HexColor('#4472C4'),
+        spaceAfter=30,
+        alignment=1  # Center
+    )
+    
+    # Title
+    elements.append(Paragraph("Inventory Report", title_style))
+    elements.append(Spacer(1, 0.2*inch))
+    
+    # Metadata
+    meta_style = styles['Normal']
+    elements.append(Paragraph(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", meta_style))
+    elements.append(Paragraph(f"Total Items: {len(items)}", meta_style))
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Prepare table data
+    table_data = []
+    
+    # Headers
+    headers = [field.replace("_", " ").title() for field in fields]
+    table_data.append(headers)
+    
+    # Data rows
+    for item in items:
+        row = []
+        for field in fields:
+            value = item.get(field, "")
+            if field == "fabric_specs":
+                value = item.get("fabric_specs", {}).get("material", "")
+            row.append(str(value))
+        table_data.append(row)
+    
+    # Create table
+    table = Table(table_data)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4472C4')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+    ]))
+    
+    elements.append(table)
+    
+    # Build PDF
+    doc.build(elements)
+    output.seek(0)
+    return output
+
+@api_router.post("/inventory/export")
+async def export_inventory(
+    export_request: ExportRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Export inventory data in specified format"""
+    # Get filtered items
+    filters = export_request.filters or {}
+    query = {}
+    
+    if filters.get("brand"):
+        query["brand"] = filters["brand"]
+    if filters.get("warehouse"):
+        query["warehouse"] = filters["warehouse"]
+    if filters.get("category"):
+        query["category"] = filters["category"]
+    if filters.get("gender"):
+        query["gender"] = filters["gender"]
+    
+    items = await db.inventory.find(query, {"_id": 0}).to_list(10000)
+    
+    # Convert datetime objects to strings
+    for item in items:
+        if isinstance(item.get("created_at"), datetime):
+            item["created_at"] = item["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+        if isinstance(item.get("updated_at"), datetime):
+            item["updated_at"] = item["updated_at"].strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Generate file based on format
+    if export_request.format == "excel":
+        file_data = generate_excel(items, export_request.fields)
+        filename = f"inventory_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    elif export_request.format == "word":
+        file_data = generate_word(items, export_request.fields)
+        filename = f"inventory_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
+        media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    elif export_request.format == "pdf":
+        file_data = generate_pdf(items, export_request.fields)
+        filename = f"inventory_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        media_type = "application/pdf"
+    else:
+        raise HTTPException(status_code=400, detail="Invalid format. Use 'excel', 'word', or 'pdf'")
+    
+    return StreamingResponse(
+        file_data,
+        media_type=media_type,
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
 # Health check
 @api_router.get("/health")
 async def health_check():
