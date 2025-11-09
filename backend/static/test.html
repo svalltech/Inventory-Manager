@@ -231,6 +231,15 @@
             background: #c82333;
         }
         
+        .btn-edit {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .btn-edit:hover {
+            background: #e0a800;
+        }
+        
         .message {
             padding: 10px;
             border-radius: 5px;
@@ -261,15 +270,6 @@
         
         .logout-btn:hover {
             background: #c82333;
-        }
-        
-        .btn-edit {
-            background: #ffc107;
-            color: #333;
-        }
-        
-        .btn-edit:hover {
-            background: #e0a800;
         }
         
         .modal {
@@ -453,8 +453,8 @@
                             <input type="text" id="material" required placeholder="e.g., 100% Cotton">
                         </div>
                         <div class="form-group">
-                            <label>Weight</label>
-                            <input type="text" id="weight" placeholder="e.g., 180 GSM">
+                            <label>Weight (grams)</label>
+                            <input type="text" id="weight" placeholder="e.g., 180">
                         </div>
                     </div>
                     
@@ -465,24 +465,29 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Price (₹) *</label>
-                            <input type="number" id="price" step="0.01" required placeholder="e.g., 599">
+                            <label>MRP (₹) *</label>
+                            <input type="number" id="mrp" step="0.01" required placeholder="e.g., 1299">
                         </div>
                         <div class="form-group">
-                            <label>Cost Price (₹)</label>
-                            <input type="number" id="costPrice" step="0.01" placeholder="e.g., 350">
+                            <label>Selling Price (₹) *</label>
+                            <input type="number" id="sellingPrice" step="0.01" required placeholder="e.g., 999">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Cost Price (₹)</label>
+                            <input type="number" id="costPrice" step="0.01" placeholder="e.g., 650">
+                        </div>
+                        <div class="form-group">
                             <label>Quantity *</label>
                             <input type="number" id="quantity" required placeholder="e.g., 100">
                         </div>
-                        <div class="form-group">
-                            <label>Low Stock Threshold</label>
-                            <input type="number" id="lowStockThreshold" value="10">
-                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Low Stock Threshold</label>
+                        <input type="number" id="lowStockThreshold" value="10">
                     </div>
                     
                     <button type="submit">Add Item</button>
@@ -511,7 +516,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="value" id="totalValue">₹0</div>
-                        <div class="label">Total Value</div>
+                        <div class="label">Total Value (MRP)</div>
                     </div>
                 </div>
             </div>
@@ -564,9 +569,17 @@
                             <input type="text" id="editCategory" required>
                         </div>
                         <div class="form-group">
-                            <label>Design *</label>
-                            <input type="text" id="editDesign" required>
+                            <label>Gender *</label>
+                            <select id="editGender" required>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
                         </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Design *</label>
+                        <input type="text" id="editDesign" required>
                     </div>
                     
                     <div class="form-row">
@@ -584,12 +597,11 @@
                         <div class="form-group">
                             <label>Size *</label>
                             <select id="editSize" required>
-                                <option value="XS">XS</option>
-                                <option value="S">S</option>
-                                <option value="M">M</option>
-                                <option value="L">L</option>
-                                <option value="XL">XL</option>
-                                <option value="XXL">XXL</option>
+                                <option value="XS(36)">XS(36)</option>
+                                <option value="S(38)">S(38)</option>
+                                <option value="M(40)">M(40)</option>
+                                <option value="L(42)">L(42)</option>
+                                <option value="XL(44)">XL(44)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -607,7 +619,7 @@
                             <input type="text" id="editMaterial" required>
                         </div>
                         <div class="form-group">
-                            <label>Weight</label>
+                            <label>Weight (grams)</label>
                             <input type="text" id="editWeight">
                         </div>
                     </div>
@@ -619,24 +631,29 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Price (₹) *</label>
-                            <input type="number" id="editPrice" step="0.01" required>
+                            <label>MRP (₹) *</label>
+                            <input type="number" id="editMrp" step="0.01" required>
                         </div>
                         <div class="form-group">
-                            <label>Cost Price (₹)</label>
-                            <input type="number" id="editCostPrice" step="0.01">
+                            <label>Selling Price (₹) *</label>
+                            <input type="number" id="editSellingPrice" step="0.01" required>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Cost Price (₹)</label>
+                            <input type="number" id="editCostPrice" step="0.01">
+                        </div>
+                        <div class="form-group">
                             <label>Quantity *</label>
                             <input type="number" id="editQuantity" required>
                         </div>
-                        <div class="form-group">
-                            <label>Low Stock Threshold</label>
-                            <input type="number" id="editLowStockThreshold">
-                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Low Stock Threshold</label>
+                        <input type="number" id="editLowStockThreshold">
                     </div>
                     
                     <button type="submit">Update Item</button>
@@ -759,6 +776,7 @@
                 sku: document.getElementById('sku').value,
                 name: document.getElementById('name').value,
                 category: document.getElementById('category').value,
+                gender: document.getElementById('gender').value,
                 color: document.getElementById('color').value,
                 color_code: document.getElementById('colorCode').value || null,
                 design: document.getElementById('design').value,
@@ -769,7 +787,8 @@
                     weight: document.getElementById('weight').value || null,
                     composition: document.getElementById('composition').value || null
                 },
-                price: parseFloat(document.getElementById('price').value),
+                mrp: parseFloat(document.getElementById('mrp').value),
+                selling_price: parseFloat(document.getElementById('sellingPrice').value),
                 cost_price: document.getElementById('costPrice').value ? parseFloat(document.getElementById('costPrice').value) : null,
                 quantity: parseInt(document.getElementById('quantity').value),
                 low_stock_threshold: parseInt(document.getElementById('lowStockThreshold').value),
@@ -869,6 +888,10 @@
                             <span>${item.category}</span>
                         </div>
                         <div class="item-detail">
+                            <span><strong>Gender:</strong></span>
+                            <span>${item.gender}</span>
+                        </div>
+                        <div class="item-detail">
                             <span><strong>Color:</strong></span>
                             <span>${item.color}</span>
                         </div>
@@ -885,8 +908,12 @@
                             <span>${item.fabric_specs.material}</span>
                         </div>
                         <div class="item-detail">
-                            <span><strong>Price:</strong></span>
-                            <span>₹${item.price}</span>
+                            <span><strong>MRP:</strong></span>
+                            <span>₹${item.mrp}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span><strong>Selling Price:</strong></span>
+                            <span>₹${item.selling_price}</span>
                         </div>
                         <div class="item-detail">
                             <span><strong>Quantity:</strong></span>
@@ -905,6 +932,105 @@
                     ` : ''}
                 </div>
             `).join('');
+        }
+        
+        async function openEditModal(itemId) {
+            try {
+                const response = await fetch(`${API_URL}/inventory/${itemId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const item = await response.json();
+                    
+                    // Populate form
+                    document.getElementById('editItemId').value = item.id;
+                    document.getElementById('editSku').value = item.sku;
+                    document.getElementById('editName').value = item.name;
+                    document.getElementById('editCategory').value = item.category;
+                    document.getElementById('editGender').value = item.gender;
+                    document.getElementById('editDesign').value = item.design;
+                    document.getElementById('editColor').value = item.color;
+                    document.getElementById('editColorCode').value = item.color_code || '';
+                    document.getElementById('editSize').value = item.size;
+                    document.getElementById('editStatus').value = item.status;
+                    document.getElementById('editMaterial').value = item.fabric_specs.material;
+                    document.getElementById('editWeight').value = item.fabric_specs.weight || '';
+                    document.getElementById('editComposition').value = item.fabric_specs.composition || '';
+                    document.getElementById('editMrp').value = item.mrp;
+                    document.getElementById('editSellingPrice').value = item.selling_price;
+                    document.getElementById('editCostPrice').value = item.cost_price || '';
+                    document.getElementById('editQuantity').value = item.quantity;
+                    document.getElementById('editLowStockThreshold').value = item.low_stock_threshold;
+                    
+                    // Show modal
+                    document.getElementById('editModal').classList.add('show');
+                } else {
+                    alert('Failed to load item details');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            document.getElementById('editItemMessage').innerHTML = '';
+        }
+        
+        async function updateItem(event) {
+            event.preventDefault();
+            
+            const itemId = document.getElementById('editItemId').value;
+            const itemData = {
+                sku: document.getElementById('editSku').value,
+                name: document.getElementById('editName').value,
+                category: document.getElementById('editCategory').value,
+                gender: document.getElementById('editGender').value,
+                color: document.getElementById('editColor').value,
+                color_code: document.getElementById('editColorCode').value || null,
+                design: document.getElementById('editDesign').value,
+                size: document.getElementById('editSize').value,
+                status: document.getElementById('editStatus').value,
+                fabric_specs: {
+                    material: document.getElementById('editMaterial').value,
+                    weight: document.getElementById('editWeight').value || null,
+                    composition: document.getElementById('editComposition').value || null
+                },
+                mrp: parseFloat(document.getElementById('editMrp').value),
+                selling_price: parseFloat(document.getElementById('editSellingPrice').value),
+                cost_price: document.getElementById('editCostPrice').value ? parseFloat(document.getElementById('editCostPrice').value) : null,
+                quantity: parseInt(document.getElementById('editQuantity').value),
+                low_stock_threshold: parseInt(document.getElementById('editLowStockThreshold').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/inventory/${itemId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(itemData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('editItemMessage', 'Item updated successfully!', 'success');
+                    setTimeout(() => {
+                        closeEditModal();
+                        loadStats();
+                        loadItems();
+                    }, 1500);
+                } else {
+                    showMessage('editItemMessage', data.detail || 'Failed to update item', 'error');
+                }
+            } catch (error) {
+                showMessage('editItemMessage', 'Network error', 'error');
+            }
         }
         
         async function deleteItem(itemId) {
@@ -937,101 +1063,6 @@
             document.getElementById('sizeFilter').value = '';
             document.getElementById('statusFilter').value = '';
             loadItems();
-        }
-        
-        async function openEditModal(itemId) {
-            try {
-                const response = await fetch(`${API_URL}/inventory/${itemId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const item = await response.json();
-                    
-                    // Populate form
-                    document.getElementById('editItemId').value = item.id;
-                    document.getElementById('editSku').value = item.sku;
-                    document.getElementById('editName').value = item.name;
-                    document.getElementById('editCategory').value = item.category;
-                    document.getElementById('editDesign').value = item.design;
-                    document.getElementById('editColor').value = item.color;
-                    document.getElementById('editColorCode').value = item.color_code || '';
-                    document.getElementById('editSize').value = item.size;
-                    document.getElementById('editStatus').value = item.status;
-                    document.getElementById('editMaterial').value = item.fabric_specs.material;
-                    document.getElementById('editWeight').value = item.fabric_specs.weight || '';
-                    document.getElementById('editComposition').value = item.fabric_specs.composition || '';
-                    document.getElementById('editPrice').value = item.price;
-                    document.getElementById('editCostPrice').value = item.cost_price || '';
-                    document.getElementById('editQuantity').value = item.quantity;
-                    document.getElementById('editLowStockThreshold').value = item.low_stock_threshold;
-                    
-                    // Show modal
-                    document.getElementById('editModal').classList.add('show');
-                } else {
-                    alert('Failed to load item details');
-                }
-            } catch (error) {
-                alert('Network error');
-            }
-        }
-        
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('show');
-            document.getElementById('editItemMessage').innerHTML = '';
-        }
-        
-        async function updateItem(event) {
-            event.preventDefault();
-            
-            const itemId = document.getElementById('editItemId').value;
-            const itemData = {
-                sku: document.getElementById('editSku').value,
-                name: document.getElementById('editName').value,
-                category: document.getElementById('editCategory').value,
-                color: document.getElementById('editColor').value,
-                color_code: document.getElementById('editColorCode').value || null,
-                design: document.getElementById('editDesign').value,
-                size: document.getElementById('editSize').value,
-                status: document.getElementById('editStatus').value,
-                fabric_specs: {
-                    material: document.getElementById('editMaterial').value,
-                    weight: document.getElementById('editWeight').value || null,
-                    composition: document.getElementById('editComposition').value || null
-                },
-                price: parseFloat(document.getElementById('editPrice').value),
-                cost_price: document.getElementById('editCostPrice').value ? parseFloat(document.getElementById('editCostPrice').value) : null,
-                quantity: parseInt(document.getElementById('editQuantity').value),
-                low_stock_threshold: parseInt(document.getElementById('editLowStockThreshold').value)
-            };
-            
-            try {
-                const response = await fetch(`${API_URL}/inventory/${itemId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
-                    },
-                    body: JSON.stringify(itemData)
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    showMessage('editItemMessage', 'Item updated successfully!', 'success');
-                    setTimeout(() => {
-                        closeEditModal();
-                        loadStats();
-                        loadItems();
-                    }, 1500);
-                } else {
-                    showMessage('editItemMessage', data.detail || 'Failed to update item', 'error');
-                }
-            } catch (error) {
-                showMessage('editItemMessage', 'Network error', 'error');
-            }
         }
         
         function showMessage(elementId, message, type) {
