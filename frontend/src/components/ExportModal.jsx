@@ -63,14 +63,7 @@ const ExportModal = ({ onClose, onExport }) => {
       return;
     }
 
-    // Check default templates
-    const defaultTemplate = defaultTemplates.find(t => t.id === templateId);
-    if (defaultTemplate) {
-      setSelectedFields(defaultTemplate.fields);
-      return;
-    }
-
-    // Check custom templates
+    // Load custom template
     const customTemplate = templates.find(t => t.id === templateId);
     if (customTemplate) {
       setSelectedFields(customTemplate.fields);
