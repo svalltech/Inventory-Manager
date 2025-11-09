@@ -782,47 +782,69 @@
         
         async function loadFilterOptions() {
             try {
-                const response = await fetch(`${API_URL}/inventory`, {
+                const response = await fetch(`${API_URL}/inventory/filter-options`, {
                     headers: {
                         'Authorization': `Bearer ${authToken}`
                     }
                 });
                 
                 if (response.ok) {
-                    const items = await response.json();
+                    const data = await response.json();
                     
-                    // Get unique values for each filter
-                    const categories = [...new Set(items.map(item => item.category))].sort();
-                    const genders = [...new Set(items.map(item => item.gender))].sort();
-                    const colors = [...new Set(items.map(item => item.color))].sort();
-                    const sizes = [...new Set(items.map(item => item.size))].sort();
-                    
-                    // Populate category dropdown
+                    // Populate filter dropdowns
                     const categoryFilter = document.getElementById('categoryFilter');
                     categoryFilter.innerHTML = '<option value="">All Categories</option>';
-                    categories.forEach(category => {
+                    data.categories.forEach(category => {
                         categoryFilter.innerHTML += `<option value="${category}">${category}</option>`;
                     });
                     
-                    // Populate gender dropdown
                     const genderFilter = document.getElementById('genderFilter');
                     genderFilter.innerHTML = '<option value="">All Genders</option>';
-                    genders.forEach(gender => {
+                    data.genders.forEach(gender => {
                         genderFilter.innerHTML += `<option value="${gender}">${gender.charAt(0).toUpperCase() + gender.slice(1)}</option>`;
                     });
                     
-                    // Populate color dropdown
                     const colorFilter = document.getElementById('colorFilter');
                     colorFilter.innerHTML = '<option value="">All Colors</option>';
-                    colors.forEach(color => {
+                    data.colors.forEach(color => {
                         colorFilter.innerHTML += `<option value="${color}">${color}</option>`;
                     });
                     
-                    // Populate size dropdown
                     const sizeFilter = document.getElementById('sizeFilter');
                     sizeFilter.innerHTML = '<option value="">All Sizes</option>';
-                    sizes.forEach(size => {
+                    data.sizes.forEach(size => {
                         sizeFilter.innerHTML += `<option value="${size}">${size}</option>`;
+                    });
+                    
+                    // Populate datalists for add/edit forms
+                    const categoryList = document.getElementById('categoryList');
+                    categoryList.innerHTML = '';
+                    data.categories.forEach(category => {
+                        categoryList.innerHTML += `<option value="${category}">`;
+                    });
+                    
+                    const designList = document.getElementById('designList');
+                    designList.innerHTML = '';
+                    data.designs.forEach(design => {
+                        designList.innerHTML += `<option value="${design}">`;
+                    });
+                    
+                    const colorList = document.getElementById('colorList');
+                    colorList.innerHTML = '';
+                    data.colors.forEach(color => {
+                        colorList.innerHTML += `<option value="${color}">`;
+                    });
+                    
+                    const materialList = document.getElementById('materialList');
+                    materialList.innerHTML = '';
+                    data.materials.forEach(material => {
+                        materialList.innerHTML += `<option value="${material}">`;
+                    });
+                    
+                    const weightList = document.getElementById('weightList');
+                    weightList.innerHTML = '';
+                    data.weights.forEach(weight => {
+                        weightList.innerHTML += `<option value="${weight}">`;
                     });
                 }
             } catch (error) {
