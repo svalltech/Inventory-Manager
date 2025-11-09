@@ -558,14 +558,47 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
             {/* Material */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Material</label>
-              <input
-                type="text"
-                name="fabric_material"
-                value={formData.fabric_specs.material}
-                onChange={handleChange}
-                placeholder="e.g., Cotton, Polyester, Nylon"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              {showNewMaterialInput || (materials.length === 0 && isCreateMode) ? (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    name="fabric_material"
+                    value={formData.fabric_specs.material}
+                    onChange={handleChange}
+                    placeholder="Enter material (e.g., Cotton, Polyester, Nylon)"
+                    className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
+                  />
+                  {materials.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewMaterialInput(false);
+                        setFormData(prev => ({
+                          ...prev,
+                          fabric_specs: { ...prev.fabric_specs, material: '' }
+                        }));
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      ← Select from existing materials
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <select
+                    value={formData.fabric_specs.material}
+                    onChange={handleMaterialChange}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select Material --</option>
+                    {materials.map(material => (
+                      <option key={material} value={material}>{material}</option>
+                    ))}
+                    <option value="__new__" className="font-semibold text-blue-600">➕ Add New Material</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Weight (grams) */}
