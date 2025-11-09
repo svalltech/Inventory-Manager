@@ -371,8 +371,10 @@ async def get_filter_options(
 ):
     """Get all unique values for filter dropdowns"""
     # Get all items
-    all_items = await db.inventory.find({}, {"_id": 0, "category": 1, "gender": 1, "color": 1, "size": 1, "design": 1, "fabric_specs": 1}).to_list(10000)
+    all_items = await db.inventory.find({}, {"_id": 0, "brand": 1, "warehouse": 1, "category": 1, "gender": 1, "color": 1, "size": 1, "design": 1, "fabric_specs": 1}).to_list(10000)
     
+    brands = sorted(list(set(item.get("brand") for item in all_items if item.get("brand"))))
+    warehouses = sorted(list(set(item.get("warehouse") for item in all_items if item.get("warehouse"))))
     categories = sorted(list(set(item.get("category") for item in all_items if item.get("category"))))
     genders = sorted(list(set(item.get("gender") for item in all_items if item.get("gender"))))
     colors = sorted(list(set(item.get("color") for item in all_items if item.get("color"))))
@@ -393,6 +395,8 @@ async def get_filter_options(
     weights = sorted(list(set(weights)))
     
     return {
+        "brands": brands,
+        "warehouses": warehouses,
         "categories": categories,
         "genders": genders,
         "colors": colors,
@@ -401,6 +405,29 @@ async def get_filter_options(
         "materials": materials,
         "weights": weights
     }
+
+@api_router.get("/inventory/brand-warehouses")
+async def get_brand_warehouses(
+    current_user: dict = Depends(get_current_user)
+):
+    """Get all brands with their associated warehouses"""
+    # Get all items
+    all_items = await db.inventory.find({}, {"_id": 0, "brand": 1, "warehouse": 1}).to_list(10000)
+    
+    # Build brand-warehouse mapping
+    brand_warehouses = {}
+    for item in all_items:
+        brand = item.get("brand")
+        warehouse = item.get("warehouse")
+        if brand and warehouse:
+            if brand not in brand_warehouses:
+                brand_warehouses[brand] = set()
+            brand_warehouses[brand].add(warehouse)
+    
+    # Convert sets to sorted lists
+    result = {brand: sorted(list(warehouses)) for brand, warehouses in brand_warehouses.items()}
+    
+    return result
 
 @api_router.get("/inventory/{item_id}", response_model=InventoryItem)
 async def get_inventory_item(
