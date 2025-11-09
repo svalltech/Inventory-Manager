@@ -468,14 +468,44 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
             {/* Color */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Color</label>
-              <input
-                type="text"
-                name="color"
-                value={formData.color}
-                onChange={handleChange}
-                placeholder="e.g., Navy Blue, Red, Black"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              {showNewColorInput || (colors.length === 0 && isCreateMode) ? (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    name="color"
+                    value={formData.color}
+                    onChange={handleChange}
+                    placeholder="Enter color (e.g., Navy Blue, Red, Black)"
+                    className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
+                  />
+                  {colors.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewColorInput(false);
+                        setFormData(prev => ({ ...prev, color: '' }));
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      ← Select from existing colors
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <select
+                    value={formData.color}
+                    onChange={handleColorChange}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select Color --</option>
+                    {colors.map(color => (
+                      <option key={color} value={color}>{color}</option>
+                    ))}
+                    <option value="__new__" className="font-semibold text-blue-600">➕ Add New Color</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Design */}
