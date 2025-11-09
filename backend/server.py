@@ -766,6 +766,213 @@ def generate_pdf(items: List[dict], fields: List[str]) -> BytesIO:
     output.seek(0)
     return output
 
+@api_router.post("/inventory/import", response_model=ImportResult)
+async def import_inventory(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(require_role([UserRole.ADMIN, UserRole.STAFF]))
+):
+    """Import inventory data from Excel file"""
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="Only Excel files (.xlsx, .xls) are supported")
+    
+    try:
+        # Read Excel file
+        contents = await file.read()
+        wb = load_workbook(BytesIO(contents))
+        ws = wb.active
+        
+        # Get headers from first row
+        headers = []
+        for cell in ws[1]:
+            if cell.value:
+                headers.append(str(cell.value).lower().replace(" ", "_"))
+        
+        # Required fields
+        required_fields = ['sku', 'name', 'brand', 'warehouse', 'category', 'gender', 'size', 'design', 'mrp', 'selling_price', 'quantity']
+        missing_fields = [field for field in required_fields if field not in headers]
+        
+        if missing_fields:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Missing required columns: {', '.join(missing_fields)}"
+            )
+        
+        # Process rows
+        total_rows = 0
+        successful = 0
+        failed = 0
+        inserted = 0
+        updated = 0
+        errors = []
+        
+        for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            if not any(row):  # Skip empty rows
+                continue
+            
+            total_rows += 1
+            
+            try:
+                # Build item dict from row
+                item_data = {}
+                for col_idx, value in enumerate(row):
+                    if col_idx < len(headers):
+                        header = headers[col_idx]
+                        item_data[header] = value
+                
+                # Validate required fields
+                for field in required_fields:
+                    if not item_data.get(field):
+                        raise ValueError(f"Missing required field: {field}")
+                
+                # Handle fabric_specs
+                fabric_specs = {
+                    "material": str(item_data.get("material", "")),
+                    "weight": str(item_data.get("weight", "")) if item_data.get("weight") else None,
+                    "composition": str(item_data.get("composition", "")) if item_data.get("composition") else None
+                }
+                
+                # Check if item exists (by SKU)
+                existing_item = await db.inventory.find_one({"sku": item_data["sku"]})
+                
+                if existing_item:
+                    # Update existing item
+                    update_data = {
+                        "name": str(item_data["name"]),
+                        "brand": str(item_data["brand"]),
+                        "warehouse": str(item_data["warehouse"]),
+                        "category": str(item_data["category"]),
+                        "gender": str(item_data["gender"]).lower(),
+                        "color": str(item_data.get("color", "")),
+                        "color_code": str(item_data.get("color_code", "")) if item_data.get("color_code") else None,
+                        "fabric_specs": fabric_specs,
+                        "size": str(item_data["size"]),
+                        "design": str(item_data["design"]),
+                        "mrp": float(item_data["mrp"]),
+                        "selling_price": float(item_data["selling_price"]),
+                        "cost_price": float(item_data["cost_price"]) if item_data.get("cost_price") else None,
+                        "quantity": int(item_data["quantity"]),
+                        "low_stock_threshold": int(item_data.get("low_stock_threshold", 10)),
+                        "status": str(item_data.get("status", "active")).lower(),
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "last_modified_by": current_user["email"]
+                    }
+                    
+                    await db.inventory.update_one(
+                        {"sku": item_data["sku"]},
+                        {"$set": update_data}
+                    )
+                    updated += 1
+                    successful += 1
+                else:
+                    # Insert new item
+                    new_item = {
+                        "id": str(uuid.uuid4()),
+                        "sku": str(item_data["sku"]),
+                        "name": str(item_data["name"]),
+                        "brand": str(item_data["brand"]),
+                        "warehouse": str(item_data["warehouse"]),
+                        "category": str(item_data["category"]),
+                        "gender": str(item_data["gender"]).lower(),
+                        "color": str(item_data.get("color", "")),
+                        "color_code": str(item_data.get("color_code", "")) if item_data.get("color_code") else None,
+                        "fabric_specs": fabric_specs,
+                        "size": str(item_data["size"]),
+                        "design": str(item_data["design"]),
+                        "mrp": float(item_data["mrp"]),
+                        "selling_price": float(item_data["selling_price"]),
+                        "cost_price": float(item_data["cost_price"]) if item_data.get("cost_price") else None,
+                        "quantity": int(item_data["quantity"]),
+                        "low_stock_threshold": int(item_data.get("low_stock_threshold", 10)),
+                        "images": [],
+                        "status": str(item_data.get("status", "active")).lower(),
+                        "sync_status": "synced",
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "created_by": current_user["email"],
+                        "last_modified_by": current_user["email"],
+                        "last_synced_at": None
+                    }
+                    
+                    await db.inventory.insert_one(new_item)
+                    inserted += 1
+                    successful += 1
+                
+            except Exception as e:
+                failed += 1
+                errors.append({
+                    "row": row_idx,
+                    "sku": item_data.get("sku", "Unknown"),
+                    "error": str(e)
+                })
+        
+        return ImportResult(
+            total_rows=total_rows,
+            successful=successful,
+            failed=failed,
+            errors=errors,
+            inserted=inserted,
+            updated=updated
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to process Excel file: {str(e)}")
+
+@api_router.get("/inventory/download-template")
+async def download_import_template(
+    current_user: dict = Depends(get_current_user)
+):
+    """Download Excel template for bulk import"""
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Inventory Import Template"
+    
+    # Headers
+    headers = [
+        "SKU", "Name", "Brand", "Warehouse", "Category", "Gender", "Color", "Color Code",
+        "Size", "Design", "Material", "Weight", "Composition", "MRP", "Selling Price",
+        "Cost Price", "Quantity", "Low Stock Threshold", "Status"
+    ]
+    
+    # Header style
+    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    
+    for col_idx, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_idx, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center")
+    
+    # Add sample data
+    sample_data = [
+        "SAMPLE-001", "Sample T-Shirt", "Nike", "Main Warehouse", "T-Shirt", "male",
+        "Blue", "#0000FF", "M(40)", "Solid", "100% Cotton", "180", "Cotton 100%",
+        1299, 999, 650, 100, 10, "active"
+    ]
+    
+    for col_idx, value in enumerate(sample_data, 1):
+        ws.cell(row=2, column=col_idx, value=value)
+    
+    # Auto-adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+        ws.column_dimensions[column].width = min(max_length + 2, 30)
+    
+    # Save to BytesIO
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=inventory_import_template.xlsx"}
+    )
+
 @api_router.post("/inventory/export")
 async def export_inventory(
     export_request: ExportRequest,
