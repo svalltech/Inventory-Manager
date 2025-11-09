@@ -312,10 +312,16 @@ async def create_inventory_item(
     item_data: InventoryItemCreate,
     current_user: dict = Depends(require_role([UserRole.ADMIN, UserRole.STAFF]))
 ):
-    # Check if SKU already exists
-    existing_item = await db.inventory.find_one({"sku": item_data.sku})
+    # Check if SKU + Warehouse combination already exists
+    existing_item = await db.inventory.find_one({
+        "sku": item_data.sku,
+        "warehouse": item_data.warehouse
+    })
     if existing_item:
-        raise HTTPException(status_code=400, detail=f"SKU '{item_data.sku}' already exists")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"SKU '{item_data.sku}' already exists in warehouse '{item_data.warehouse}'. Same SKU can exist in different warehouses."
+        )
     
     # Create item
     item = InventoryItem(
