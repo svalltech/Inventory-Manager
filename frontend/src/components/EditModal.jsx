@@ -191,7 +191,8 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
       mrp: parseFloat(formData.mrp),
       selling_price: parseFloat(formData.selling_price),
       cost_price: formData.cost_price ? parseFloat(formData.cost_price) : undefined,
-      quantity: parseInt(formData.quantity)
+      quantity: parseInt(formData.quantity),
+      low_stock_threshold: parseInt(formData.low_stock_threshold)
     };
 
     onSave(dataToSave);
