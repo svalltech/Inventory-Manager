@@ -1127,6 +1127,8 @@
                     document.getElementById('editItemId').value = item.id;
                     document.getElementById('editSku').value = item.sku;
                     document.getElementById('editName').value = item.name;
+                    document.getElementById('editBrand').value = item.brand;
+                    document.getElementById('editWarehouse').value = item.warehouse;
                     document.getElementById('editCategory').value = item.category;
                     document.getElementById('editGender').value = item.gender;
                     document.getElementById('editDesign').value = item.design;
@@ -1142,6 +1144,9 @@
                     document.getElementById('editCostPrice').value = item.cost_price || '';
                     document.getElementById('editQuantity').value = item.quantity;
                     document.getElementById('editLowStockThreshold').value = item.low_stock_threshold;
+                    
+                    // Update warehouse options for selected brand
+                    updateEditWarehouseOptions();
                     
                     // Show modal
                     document.getElementById('editModal').classList.add('show');
