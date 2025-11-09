@@ -2,16 +2,39 @@ import { useState, useMemo } from 'react';
 
 const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onEdit }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [columnFilters, setColumnFilters] = useState({
+    category: '',
+    name: '',
+    sku: '',
+    design: '',
+    size: '',
+    brand: '',
+    warehouse: '',
+    quantity: '',
+    selling_price: ''
+  });
 
   // Sortable columns
   const sortableColumns = ['category', 'name', 'sku', 'design', 'size', 'quantity', 'selling_price', 'totalValue'];
 
-  // Sort data
-  const sortedData = useMemo(() => {
-    let sortableData = [...data];
+  // Apply column filters first, then sort
+  const filteredAndSortedData = useMemo(() => {
+    // First, filter the data based on column filters
+    let filtered = [...data];
     
+    Object.keys(columnFilters).forEach(key => {
+      const filterValue = columnFilters[key].toLowerCase().trim();
+      if (filterValue) {
+        filtered = filtered.filter(item => {
+          const itemValue = item[key]?.toString().toLowerCase() || '';
+          return itemValue.includes(filterValue);
+        });
+      }
+    });
+
+    // Then, sort the filtered data
     if (sortConfig.key) {
-      sortableData.sort((a, b) => {
+      filtered.sort((a, b) => {
         let aValue, bValue;
 
         if (sortConfig.key === 'totalValue') {
@@ -35,8 +58,8 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
       });
     }
 
-    return sortableData;
-  }, [data, sortConfig]);
+    return filtered;
+  }, [data, sortConfig, columnFilters]);
 
   // Pagination
   const totalPages = Math.ceil(sortedData.length / entriesPerPage);
