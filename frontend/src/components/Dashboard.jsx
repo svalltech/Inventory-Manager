@@ -248,8 +248,18 @@ const Dashboard = ({ user, onLogout }) => {
           entriesPerPage={entriesPerPage}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
+          onEdit={handleEdit}
         />
       </main>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <EditModal
+          item={editItem}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleUpdateItem}
+        />
+      )}
     </div>
   );
 };
