@@ -173,6 +173,26 @@ class InventoryStats(BaseModel):
     categories_count: int
     total_value: float
 
+class ExportTemplate(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    fields: List[str]
+    is_default: bool = False
+    created_by: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ExportTemplateCreate(BaseModel):
+    name: str
+    fields: List[str]
+    is_default: bool = False
+
+class ExportRequest(BaseModel):
+    format: str  # excel, pdf, word
+    fields: List[str]
+    filters: Optional[Dict] = None
+
 # Helper Functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
