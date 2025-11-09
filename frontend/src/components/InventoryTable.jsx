@@ -121,6 +121,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200">
+            {/* Header Row with Sort Icons */}
             <tr>
               {[
                 { key: 'category', label: 'Category' },
@@ -135,8 +136,8 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
               ].map(({ key, label }) => (
                 <th
                   key={key}
-                  onClick={() => handleSort(key)}
-                  className={`px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider ${
+                  onClick={() => key !== 'actions' && handleSort(key)}
+                  className={`px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider ${
                     sortableColumns.includes(key) ? 'cursor-pointer hover:bg-blue-100 transition' : ''
                   }`}
                 >
@@ -144,6 +145,33 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                     <span>{label}</span>
                     {getSortIcon(key)}
                   </div>
+                </th>
+              ))}
+            </tr>
+            {/* Search Row */}
+            <tr className="bg-white border-t border-slate-200">
+              {[
+                { key: 'category', placeholder: 'Search category...' },
+                { key: 'name', placeholder: 'Search name...' },
+                { key: 'sku', placeholder: 'Search SKU...' },
+                { key: 'design', placeholder: 'Search design...' },
+                { key: 'size', placeholder: 'Search size...' },
+                { key: 'quantity', placeholder: 'Search qty...' },
+                { key: 'selling_price', placeholder: 'Search price...' },
+                { key: 'totalValue', placeholder: '' },
+                { key: 'actions', placeholder: '' }
+              ].map(({ key, placeholder }) => (
+                <th key={key} className="px-6 py-2">
+                  {key !== 'totalValue' && key !== 'actions' ? (
+                    <input
+                      type="text"
+                      value={columnFilters[key] || ''}
+                      onChange={(e) => handleColumnFilterChange(key, e.target.value)}
+                      placeholder={placeholder}
+                      className="w-full px-2 py-1.5 text-xs border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : null}
                 </th>
               ))}
             </tr>
