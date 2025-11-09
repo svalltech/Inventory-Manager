@@ -151,12 +151,15 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage }) =
               <td className="px-6 py-4 text-sm font-bold text-slate-900">
                 {totals.totalQuantity.toLocaleString('en-IN')}
               </td>
+              <td className="px-6 py-4 text-sm font-bold text-slate-500">
+                -
+              </td>
               <td className="px-6 py-4 text-sm font-bold text-blue-600">
                 ₹{totals.totalValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
             </tr>
             <tr>
-              <td colSpan="7" className="px-6 py-3 text-sm text-slate-600 bg-slate-50">
+              <td colSpan="8" className="px-6 py-3 text-sm text-slate-600 bg-slate-50">
                 Showing <span className="font-semibold">{startIndex + 1}</span> to{' '}
                 <span className="font-semibold">{Math.min(endIndex, sortedData.length)}</span> of{' '}
                 <span className="font-semibold">{sortedData.length}</span> entries
