@@ -843,6 +843,12 @@
                     });
                     
                     // Populate datalists for add/edit forms
+                    const brandList = document.getElementById('brandList');
+                    brandList.innerHTML = '';
+                    data.brands.forEach(brand => {
+                        brandList.innerHTML += `<option value="${brand}">`;
+                    });
+                    
                     const categoryList = document.getElementById('categoryList');
                     categoryList.innerHTML = '';
                     data.categories.forEach(category => {
@@ -873,8 +879,55 @@
                         weightList.innerHTML += `<option value="${weight}">`;
                     });
                 }
+                
+                // Load brand-warehouse mapping
+                const brandWarehouseResponse = await fetch(`${API_URL}/inventory/brand-warehouses`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (brandWarehouseResponse.ok) {
+                    brandWarehouseMap = await brandWarehouseResponse.json();
+                }
             } catch (error) {
                 console.error('Failed to load filter options:', error);
+            }
+        }
+        
+        function updateWarehouseOptions() {
+            const brand = document.getElementById('brand').value;
+            const warehouseList = document.getElementById('warehouseList');
+            warehouseList.innerHTML = '';
+            
+            if (brand && brandWarehouseMap[brand]) {
+                // Show warehouses for selected brand
+                brandWarehouseMap[brand].forEach(warehouse => {
+                    warehouseList.innerHTML += `<option value="${warehouse}">`;
+                });
+            } else {
+                // Show all warehouses if no brand selected or new brand
+                Object.values(brandWarehouseMap).flat().forEach(warehouse => {
+                    warehouseList.innerHTML += `<option value="${warehouse}">`;
+                });
+            }
+        }
+        
+        function updateEditWarehouseOptions() {
+            const brand = document.getElementById('editBrand').value;
+            const editWarehouseList = document.getElementById('editWarehouseList');
+            editWarehouseList.innerHTML = '';
+            
+            if (brand && brandWarehouseMap[brand]) {
+                // Show warehouses for selected brand
+                brandWarehouseMap[brand].forEach(warehouse => {
+                    editWarehouseList.innerHTML += `<option value="${warehouse}">`;
+                });
+            } else {
+                // Show all warehouses if no brand selected or new brand
+                Object.values(brandWarehouseMap).flat().forEach(warehouse => {
+                    editWarehouseList.innerHTML += `<option value="${warehouse}">`;
+                });
             }
         }
         
