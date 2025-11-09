@@ -99,23 +99,35 @@ const Dashboard = ({ user, onLogout }) => {
 
   const handleEdit = (item) => {
     setEditItem(item);
-    setShowEditModal(true);
+    setIsCreateMode(false);
+    setShowModal(true);
   };
 
-  const handleUpdateItem = async (updatedItem) => {
+  const handleAddNew = () => {
+    setEditItem(null);
+    setIsCreateMode(true);
+    setShowModal(true);
+  };
+
+  const handleSaveItem = async (itemData) => {
     try {
       const token = localStorage.getItem('authToken');
-      await axios.put(
-        `${API}/inventory/${updatedItem.id}`,
-        updatedItem,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const headers = { Authorization: `Bearer ${token}` };
+
+      if (isCreateMode) {
+        // Create new item
+        await axios.post(`${API}/inventory`, itemData, { headers });
+        toast.success('Item created successfully!');
+      } else {
+        // Update existing item
+        await axios.put(`${API}/inventory/${itemData.id}`, itemData, { headers });
+        toast.success('Item updated successfully!');
+      }
       
-      toast.success('Item updated successfully!');
-      setShowEditModal(false);
+      setShowModal(false);
       fetchData(); // Refresh data
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to update item');
+      toast.error(error.response?.data?.detail || `Failed to ${isCreateMode ? 'create' : 'update'} item`);
     }
   };
 
