@@ -120,7 +120,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
           <tbody className="divide-y divide-slate-200">
             {currentData.length === 0 ? (
               <tr>
-                <td colSpan="8" className="px-6 py-12 text-center text-slate-500">
+                <td colSpan="9" className="px-6 py-12 text-center text-slate-500">
                   No inventory items found
                 </td>
               </tr>
@@ -138,6 +138,17 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-900 font-semibold">
                     ₹{(item.selling_price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => onEdit(item)}
+                      className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-lg transition"
+                      title="Edit item"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
                   </td>
                 </tr>
               ))
