@@ -137,6 +137,8 @@ class InventoryItemCreate(BaseModel):
 class InventoryItemUpdate(BaseModel):
     sku: Optional[str] = None
     name: Optional[str] = None
+    brand: Optional[str] = None
+    warehouse: Optional[str] = None
     category: Optional[str] = None
     gender: Optional[Gender] = None
     color: Optional[str] = None
