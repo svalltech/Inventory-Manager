@@ -781,6 +781,7 @@
             document.getElementById('logoutBtn').classList.remove('hidden');
             document.getElementById('userInfo').textContent = `Logged in as: ${currentUser.email} (${currentUser.role})`;
             loadStats();
+            loadFilterOptions();
             loadItems();
         }
         
