@@ -413,6 +413,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
                 name="color"
                 value={formData.color}
                 onChange={handleChange}
+                placeholder="e.g., Navy Blue, Red, Black"
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -427,6 +428,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
                 name="design"
                 value={formData.design}
                 onChange={handleChange}
+                placeholder="e.g., Solid, Striped, Printed"
                 required
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -440,6 +442,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, categories, sizes, 
                 name="fabric_material"
                 value={formData.fabric_specs.material}
                 onChange={handleChange}
+                placeholder="e.g., Cotton, Polyester, Nylon"
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
