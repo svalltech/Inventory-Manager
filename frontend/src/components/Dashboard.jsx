@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import InventoryTable from './InventoryTable';
+import EditModal from './EditModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -16,8 +17,13 @@ const Dashboard = ({ user, onLogout }) => {
   // Filters
   const [selectedBrand, setSelectedBrand] = useState('ALL');
   const [selectedWarehouse, setSelectedWarehouse] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
   const [entriesPerPage, setEntriesPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // Edit Modal
+  const [editItem, setEditItem] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     fetchData();
