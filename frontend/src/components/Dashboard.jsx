@@ -12,6 +12,8 @@ const Dashboard = ({ user, onLogout }) => {
   const [filteredInventory, setFilteredInventory] = useState([]);
   const [brands, setBrands] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [sizes, setSizes] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Filters
@@ -21,9 +23,10 @@ const Dashboard = ({ user, onLogout }) => {
   const [entriesPerPage, setEntriesPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Edit Modal
+  // Modal
   const [editItem, setEditItem] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [isCreateMode, setIsCreateMode] = useState(false);
 
   useEffect(() => {
     fetchData();
