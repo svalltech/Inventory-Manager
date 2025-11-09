@@ -19,7 +19,6 @@ const Dashboard = ({ user, onLogout }) => {
   // Filters
   const [selectedBrand, setSelectedBrand] = useState('ALL');
   const [selectedWarehouse, setSelectedWarehouse] = useState('ALL');
-  const [searchQuery, setSearchQuery] = useState('');
   const [entriesPerPage, setEntriesPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   
