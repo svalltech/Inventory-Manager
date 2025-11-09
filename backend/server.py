@@ -917,62 +917,6 @@ async def import_inventory(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to process Excel file: {str(e)}")
 
-@api_router.get("/inventory/download-template")
-async def download_import_template(
-    current_user: dict = Depends(get_current_user)
-):
-    """Download Excel template for bulk import"""
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Inventory Import Template"
-    
-    # Headers
-    headers = [
-        "SKU", "Name", "Brand", "Warehouse", "Category", "Gender", "Color", "Color Code",
-        "Size", "Design", "Material", "Weight", "Composition", "MRP", "Selling Price",
-        "Cost Price", "Quantity", "Low Stock Threshold", "Status"
-    ]
-    
-    # Header style
-    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
-    header_font = Font(bold=True, color="FFFFFF", size=12)
-    
-    for col_idx, header in enumerate(headers, 1):
-        cell = ws.cell(row=1, column=col_idx, value=header)
-        cell.fill = header_fill
-        cell.font = header_font
-        cell.alignment = Alignment(horizontal="center")
-    
-    # Add sample data
-    sample_data = [
-        "SAMPLE-001", "Sample T-Shirt", "Nike", "Main Warehouse", "T-Shirt", "male",
-        "Blue", "#0000FF", "M(40)", "Solid", "100% Cotton", "180", "Cotton 100%",
-        1299, 999, 650, 100, 10, "active"
-    ]
-    
-    for col_idx, value in enumerate(sample_data, 1):
-        ws.cell(row=2, column=col_idx, value=value)
-    
-    # Auto-adjust column widths
-    for col in ws.columns:
-        max_length = 0
-        column = col[0].column_letter
-        for cell in col:
-            if cell.value:
-                max_length = max(max_length, len(str(cell.value)))
-        ws.column_dimensions[column].width = min(max_length + 2, 30)
-    
-    # Save to BytesIO
-    output = BytesIO()
-    wb.save(output)
-    output.seek(0)
-    
-    return StreamingResponse(
-        output,
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": "attachment; filename=inventory_import_template.xlsx"}
-    )
-
 @api_router.post("/inventory/export")
 async def export_inventory(
     export_request: ExportRequest,
