@@ -59,6 +59,7 @@ const Dashboard = ({ user, onLogout }) => {
       const optionsRes = await axios.get(`${API}/inventory/filter-options`, { headers });
       setBrands(optionsRes.data.brands || []);
       setWarehouses(optionsRes.data.warehouses || []);
+      setProductTypes(optionsRes.data.product_types || []);
       
       // Extract unique values from inventory data
       const uniqueCategories = [...new Set(inventoryRes.data.map(item => item.category))].filter(Boolean);
