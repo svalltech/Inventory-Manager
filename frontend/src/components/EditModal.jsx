@@ -246,14 +246,50 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   };
 
   const handleSaveVariants = () => {
+    // Validate all variant rows
+    const errors = [];
+    const sizes = [];
+    
+    variantRows.forEach((variant, index) => {
+      // Check for empty required fields
+      if (!variant.size || !variant.quantity || !variant.selling_price || !variant.mrp) {
+        errors.push(`Row ${index + 1}: Please fill in all required fields (Size, Quantity, Selling Price, MRP)`);
+      }
+      
+      // Check for duplicate sizes
+      if (variant.size) {
+        if (sizes.includes(variant.size)) {
+          errors.push(`Row ${index + 1}: Duplicate size "${variant.size}" detected. Each variant must have a unique size.`);
+        } else {
+          sizes.push(variant.size);
+        }
+      }
+      
+      // Validate numeric values
+      if (variant.quantity && (isNaN(variant.quantity) || parseInt(variant.quantity) <= 0)) {
+        errors.push(`Row ${index + 1}: Quantity must be a positive number`);
+      }
+      if (variant.selling_price && (isNaN(variant.selling_price) || parseFloat(variant.selling_price) <= 0)) {
+        errors.push(`Row ${index + 1}: Selling Price must be a positive number`);
+      }
+      if (variant.mrp && (isNaN(variant.mrp) || parseFloat(variant.mrp) <= 0)) {
+        errors.push(`Row ${index + 1}: MRP must be a positive number`);
+      }
+    });
+    
+    if (errors.length > 0) {
+      alert('Please fix the following errors:\n\n' + errors.join('\n'));
+      return;
+    }
+    
     // Create multiple items from variants
     const promises = variantRows.map(variant => {
       const dataToSave = {
         ...formData,
         size: variant.size,
-        quantity: parseInt(variant.quantity) || 0,
-        selling_price: parseFloat(variant.selling_price) || 0,
-        mrp: parseFloat(variant.mrp) || 0,
+        quantity: parseInt(variant.quantity),
+        selling_price: parseFloat(variant.selling_price),
+        mrp: parseFloat(variant.mrp),
         cost_price: variant.cost_price ? parseFloat(variant.cost_price) : undefined,
         low_stock_threshold: parseInt(variant.low_stock_threshold) || 10
       };
@@ -265,6 +301,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
       onClose();
     }).catch(error => {
       console.error('Error saving variants:', error);
+      alert('Error saving variants: ' + (error.response?.data?.detail || error.message));
     });
   };
 
