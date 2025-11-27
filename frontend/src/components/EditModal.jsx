@@ -237,23 +237,23 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
   };
 
-  const addVariantRow = () => {
-    setVariantRows(prev => [...prev, {
+  const addNewVariantRow = () => {
+    setNewVariants(prev => [...prev, {
       size: '',
-      quantity: formData.quantity,
-      selling_price: formData.selling_price,
-      mrp: formData.mrp,
-      cost_price: formData.cost_price,
-      low_stock_threshold: formData.low_stock_threshold
+      quantity: formData.quantity || '',
+      selling_price: formData.selling_price || '',
+      mrp: formData.mrp || '',
+      cost_price: formData.cost_price || '',
+      low_stock_threshold: formData.low_stock_threshold || '10'
     }]);
   };
 
-  const removeVariantRow = (index) => {
-    setVariantRows(prev => prev.filter((_, i) => i !== index));
+  const removeNewVariantRow = (index) => {
+    setNewVariants(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleVariantChange = (index, field, value) => {
-    setVariantRows(prev => {
+  const handleNewVariantChange = (index, field, value) => {
+    setNewVariants(prev => {
       const newRows = [...prev];
       newRows[index] = { ...newRows[index], [field]: value };
       return newRows;
