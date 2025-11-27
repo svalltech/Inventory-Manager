@@ -130,6 +130,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                 { key: 'sku', label: 'SKU' },
                 { key: 'brand', label: 'Brand' },
                 { key: 'warehouse', label: 'Warehouse' },
+                { key: 'product_type', label: 'Product Type' },
                 { key: 'design', label: 'Design' },
                 { key: 'size', label: 'Size' },
                 { key: 'quantity', label: 'Quantity' },
