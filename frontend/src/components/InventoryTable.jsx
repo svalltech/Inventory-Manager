@@ -125,12 +125,12 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
             {/* Header Row with Sort Icons */}
             <tr>
               {[
+                { key: 'product_type', label: 'Product Type' },
                 { key: 'category', label: 'Category' },
                 { key: 'name', label: 'Product Name' },
                 { key: 'sku', label: 'SKU' },
                 { key: 'brand', label: 'Brand' },
                 { key: 'warehouse', label: 'Warehouse' },
-                { key: 'product_type', label: 'Product Type' },
                 { key: 'design', label: 'Design' },
                 { key: 'size', label: 'Size' },
                 { key: 'quantity', label: 'Quantity' },
