@@ -186,7 +186,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
           <tbody className="divide-y divide-slate-200">
             {currentData.length === 0 ? (
               <tr>
-                <td colSpan="11" className="px-6 py-12 text-center text-slate-500">
+                <td colSpan="12" className="px-6 py-12 text-center text-slate-500">
                   No inventory items found
                 </td>
               </tr>
@@ -211,6 +211,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                         📦 {item.warehouse}
                       </span>
                     </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{item.product_type || 'Clothing'}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{item.design}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{item.size}</td>
                     <td className="px-6 py-4 text-sm font-semibold">
