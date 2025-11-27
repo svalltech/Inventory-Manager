@@ -210,17 +210,48 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
     
     try {
-      // Fetch all existing variants for this SKU from the same warehouse
+      // Extract base SKU by removing size suffix
+      // SKU format: "MESH TRACKPANT-M40" -> base: "MESH TRACKPANT"
+      // Remove patterns like -XS36, -S38, -M40, -L42, -XL44, -2XL46, -M-40, -L-42, etc.
+      let baseSku = formData.sku;
+      
+      // Remove size patterns: -XS36, -S38, -M40, -L42, -XL44, -2XL46
+      baseSku = baseSku.replace(/-XS\(?36\)?$/i, '');
+      baseSku = baseSku.replace(/-S\(?38\)?$/i, '');
+      baseSku = baseSku.replace(/-M\(?40\)?$/i, '');
+      baseSku = baseSku.replace(/-L\(?42\)?$/i, '');
+      baseSku = baseSku.replace(/-XL\(?44\)?$/i, '');
+      baseSku = baseSku.replace(/-2XL\(?46\)?$/i, '');
+      
+      // Also handle patterns with dashes: -M-40, -L-42, -XL-44, -2XL-46, -XS-36, -S-38
+      baseSku = baseSku.replace(/-XS-36$/i, '');
+      baseSku = baseSku.replace(/-S-38$/i, '');
+      baseSku = baseSku.replace(/-M-40$/i, '');
+      baseSku = baseSku.replace(/-L-42$/i, '');
+      baseSku = baseSku.replace(/-XL-44$/i, '');
+      baseSku = baseSku.replace(/-2XL-46$/i, '');
+      
+      console.log('Original SKU:', formData.sku);
+      console.log('Base SKU:', baseSku);
+      
+      // Fetch all inventory items and filter by base SKU pattern
       const token = localStorage.getItem('authToken');
       const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-      const response = await fetch(`${BACKEND_URL}/api/inventory?sku=${formData.sku}`, {
+      const response = await fetch(`${BACKEND_URL}/api/inventory`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.ok) {
         const allItems = await response.json();
-        // Filter items from the same warehouse
-        const warehouseVariants = allItems.filter(item => item.warehouse === formData.warehouse);
+        // Filter items that match the base SKU and same warehouse
+        const warehouseVariants = allItems.filter(item => {
+          // Check if item's SKU starts with base SKU and is from same warehouse
+          return item.sku.startsWith(baseSku) && 
+                 item.warehouse === formData.warehouse &&
+                 item.name === formData.name;
+        });
+        
+        console.log('Found variants:', warehouseVariants.length);
         setExistingVariants(warehouseVariants);
       } else {
         setExistingVariants([]);
