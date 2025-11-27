@@ -388,7 +388,8 @@ async def get_inventory(
     
     # Specific field search
     if sku:
-        query["sku"] = {"$regex": sku, "$options": "i"}
+        # Filter by SKU (match base SKU pattern)
+        query["sku"] = {"$regex": f"^{sku}"}
     elif name:
         query["name"] = {"$regex": name, "$options": "i"}
     elif design:
