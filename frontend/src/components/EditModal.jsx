@@ -201,7 +201,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
   };
 
-  const handleAddVariants = () => {
+  const handleAddVariants = async () => {
     // Validate required fields before opening variants modal
     if (!formData.warehouse || !formData.brand || !formData.product_type || !formData.category || 
         !formData.name || !formData.sku || !formData.design || !formData.gender) {
@@ -209,16 +209,32 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
       return;
     }
     
-    // Initialize first row with current form data
-    setVariantRows([{
-      size: formData.size,
-      quantity: formData.quantity,
-      selling_price: formData.selling_price,
-      mrp: formData.mrp,
-      cost_price: formData.cost_price,
-      low_stock_threshold: formData.low_stock_threshold
-    }]);
-    setShowVariantsModal(true);
+    try {
+      // Fetch all existing variants for this SKU from the same warehouse
+      const token = localStorage.getItem('authToken');
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${BACKEND_URL}/api/inventory?sku=${formData.sku}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const allItems = await response.json();
+        // Filter items from the same warehouse
+        const warehouseVariants = allItems.filter(item => item.warehouse === formData.warehouse);
+        setExistingVariants(warehouseVariants);
+      } else {
+        setExistingVariants([]);
+      }
+      
+      // Initialize with empty new variants
+      setNewVariants([]);
+      setShowVariantsModal(true);
+    } catch (error) {
+      console.error('Error fetching variants:', error);
+      setExistingVariants([]);
+      setNewVariants([]);
+      setShowVariantsModal(true);
+    }
   };
 
   const addVariantRow = () => {
