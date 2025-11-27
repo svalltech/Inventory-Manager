@@ -107,6 +107,7 @@ class InventoryItem(BaseModel):
     name: str
     brand: str
     warehouse: str
+    product_type: str = "Clothing"
     category: str
     gender: Gender
     color: str
