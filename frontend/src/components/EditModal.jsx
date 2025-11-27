@@ -203,6 +203,13 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   };
 
   const handleAddVariants = () => {
+    // Validate required fields before opening variants modal
+    if (!formData.warehouse || !formData.brand || !formData.product_type || !formData.category || 
+        !formData.name || !formData.sku || !formData.design || !formData.gender) {
+      alert('Please fill in all required fields (Warehouse, Brand, Product Type, Category, Product Name, SKU, Design, Gender) before adding variants.');
+      return;
+    }
+    
     // Initialize first row with current form data
     setVariantRows([{
       size: formData.size,
