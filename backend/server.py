@@ -494,7 +494,7 @@ async def download_import_template(
     
     # Headers
     headers = [
-        "SKU", "Name", "Brand", "Warehouse", "Category", "Gender", "Color", "Color Code",
+        "SKU", "Name", "Brand", "Warehouse", "Product Type", "Category", "Gender", "Color", "Color Code",
         "Size", "Design", "Material", "Weight", "Composition", "MRP", "Selling Price",
         "Cost Price", "Quantity", "Low Stock Threshold", "Status"
     ]
