@@ -280,7 +280,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
               <td className="px-6 py-4"></td>
             </tr>
             <tr>
-              <td colSpan="11" className="px-6 py-3 text-sm text-slate-600 bg-slate-50">
+              <td colSpan="12" className="px-6 py-3 text-sm text-slate-600 bg-slate-50">
                 Showing <span className="font-semibold">{startIndex + 1}</span> to{' '}
                 <span className="font-semibold">{Math.min(endIndex, filteredAndSortedData.length)}</span> of{' '}
                 <span className="font-semibold">{filteredAndSortedData.length}</span> entries
