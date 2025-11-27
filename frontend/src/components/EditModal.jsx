@@ -37,9 +37,8 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
 
   // Variants modal state
   const [showVariantsModal, setShowVariantsModal] = useState(false);
-  const [variantRows, setVariantRows] = useState([
-    { size: '', quantity: '', selling_price: '', mrp: '', cost_price: '', low_stock_threshold: '10' }
-  ]);
+  const [existingVariants, setExistingVariants] = useState([]);
+  const [newVariants, setNewVariants] = useState([]);
 
   // Predefined size options
   const sizeOptions = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)'];
