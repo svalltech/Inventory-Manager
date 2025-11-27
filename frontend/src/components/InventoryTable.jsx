@@ -160,6 +160,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                 { key: 'sku', placeholder: 'Search SKU...' },
                 { key: 'brand', placeholder: 'Search brand...' },
                 { key: 'warehouse', placeholder: 'Search warehouse...' },
+                { key: 'product_type', placeholder: 'Search type...' },
                 { key: 'design', placeholder: 'Search design...' },
                 { key: 'size', placeholder: 'Search size...' },
                 { key: 'quantity', placeholder: 'Search qty...' },
