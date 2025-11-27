@@ -261,34 +261,42 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   };
 
   const handleSaveVariants = async () => {
-    // Validate all variant rows
-    const errors = [];
-    const sizes = [];
+    // Validate only new variant rows
+    if (newVariants.length === 0) {
+      alert('Please add at least one new size variant before saving.');
+      return;
+    }
     
-    variantRows.forEach((variant, index) => {
+    const errors = [];
+    const newSizes = [];
+    const existingSizes = existingVariants.map(v => v.size);
+    
+    newVariants.forEach((variant, index) => {
       // Check for empty required fields
       if (!variant.size || !variant.quantity || !variant.selling_price || !variant.mrp) {
-        errors.push(`Row ${index + 1}: Please fill in all required fields (Size, Quantity, Selling Price, MRP)`);
+        errors.push(`New variant ${index + 1}: Please fill in all required fields (Size, Quantity, Selling Price, MRP)`);
       }
       
-      // Check for duplicate sizes
+      // Check for duplicate sizes within new variants
       if (variant.size) {
-        if (sizes.includes(variant.size)) {
-          errors.push(`Row ${index + 1}: Duplicate size "${variant.size}" detected. Each variant must have a unique size.`);
+        if (newSizes.includes(variant.size)) {
+          errors.push(`New variant ${index + 1}: Duplicate size "${variant.size}" detected in new variants.`);
+        } else if (existingSizes.includes(variant.size)) {
+          errors.push(`New variant ${index + 1}: Size "${variant.size}" already exists for this SKU. Please choose a different size.`);
         } else {
-          sizes.push(variant.size);
+          newSizes.push(variant.size);
         }
       }
       
       // Validate numeric values
       if (variant.quantity && (isNaN(variant.quantity) || parseInt(variant.quantity) <= 0)) {
-        errors.push(`Row ${index + 1}: Quantity must be a positive number`);
+        errors.push(`New variant ${index + 1}: Quantity must be a positive number`);
       }
       if (variant.selling_price && (isNaN(variant.selling_price) || parseFloat(variant.selling_price) <= 0)) {
-        errors.push(`Row ${index + 1}: Selling Price must be a positive number`);
+        errors.push(`New variant ${index + 1}: Selling Price must be a positive number`);
       }
       if (variant.mrp && (isNaN(variant.mrp) || parseFloat(variant.mrp) <= 0)) {
-        errors.push(`Row ${index + 1}: MRP must be a positive number`);
+        errors.push(`New variant ${index + 1}: MRP must be a positive number`);
       }
     });
     
@@ -298,19 +306,17 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
     
     try {
-      // If in edit mode, create NEW items for variants (don't update existing)
-      // If in create mode, create all items as new
-      const promises = variantRows.map(variant => {
+      // Only create NEW variants
+      const promises = newVariants.map(variant => {
         // Generate unique SKU by appending size to base SKU
-        const baseSku = formData.sku;
+        const baseSku = formData.sku.split('-')[0]; // Get base SKU without size suffix
         const sizeCode = variant.size.replace(/[()]/g, '').replace(/\s+/g, '-');
         const uniqueSku = `${baseSku}-${sizeCode}`;
         
         const dataToSave = {
           ...formData,
-          // Remove ID so new items are created instead of updating existing
-          id: undefined,
-          sku: uniqueSku,  // Use unique SKU for each variant
+          id: undefined, // Ensure new item creation
+          sku: uniqueSku,
           size: variant.size,
           quantity: parseInt(variant.quantity),
           selling_price: parseFloat(variant.selling_price),
@@ -319,7 +325,6 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
           low_stock_threshold: parseInt(variant.low_stock_threshold) || 10
         };
         
-        // Always create new items for variants
         return onSave(dataToSave);
       });
 
