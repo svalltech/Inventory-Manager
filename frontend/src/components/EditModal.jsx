@@ -1042,6 +1042,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                           const disabledSizes = [...existingSizes, ...usedSizes];
                           
                           return (
+                            <tr key={index} className="border-t border-slate-200">
                               <td className="px-4 py-3">
                                 <select
                                   value={row.size}
