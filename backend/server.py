@@ -911,6 +911,7 @@ async def import_inventory(
                         "name": str(item_data["name"]),
                         "brand": str(item_data["brand"]),
                         "warehouse": str(item_data["warehouse"]),
+                        "product_type": str(item_data.get("product_type", "Clothing")),
                         "category": str(item_data["category"]),
                         "gender": str(item_data["gender"]).lower(),
                         "color": str(item_data.get("color", "")),
