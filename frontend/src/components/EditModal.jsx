@@ -245,7 +245,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     });
   };
 
-  const handleSaveVariants = () => {
+  const handleSaveVariants = async () => {
     // Validate all variant rows
     const errors = [];
     const sizes = [];
@@ -282,27 +282,33 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
       return;
     }
     
-    // Create multiple items from variants
-    const promises = variantRows.map(variant => {
-      const dataToSave = {
-        ...formData,
-        size: variant.size,
-        quantity: parseInt(variant.quantity),
-        selling_price: parseFloat(variant.selling_price),
-        mrp: parseFloat(variant.mrp),
-        cost_price: variant.cost_price ? parseFloat(variant.cost_price) : undefined,
-        low_stock_threshold: parseInt(variant.low_stock_threshold) || 10
-      };
-      return onSave(dataToSave);
-    });
+    try {
+      // If in edit mode, create NEW items for variants (don't update existing)
+      // If in create mode, create all items as new
+      const promises = variantRows.map(variant => {
+        const dataToSave = {
+          ...formData,
+          // Remove ID so new items are created instead of updating existing
+          id: undefined,
+          size: variant.size,
+          quantity: parseInt(variant.quantity),
+          selling_price: parseFloat(variant.selling_price),
+          mrp: parseFloat(variant.mrp),
+          cost_price: variant.cost_price ? parseFloat(variant.cost_price) : undefined,
+          low_stock_threshold: parseInt(variant.low_stock_threshold) || 10
+        };
+        
+        // Always create new items for variants
+        return onSave(dataToSave);
+      });
 
-    Promise.all(promises).then(() => {
+      await Promise.all(promises);
       setShowVariantsModal(false);
       onClose();
-    }).catch(error => {
+    } catch (error) {
       console.error('Error saving variants:', error);
       alert('Error saving variants: ' + (error.response?.data?.detail || error.message));
-    });
+    }
   };
 
   const handleSubmit = (e) => {
