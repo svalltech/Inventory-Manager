@@ -856,7 +856,7 @@ async def import_inventory(
                 headers.append(str(cell.value).lower().replace(" ", "_"))
         
         # Required fields
-        required_fields = ['sku', 'name', 'brand', 'warehouse', 'category', 'gender', 'size', 'design', 'mrp', 'selling_price', 'quantity']
+        required_fields = ['sku', 'name', 'brand', 'warehouse', 'product_type', 'category', 'gender', 'size', 'design', 'mrp', 'selling_price', 'quantity']
         missing_fields = [field for field in required_fields if field not in headers]
         
         if missing_fields:
