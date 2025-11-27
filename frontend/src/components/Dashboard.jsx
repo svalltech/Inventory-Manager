@@ -115,12 +115,14 @@ const Dashboard = ({ user, onLogout }) => {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      if (isCreateMode) {
+      // If itemData has no ID or ID is undefined, create new item
+      // This handles both create mode and variant creation from edit mode
+      if (!itemData.id || isCreateMode) {
         // Create new item
         await axios.post(`${API}/inventory`, itemData, { headers });
         toast.success('Item created successfully!');
       } else {
-        // Update existing item
+        // Update existing item (only when ID exists and not in create mode)
         await axios.put(`${API}/inventory/${itemData.id}`, itemData, { headers });
         toast.success('Item updated successfully!');
       }
@@ -128,7 +130,7 @@ const Dashboard = ({ user, onLogout }) => {
       setShowModal(false);
       fetchData(); // Refresh data
     } catch (error) {
-      toast.error(error.response?.data?.detail || `Failed to ${isCreateMode ? 'create' : 'update'} item`);
+      toast.error(error.response?.data?.detail || `Failed to ${!itemData.id || isCreateMode ? 'create' : 'update'} item`);
     }
   };
 
