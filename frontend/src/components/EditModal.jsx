@@ -899,18 +899,16 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
 
             {/* Buttons */}
             <div className="mt-6 flex justify-between items-center">
-              {isCreateMode && (
-                <button
-                  type="button"
-                  onClick={handleAddVariants}
-                  className="px-4 py-2.5 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-300 rounded-lg hover:bg-indigo-100 transition flex items-center space-x-2"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  <span>Add Size Variants</span>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleAddVariants}
+                className="px-4 py-2.5 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-300 rounded-lg hover:bg-indigo-100 transition flex items-center space-x-2"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Add Size Variants</span>
+              </button>
               <div className="flex justify-end space-x-3 ml-auto">
                 <button
                   type="button"
