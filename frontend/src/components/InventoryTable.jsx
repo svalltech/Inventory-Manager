@@ -155,12 +155,12 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
             {/* Search Row */}
             <tr className="bg-white border-t border-slate-200">
               {[
+                { key: 'product_type', placeholder: 'Search type...' },
                 { key: 'category', placeholder: 'Search category...' },
                 { key: 'name', placeholder: 'Search name...' },
                 { key: 'sku', placeholder: 'Search SKU...' },
                 { key: 'brand', placeholder: 'Search brand...' },
                 { key: 'warehouse', placeholder: 'Search warehouse...' },
-                { key: 'product_type', placeholder: 'Search type...' },
                 { key: 'design', placeholder: 'Search design...' },
                 { key: 'size', placeholder: 'Search size...' },
                 { key: 'quantity', placeholder: 'Search qty...' },
