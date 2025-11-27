@@ -202,6 +202,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                         : 'hover:bg-slate-50'
                     }`}
                   >
+                    <td className="px-6 py-4 text-sm text-slate-600">{item.product_type || 'Clothing'}</td>
                     <td className="px-6 py-4 text-sm text-slate-900">{item.category}</td>
                     <td className="px-6 py-4 text-sm font-medium text-slate-900">{item.name}</td>
                     <td className="px-6 py-4 text-sm text-slate-600 font-mono">{item.sku}</td>
@@ -211,7 +212,6 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                         📦 {item.warehouse}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{item.product_type || 'Clothing'}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{item.design}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{item.size}</td>
                     <td className="px-6 py-4 text-sm font-semibold">
