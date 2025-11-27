@@ -286,10 +286,16 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
       // If in edit mode, create NEW items for variants (don't update existing)
       // If in create mode, create all items as new
       const promises = variantRows.map(variant => {
+        // Generate unique SKU by appending size to base SKU
+        const baseSku = formData.sku;
+        const sizeCode = variant.size.replace(/[()]/g, '').replace(/\s+/g, '-');
+        const uniqueSku = `${baseSku}-${sizeCode}`;
+        
         const dataToSave = {
           ...formData,
           // Remove ID so new items are created instead of updating existing
           id: undefined,
+          sku: uniqueSku,  // Use unique SKU for each variant
           size: variant.size,
           quantity: parseInt(variant.quantity),
           selling_price: parseFloat(variant.selling_price),
