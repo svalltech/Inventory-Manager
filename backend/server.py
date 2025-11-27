@@ -61,6 +61,7 @@ class UserRole(str, Enum):
 class Gender(str, Enum):
     MALE = "male"
     FEMALE = "female"
+    UNISEX = "unisex"
 
 class ItemStatus(str, Enum):
     ACTIVE = "active"
