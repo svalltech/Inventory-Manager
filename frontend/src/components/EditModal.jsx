@@ -979,24 +979,70 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
 
             {/* Table */}
             <div className="p-6">
-              <p className="text-sm text-slate-600 mb-4">All fields are pre-filled from the main form. You can edit any field for each size variant.</p>
-              
-              <div className="overflow-x-auto">
-                <table className="w-full border border-slate-300 rounded-lg">
-                  <thead className="bg-slate-100">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Size *</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Quantity *</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Selling Price (₹) *</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">MRP (₹) *</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Cost Price (₹)</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Critical Qty</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-slate-700">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {variantRows.map((row, index) => (
-                      <tr key={index} className="border-t border-slate-200">
+              {/* Existing Variants Section */}
+              {existingVariants.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-3">Existing Size Variants for "{formData.name}"</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border border-slate-300 rounded-lg">
+                      <thead className="bg-green-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Size</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">SKU</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Quantity</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Selling Price (₹)</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">MRP (₹)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {existingVariants.map((variant, index) => (
+                          <tr key={index} className="border-t border-slate-200 bg-green-50/30">
+                            <td className="px-4 py-3 text-sm font-medium">{variant.size}</td>
+                            <td className="px-4 py-3 text-sm font-mono text-slate-600">{variant.sku}</td>
+                            <td className="px-4 py-3 text-sm">{variant.quantity}</td>
+                            <td className="px-4 py-3 text-sm">₹{variant.selling_price}</td>
+                            <td className="px-4 py-3 text-sm">₹{variant.mrp}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* New Variants Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-3">
+                  {newVariants.length > 0 ? 'Add New Size Variants' : 'Add New Size Variants'}
+                </h3>
+                <p className="text-sm text-slate-600 mb-4">
+                  {existingVariants.length > 0 
+                    ? 'Add new sizes below. Already existing sizes are disabled in the dropdown.'
+                    : 'Add size variants for this product. All fields are pre-filled but can be edited.'}
+                </p>
+                
+                {newVariants.length > 0 && (
+                  <div className="overflow-x-auto mb-4">
+                    <table className="w-full border border-slate-300 rounded-lg">
+                      <thead className="bg-blue-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Size *</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Quantity *</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Selling Price (₹) *</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">MRP (₹) *</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Cost Price (₹)</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Critical Qty</th>
+                          <th className="px-4 py-3 text-center text-xs font-semibold text-slate-700">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {newVariants.map((row, index) => {
+                          const existingSizes = existingVariants.map(v => v.size);
+                          const usedSizes = newVariants.slice(0, index).map(v => v.size).filter(Boolean);
+                          const disabledSizes = [...existingSizes, ...usedSizes];
+                          
+                          return (
+                            <tr key={index} className="border-t border-slate-200">
                         <td className="px-4 py-3">
                           <input
                             type="text"
