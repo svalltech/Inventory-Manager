@@ -511,7 +511,7 @@ async def download_import_template(
     
     # Add sample data
     sample_data = [
-        "SAMPLE-001", "Sample T-Shirt", "Nike", "Main Warehouse", "T-Shirt", "male",
+        "SAMPLE-001", "Sample T-Shirt", "Nike", "Main Warehouse", "Clothing", "T-Shirt", "male",
         "Blue", "#0000FF", "M(40)", "Solid", "100% Cotton", "180", "Cotton 100%",
         1299, 999, 650, 100, 10, "active"
     ]
