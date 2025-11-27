@@ -8,6 +8,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
     sku: '',
     brand: '',
     warehouse: '',
+    product_type: '',
     design: '',
     size: '',
     quantity: '',
