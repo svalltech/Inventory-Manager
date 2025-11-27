@@ -41,7 +41,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   const [newVariants, setNewVariants] = useState([]);
 
   // Predefined size options
-  const sizeOptions = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)'];
+  const sizeOptions = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)', '2XL(46)'];
   
   // Gender options (added Unisex)
   const genderOptions = ['male', 'female', 'unisex'];
