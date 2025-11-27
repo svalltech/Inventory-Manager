@@ -422,10 +422,11 @@ async def get_filter_options(
 ):
     """Get all unique values for filter dropdowns"""
     # Get all items
-    all_items = await db.inventory.find({}, {"_id": 0, "brand": 1, "warehouse": 1, "category": 1, "gender": 1, "color": 1, "size": 1, "design": 1, "fabric_specs": 1}).to_list(10000)
+    all_items = await db.inventory.find({}, {"_id": 0, "brand": 1, "warehouse": 1, "product_type": 1, "category": 1, "gender": 1, "color": 1, "size": 1, "design": 1, "fabric_specs": 1}).to_list(10000)
     
     brands = sorted(list(set(item.get("brand") for item in all_items if item.get("brand"))))
     warehouses = sorted(list(set(item.get("warehouse") for item in all_items if item.get("warehouse"))))
+    product_types = sorted(list(set(item.get("product_type") for item in all_items if item.get("product_type"))))
     categories = sorted(list(set(item.get("category") for item in all_items if item.get("category"))))
     genders = sorted(list(set(item.get("gender") for item in all_items if item.get("gender"))))
     colors = sorted(list(set(item.get("color") for item in all_items if item.get("color"))))
@@ -448,6 +449,7 @@ async def get_filter_options(
     return {
         "brands": brands,
         "warehouses": warehouses,
+        "product_types": product_types,
         "categories": categories,
         "genders": genders,
         "colors": colors,
