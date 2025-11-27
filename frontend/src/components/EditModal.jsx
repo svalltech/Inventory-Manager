@@ -1042,92 +1042,101 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                           const disabledSizes = [...existingSizes, ...usedSizes];
                           
                           return (
-                            <tr key={index} className="border-t border-slate-200">
-                        <td className="px-4 py-3">
-                          <input
-                            type="text"
-                            value={row.size}
-                            onChange={(e) => handleVariantChange(index, 'size', e.target.value)}
-                            placeholder="e.g., M(40)"
-                            required
-                            className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3">
-                          <input
-                            type="number"
-                            value={row.quantity}
-                            onChange={(e) => handleVariantChange(index, 'quantity', e.target.value)}
-                            required
-                            className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3">
-                          <input
-                            type="number"
-                            value={row.selling_price}
-                            onChange={(e) => handleVariantChange(index, 'selling_price', e.target.value)}
-                            step="0.01"
-                            required
-                            className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3">
-                          <input
-                            type="number"
-                            value={row.mrp}
-                            onChange={(e) => handleVariantChange(index, 'mrp', e.target.value)}
-                            step="0.01"
-                            required
-                            className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3">
-                          <input
-                            type="number"
-                            value={row.cost_price}
-                            onChange={(e) => handleVariantChange(index, 'cost_price', e.target.value)}
-                            step="0.01"
-                            className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3">
-                          <input
-                            type="number"
-                            value={row.low_stock_threshold}
-                            onChange={(e) => handleVariantChange(index, 'low_stock_threshold', e.target.value)}
-                            className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          {variantRows.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeVariantRow(index)}
-                              className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
-                            >
-                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                              <td className="px-4 py-3">
+                                <select
+                                  value={row.size}
+                                  onChange={(e) => handleNewVariantChange(index, 'size', e.target.value)}
+                                  required
+                                  className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                                >
+                                  <option value="">-- Select Size --</option>
+                                  {sizeOptions.map(size => (
+                                    <option 
+                                      key={size} 
+                                      value={size}
+                                      disabled={disabledSizes.includes(size)}
+                                    >
+                                      {size} {disabledSizes.includes(size) ? '(Already exists)' : ''}
+                                    </option>
+                                  ))}
+                                </select>
+                              </td>
+                              <td className="px-4 py-3">
+                                <input
+                                  type="number"
+                                  value={row.quantity}
+                                  onChange={(e) => handleNewVariantChange(index, 'quantity', e.target.value)}
+                                  required
+                                  className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                                />
+                              </td>
+                              <td className="px-4 py-3">
+                                <input
+                                  type="number"
+                                  value={row.selling_price}
+                                  onChange={(e) => handleNewVariantChange(index, 'selling_price', e.target.value)}
+                                  step="0.01"
+                                  required
+                                  className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                                />
+                              </td>
+                              <td className="px-4 py-3">
+                                <input
+                                  type="number"
+                                  value={row.mrp}
+                                  onChange={(e) => handleNewVariantChange(index, 'mrp', e.target.value)}
+                                  step="0.01"
+                                  required
+                                  className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                                />
+                              </td>
+                              <td className="px-4 py-3">
+                                <input
+                                  type="number"
+                                  value={row.cost_price}
+                                  onChange={(e) => handleNewVariantChange(index, 'cost_price', e.target.value)}
+                                  step="0.01"
+                                  className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                                />
+                              </td>
+                              <td className="px-4 py-3">
+                                <input
+                                  type="number"
+                                  value={row.low_stock_threshold}
+                                  onChange={(e) => handleNewVariantChange(index, 'low_stock_threshold', e.target.value)}
+                                  className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                                />
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => removeNewVariantRow(index)}
+                                  className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
+                                >
+                                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
 
-              <button
-                type="button"
-                onClick={addVariantRow}
-                className="mt-4 px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-300 rounded-lg hover:bg-indigo-100 transition flex items-center space-x-2"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                <span>Add Another Variant</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={addNewVariantRow}
+                  className="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-300 rounded-lg hover:bg-indigo-100 transition flex items-center space-x-2"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Add New Size Variant</span>
+                </button>
+              </div>
 
               {/* Save Buttons */}
               <div className="mt-6 flex justify-end space-x-3">
