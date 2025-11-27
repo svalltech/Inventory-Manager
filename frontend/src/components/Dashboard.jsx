@@ -376,6 +376,7 @@ const Dashboard = ({ user, onLogout }) => {
           isCreateMode={isCreateMode}
           brands={brands}
           warehouses={warehouses}
+          productTypes={productTypes}
           categories={categories}
           sizes={sizes}
           colors={colors}
