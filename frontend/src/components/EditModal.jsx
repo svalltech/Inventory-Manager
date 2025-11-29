@@ -1174,12 +1174,13 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
               {/* Existing Variants Section */}
               {existingVariants.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3">Existing Size Variants for "{formData.name}"</h3>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-3">Existing Size Variants for "{formData.name}" (All Warehouses)</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full border border-slate-300 rounded-lg">
                       <thead className="bg-green-50">
                         <tr>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Size</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Warehouse</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">SKU</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Quantity</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Selling Price (₹)</th>
@@ -1190,6 +1191,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                         {existingVariants.map((variant, index) => (
                           <tr key={index} className="border-t border-slate-200 bg-green-50/30">
                             <td className="px-4 py-3 text-sm font-medium">{variant.size}</td>
+                            <td className="px-4 py-3 text-sm font-medium text-indigo-600">{variant.warehouse}</td>
                             <td className="px-4 py-3 text-sm font-mono text-slate-600">{variant.sku}</td>
                             <td className="px-4 py-3 text-sm">{variant.quantity}</td>
                             <td className="px-4 py-3 text-sm">₹{variant.selling_price}</td>
