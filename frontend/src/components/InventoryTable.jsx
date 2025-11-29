@@ -11,6 +11,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
     quantity: '',
     selling_price: ''
   });
+  const [expandedGroups, setExpandedGroups] = useState(new Set());
 
   // Sortable columns
   const sortableColumns = ['product_type', 'category', 'name', 'design', 'size', 'quantity', 'selling_price', 'totalValue'];
