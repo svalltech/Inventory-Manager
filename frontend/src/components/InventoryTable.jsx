@@ -201,6 +201,51 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
       });
     }
 
+    // Sort variants within each group based on sortConfig
+    filtered.forEach(group => {
+      group.variants.sort((a, b) => {
+        let aValue, bValue;
+
+        if (sortConfig.key === 'quantity') {
+          aValue = a.quantity;
+          bValue = b.quantity;
+        } else if (sortConfig.key === 'selling_price') {
+          aValue = a.selling_price;
+          bValue = b.selling_price;
+        } else if (sortConfig.key === 'size') {
+          // Sort by size using predefined order
+          const sizeOrder = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)', '2XL(46)'];
+          const aIndex = sizeOrder.indexOf(a.size);
+          const bIndex = sizeOrder.indexOf(b.size);
+          
+          if (aIndex !== -1 && bIndex !== -1) {
+            aValue = aIndex;
+            bValue = bIndex;
+          } else {
+            // Fallback to string comparison
+            return sortConfig.direction === 'asc' 
+              ? a.size.localeCompare(b.size)
+              : b.size.localeCompare(a.size);
+          }
+        } else {
+          // Default: sort by size if no specific sort or for other columns
+          const sizeOrder = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)', '2XL(46)'];
+          const aIndex = sizeOrder.indexOf(a.size);
+          const bIndex = sizeOrder.indexOf(b.size);
+          if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+          return a.size.localeCompare(b.size);
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    });
+
     return filtered;
   }, [groupedData, columnFilters, sortConfig]);
 
