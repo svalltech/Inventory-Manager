@@ -1219,7 +1219,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
               {/* Existing Variants Section */}
               {existingVariants.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3">Existing Size Variants for "{formData.name}" (All Warehouses)</h3>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-3">Existing Size Variants for "{formData.name}" - {formData.color} - {formData.design} (All Warehouses)</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full border border-slate-300 rounded-lg">
                       <thead className="bg-green-50">
