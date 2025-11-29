@@ -373,24 +373,29 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
       </main>
 
       {/* Item Modal (Create/Edit) */}
-      {showModal && (
-        <EditModal
-          item={editItem}
-          isCreateMode={isCreateMode}
-          brands={brands}
-          warehouses={warehouses}
-          productTypes={productTypes}
-          categories={categories}
-          sizes={sizes}
-          colors={colors}
-          materials={materials}
-          designs={designs}
-          weights={weights}
-          productHierarchy={productHierarchy}
-          onClose={() => setShowModal(false)}
-          onSave={handleSaveItem}
-        />
-      )}
+      {showModal && (() => {
+        console.log('=== DASHBOARD: Rendering EditModal ===');
+        console.log('Passing productHierarchy:', productHierarchy);
+        console.log('Hierarchy keys:', Object.keys(productHierarchy || {}));
+        return (
+          <EditModal
+            item={editItem}
+            isCreateMode={isCreateMode}
+            brands={brands}
+            warehouses={warehouses}
+            productTypes={productTypes}
+            categories={categories}
+            sizes={sizes}
+            colors={colors}
+            materials={materials}
+            designs={designs}
+            weights={weights}
+            productHierarchy={productHierarchy}
+            onClose={() => setShowModal(false)}
+            onSave={handleSaveItem}
+          />
+        );
+      })()}
 
       {/* Export Modal */}
       {showExportModal && (
