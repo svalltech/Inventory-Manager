@@ -168,17 +168,23 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
 
   // Update filtered categories when product type changes
   useEffect(() => {
-    if (formData.product_type && productHierarchy[formData.product_type]) {
-      const categories = Object.keys(productHierarchy[formData.product_type]);
+    console.log('=== UPDATING CATEGORIES ===');
+    console.log('Product Type:', formData.product_type);
+    console.log('Hierarchy:', propProductHierarchy);
+    
+    if (formData.product_type && propProductHierarchy && propProductHierarchy[formData.product_type]) {
+      const categories = Object.keys(propProductHierarchy[formData.product_type]);
+      console.log('Found categories:', categories);
       setFilteredCategories(categories);
       // Only reset if in create mode or if categories have actually changed
       if (isCreateMode && formData.category && !categories.includes(formData.category)) {
         setFormData(prev => ({ ...prev, category: '', name: '' }));
       }
     } else {
+      console.log('No categories found, resetting');
       setFilteredCategories([]);
     }
-  }, [formData.product_type, productHierarchy]);
+  }, [formData.product_type, propProductHierarchy]);
 
   // Update filtered product names when category changes
   useEffect(() => {
