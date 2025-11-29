@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import ProductHierarchy from './ProductHierarchy';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Settings = ({ user, onLogout, onNavigateToDashboard }) => {
-  const [activeTab, setActiveTab] = useState('brands');
+  const [activeTab, setActiveTab] = useState('hierarchy');
   const [masterData, setMasterData] = useState({
     brands: [],
     warehouses: [],
