@@ -764,9 +764,14 @@ def generate_word(items: List[dict], fields: List[str]) -> BytesIO:
         row_cells = table.add_row().cells
         for idx, field in enumerate(fields):
             value = item.get(field, "")
-            if field == "fabric_specs":
+            # Handle nested fabric_specs fields
+            if field == "material":
                 value = item.get("fabric_specs", {}).get("material", "")
-            row_cells[idx].text = str(value)
+            elif field == "weight":
+                value = item.get("fabric_specs", {}).get("weight", "")
+            elif field == "composition":
+                value = item.get("fabric_specs", {}).get("composition", "")
+            row_cells[idx].text = str(value) if value else ""
     
     # Save to BytesIO
     output = BytesIO()
