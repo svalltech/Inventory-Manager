@@ -383,7 +383,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
     
     const errors = [];
-    const newSizesUsed = [];
+    const newSizeWarehouseCombos = [];
     
     newVariants.forEach((variant, index) => {
       // Check for empty required fields including warehouse
@@ -391,17 +391,23 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
         errors.push(`New variant ${index + 1}: Please fill in all required fields (Size, Warehouse, Quantity, Selling Price, MRP)`);
       }
       
-      // Check if size already exists in ANY warehouse (from existing variants)
-      if (variant.size) {
-        const existingSizeMatch = existingVariants.find(v => v.size === variant.size);
+      // Check for duplicate size+warehouse combination
+      if (variant.size && variant.warehouse) {
+        const combo = `${variant.size}|${variant.warehouse}`;
         
-        if (existingSizeMatch) {
-          errors.push(`New variant ${index + 1}: Size "${variant.size}" already exists in the system (in warehouse "${existingSizeMatch.warehouse}"). Please choose a different size.`);
-        } else if (newSizesUsed.includes(variant.size)) {
-          // Check within new variants being added
-          errors.push(`New variant ${index + 1}: Duplicate size "${variant.size}" detected in new variants.`);
+        // Check within new variants
+        if (newSizeWarehouseCombos.includes(combo)) {
+          errors.push(`New variant ${index + 1}: Duplicate size "${variant.size}" in warehouse "${variant.warehouse}" detected in new variants.`);
         } else {
-          newSizesUsed.push(variant.size);
+          // Check against existing variants for this specific warehouse
+          const existingMatch = existingVariants.find(
+            v => v.size === variant.size && v.warehouse === variant.warehouse
+          );
+          if (existingMatch) {
+            errors.push(`New variant ${index + 1}: Size "${variant.size}" already exists in warehouse "${variant.warehouse}". Please choose a different size or warehouse.`);
+          } else {
+            newSizeWarehouseCombos.push(combo);
+          }
         }
       }
       
