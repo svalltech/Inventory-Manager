@@ -53,7 +53,13 @@ function App() {
       {!isAuthenticated ? (
         <Login onLogin={handleLogin} />
       ) : (
-        <Dashboard user={user} onLogout={handleLogout} />
+        <>
+          {currentPage === 'dashboard' ? (
+            <Dashboard user={user} onLogout={handleLogout} onNavigateToSettings={() => setCurrentPage('settings')} />
+          ) : (
+            <Settings user={user} onLogout={handleLogout} onNavigateToDashboard={() => setCurrentPage('dashboard')} />
+          )}
+        </>
       )}
       <Toaster position="top-right" />
     </div>
