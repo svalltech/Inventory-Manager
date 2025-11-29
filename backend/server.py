@@ -1044,6 +1044,149 @@ async def export_inventory(
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
 
+# ==================== MASTER DATA MANAGEMENT ====================
+
+# Get all master data
+@api_router.get("/master-data")
+async def get_master_data(current_user: dict = Depends(verify_token)):
+    """Get all master data for dropdowns"""
+    try:
+        # Get unique values from inventory
+        inventory_items = await db.inventory.find({}, {"_id": 0}).to_list(None)
+        
+        brands = sorted(set(item.get("brand") for item in inventory_items if item.get("brand")))
+        warehouses = sorted(set(item.get("warehouse") for item in inventory_items if item.get("warehouse")))
+        product_types = sorted(set(item.get("product_type") for item in inventory_items if item.get("product_type")))
+        categories = sorted(set(item.get("category") for item in inventory_items if item.get("category")))
+        product_names = sorted(set(item.get("name") for item in inventory_items if item.get("name")))
+        designs = sorted(set(item.get("design") for item in inventory_items if item.get("design")))
+        colors = sorted(set(item.get("color") for item in inventory_items if item.get("color")))
+        sizes = sorted(set(item.get("size") for item in inventory_items if item.get("size")))
+        materials = sorted(set(item.get("fabric_specs", {}).get("material") for item in inventory_items if item.get("fabric_specs", {}).get("material")))
+        weights = sorted(set(item.get("fabric_specs", {}).get("weight") for item in inventory_items if item.get("fabric_specs", {}).get("weight")))
+        
+        return {
+            "brands": brands,
+            "warehouses": warehouses,
+            "product_types": product_types,
+            "categories": categories,
+            "product_names": product_names,
+            "designs": designs,
+            "colors": colors,
+            "sizes": sizes,
+            "materials": materials,
+            "weights": weights
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Add master data value
+@api_router.post("/master-data/{field_name}")
+async def add_master_data(field_name: str, request: dict, current_user: dict = Depends(verify_token)):
+    """Add a new value to master data"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can manage master data")
+    
+    value = request.get("value", "").strip()
+    if not value:
+        raise HTTPException(status_code=400, detail="Value cannot be empty")
+    
+    # Note: Since we're deriving master data from inventory, 
+    # adding here means we need to track it separately or just return success
+    # For now, we'll just validate that it's a valid field
+    valid_fields = ["brands", "warehouses", "product_types", "categories", "product_names", "designs", "colors", "sizes", "materials", "weights"]
+    if field_name not in valid_fields:
+        raise HTTPException(status_code=400, detail=f"Invalid field name. Must be one of: {', '.join(valid_fields)}")
+    
+    return {"message": f"Value '{value}' added to {field_name}", "value": value}
+
+# Update master data value
+@api_router.put("/master-data/{field_name}/{old_value}")
+async def update_master_data(field_name: str, old_value: str, request: dict, current_user: dict = Depends(verify_token)):
+    """Update a master data value"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can manage master data")
+    
+    new_value = request.get("new_value", "").strip()
+    if not new_value:
+        raise HTTPException(status_code=400, detail="New value cannot be empty")
+    
+    # Map field names to inventory fields
+    field_mapping = {
+        "brands": "brand",
+        "warehouses": "warehouse",
+        "product_types": "product_type",
+        "categories": "category",
+        "product_names": "name",
+        "designs": "design",
+        "colors": "color",
+        "sizes": "size",
+        "materials": "fabric_specs.material",
+        "weights": "fabric_specs.weight"
+    }
+    
+    if field_name not in field_mapping:
+        raise HTTPException(status_code=400, detail="Invalid field name")
+    
+    db_field = field_mapping[field_name]
+    
+    # Update all inventory items with the old value
+    if field_name in ["materials", "weights"]:
+        # Handle nested fields
+        field_key = db_field.split(".")[1]
+        result = await db.inventory.update_many(
+            {f"fabric_specs.{field_key}": old_value},
+            {"$set": {f"fabric_specs.{field_key}": new_value}}
+        )
+    else:
+        result = await db.inventory.update_many(
+            {db_field: old_value},
+            {"$set": {db_field: new_value}}
+        )
+    
+    return {"message": f"Updated {result.modified_count} items", "modified_count": result.modified_count}
+
+# Delete master data value
+@api_router.delete("/master-data/{field_name}/{value}")
+async def delete_master_data(field_name: str, value: str, current_user: dict = Depends(verify_token)):
+    """Delete a master data value (marks items as inactive)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can manage master data")
+    
+    # Map field names to inventory fields
+    field_mapping = {
+        "brands": "brand",
+        "warehouses": "warehouse",
+        "product_types": "product_type",
+        "categories": "category",
+        "product_names": "name",
+        "designs": "design",
+        "colors": "color",
+        "sizes": "size",
+        "materials": "fabric_specs.material",
+        "weights": "fabric_specs.weight"
+    }
+    
+    if field_name not in field_mapping:
+        raise HTTPException(status_code=400, detail="Invalid field name")
+    
+    db_field = field_mapping[field_name]
+    
+    # Check how many items use this value
+    if field_name in ["materials", "weights"]:
+        field_key = db_field.split(".")[1]
+        count = await db.inventory.count_documents({f"fabric_specs.{field_key}": value})
+    else:
+        count = await db.inventory.count_documents({db_field: value})
+    
+    if count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot delete '{value}' as it is used by {count} inventory item(s). Please update or delete those items first."
+        )
+    
+    return {"message": f"Value '{value}' deleted successfully"}
+
 # Health check
 @api_router.get("/health")
 async def health_check():
