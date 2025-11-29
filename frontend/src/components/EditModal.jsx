@@ -824,7 +824,28 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                   <div className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 text-sm">
                     Please select Product Type and Category first
                   </div>
-                ) : showNewProductNameInput || filteredProductNames.length === 0 ? (
+                ) : filteredProductNames.length === 0 ? (
+                  <div className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-amber-50 text-amber-700 text-sm">
+                    No products for this category. Please add in Settings → Product Hierarchy
+                  </div>
+                ) : (
+                  <select
+                    value={formData.name}
+                    onChange={handleChange}
+                    name="name"
+                    required
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select Product Name --</option>
+                    {filteredProductNames.map(productName => (
+                      <option key={productName} value={productName}>{productName}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {/* OLD CODE - KEPT FOR BACKWARDS COMPATIBILITY */}
+              {false && showNewProductNameInput && (
                   <div className="space-y-2">
                     <input
                       type="text"
