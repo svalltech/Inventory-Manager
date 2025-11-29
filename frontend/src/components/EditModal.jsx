@@ -383,23 +383,31 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
     
     const errors = [];
-    const newSizes = [];
-    const existingSizes = existingVariants.map(v => v.size);
+    const newSizeWarehouseCombos = [];
     
     newVariants.forEach((variant, index) => {
-      // Check for empty required fields
-      if (!variant.size || !variant.quantity || !variant.selling_price || !variant.mrp) {
-        errors.push(`New variant ${index + 1}: Please fill in all required fields (Size, Quantity, Selling Price, MRP)`);
+      // Check for empty required fields including warehouse
+      if (!variant.size || !variant.warehouse || !variant.quantity || !variant.selling_price || !variant.mrp) {
+        errors.push(`New variant ${index + 1}: Please fill in all required fields (Size, Warehouse, Quantity, Selling Price, MRP)`);
       }
       
-      // Check for duplicate sizes within new variants
-      if (variant.size) {
-        if (newSizes.includes(variant.size)) {
-          errors.push(`New variant ${index + 1}: Duplicate size "${variant.size}" detected in new variants.`);
-        } else if (existingSizes.includes(variant.size)) {
-          errors.push(`New variant ${index + 1}: Size "${variant.size}" already exists for this SKU. Please choose a different size.`);
+      // Check for duplicate size+warehouse combination
+      if (variant.size && variant.warehouse) {
+        const combo = `${variant.size}|${variant.warehouse}`;
+        
+        // Check within new variants
+        if (newSizeWarehouseCombos.includes(combo)) {
+          errors.push(`New variant ${index + 1}: Duplicate size "${variant.size}" in warehouse "${variant.warehouse}" detected in new variants.`);
         } else {
-          newSizes.push(variant.size);
+          // Check against existing variants
+          const existingMatch = existingVariants.find(
+            v => v.size === variant.size && v.warehouse === variant.warehouse
+          );
+          if (existingMatch) {
+            errors.push(`New variant ${index + 1}: Size "${variant.size}" already exists in warehouse "${variant.warehouse}". Please choose a different size or warehouse.`);
+          } else {
+            newSizeWarehouseCombos.push(combo);
+          }
         }
       }
       
