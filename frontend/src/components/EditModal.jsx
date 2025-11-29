@@ -131,17 +131,11 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   // Gender options (added Unisex)
   const genderOptions = ['male', 'female', 'unisex'];
 
-  // Use product hierarchy from props
+  // Log when hierarchy prop changes
   useEffect(() => {
-    console.log('=== PRODUCT HIERARCHY PROP CHANGED ===');
-    console.log('Received prop:', propProductHierarchy);
-    console.log('Prop keys:', propProductHierarchy ? Object.keys(propProductHierarchy) : 'null');
-    if (propProductHierarchy) {
-      setProductHierarchy(propProductHierarchy);
-      console.log('Product hierarchy state updated');
-    } else {
-      console.log('Prop is empty/null');
-    }
+    console.log('=== PRODUCT HIERARCHY PROP ===');
+    console.log('Received:', propProductHierarchy);
+    console.log('Keys:', propProductHierarchy ? Object.keys(propProductHierarchy) : 'null/undefined');
   }, [propProductHierarchy]);
 
   useEffect(() => {
