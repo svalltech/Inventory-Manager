@@ -716,7 +716,11 @@ def generate_excel(items: List[dict], fields: List[str]) -> BytesIO:
                 value = item.get("fabric_specs", {}).get("weight", "")
             elif field == "composition":
                 value = item.get("fabric_specs", {}).get("composition", "")
-            ws.cell(row=row_idx, column=col_idx, value=str(value) if value else "")
+            # Convert to string, but handle None and 0 properly
+            if value is None or value == "":
+                ws.cell(row=row_idx, column=col_idx, value="")
+            else:
+                ws.cell(row=row_idx, column=col_idx, value=str(value))
     
     # Auto-adjust column widths
     for col in ws.columns:
