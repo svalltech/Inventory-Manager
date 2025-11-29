@@ -122,17 +122,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
       groups[groupKey].variants.push(item);
     });
     
-    // Sort variants within each group by size
-    Object.values(groups).forEach(group => {
-      group.variants.sort((a, b) => {
-        const sizeOrder = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)', '2XL(46)'];
-        const aIndex = sizeOrder.indexOf(a.size);
-        const bIndex = sizeOrder.indexOf(b.size);
-        if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
-        return a.size.localeCompare(b.size);
-      });
-    });
-    
+    // Don't sort variants here - will be sorted based on sortConfig later
     return Object.values(groups);
   }, [data]);
 
