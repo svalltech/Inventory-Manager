@@ -1232,6 +1232,29 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                       </thead>
                       <tbody>
                         {newVariants.map((row, index) => {
+                          // For each row, determine which sizes are disabled based on the selected warehouse
+                          const selectedWarehouse = row.warehouse;
+                          
+                          // Get sizes that exist in the selected warehouse
+                          const sizesInSelectedWarehouse = selectedWarehouse 
+                            ? existingVariants
+                                .filter(v => v.warehouse === selectedWarehouse)
+                                .map(v => v.size)
+                            : [];
+                          
+                          // Also check sizes in other rows targeting the same warehouse
+                          const sizesInOtherRowsForSameWarehouse = selectedWarehouse
+                            ? newVariants
+                                .slice(0, index)
+                                .filter(v => v.warehouse === selectedWarehouse && v.size)
+                                .map(v => v.size)
+                            : [];
+                          
+                          const disabledSizesForWarehouse = [
+                            ...sizesInSelectedWarehouse,
+                            ...sizesInOtherRowsForSameWarehouse
+                          ];
+                          
                           return (
                             <tr key={index} className="border-t border-slate-200">
                               <td className="px-4 py-3">
@@ -1242,14 +1265,18 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                                   className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
                                 >
                                   <option value="">-- Select Size --</option>
-                                  {sizeOptions.map(size => (
-                                    <option 
-                                      key={size} 
-                                      value={size}
-                                    >
-                                      {size}
-                                    </option>
-                                  ))}
+                                  {sizeOptions.map(size => {
+                                    const isDisabled = disabledSizesForWarehouse.includes(size);
+                                    return (
+                                      <option 
+                                        key={size} 
+                                        value={size}
+                                        disabled={isDisabled}
+                                      >
+                                        {size} {isDisabled ? '(Already exists in this warehouse)' : ''}
+                                      </option>
+                                    );
+                                  })}
                                 </select>
                               </td>
                               <td className="px-4 py-3">
