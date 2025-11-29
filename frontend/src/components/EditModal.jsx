@@ -132,9 +132,14 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
 
   // Use product hierarchy from props
   useEffect(() => {
+    console.log('=== PRODUCT HIERARCHY PROP CHANGED ===');
+    console.log('Received prop:', propProductHierarchy);
+    console.log('Prop keys:', propProductHierarchy ? Object.keys(propProductHierarchy) : 'null');
     if (propProductHierarchy) {
-      console.log('Setting product hierarchy from props:', propProductHierarchy);
       setProductHierarchy(propProductHierarchy);
+      console.log('Product hierarchy state updated');
+    } else {
+      console.log('Prop is empty/null');
     }
   }, [propProductHierarchy]);
 
