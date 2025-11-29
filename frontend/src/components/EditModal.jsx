@@ -1211,8 +1211,8 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                 </h3>
                 <p className="text-sm text-slate-600 mb-4">
                   {existingVariants.length > 0 
-                    ? 'Add new size variants below. Sizes that already exist in any warehouse are disabled. Select a warehouse to specify where the new variant will be stored.'
-                    : 'Add size variants for this product. All fields are pre-filled but can be edited. Select a warehouse for each variant.'}
+                    ? 'Add new size variants below. You can select a different warehouse for each variant. Same size can exist in different warehouses.'
+                    : 'Add size variants for this product. All fields are pre-filled but can be edited. You can select a different warehouse for each variant.'}
                 </p>
                 
                 {newVariants.length > 0 && (
