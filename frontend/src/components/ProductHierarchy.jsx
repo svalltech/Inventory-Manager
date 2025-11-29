@@ -85,12 +85,12 @@ const ProductHierarchy = () => {
       const token = localStorage.getItem('authToken');
       await axios.delete(`${API}/master-data/hierarchy/category`, {
         headers: { Authorization: `Bearer ${token}` },
-        data: { product_type: productType, category }
+        params: { product_type: productType, category }
       });
       toast.success('Category deleted');
       fetchData();
     } catch (error) {
-      toast.error('Failed to delete category');
+      toast.error(error.response?.data?.detail || 'Failed to delete category');
     }
   };
 
@@ -103,12 +103,12 @@ const ProductHierarchy = () => {
       const token = localStorage.getItem('authToken');
       await axios.delete(`${API}/master-data/hierarchy/product_name`, {
         headers: { Authorization: `Bearer ${token}` },
-        data: { product_type: productType, category, product_name: productName }
+        params: { product_type: productType, category, product_name: productName }
       });
       toast.success('Product name deleted');
       fetchData();
     } catch (error) {
-      toast.error('Failed to delete product name');
+      toast.error(error.response?.data?.detail || 'Failed to delete product name');
     }
   };
 
