@@ -1236,6 +1236,114 @@ async def delete_master_data(field_name: str, value: str, current_user: dict = D
     
     return {"message": f"Value '{value}' deleted successfully"}
 
+# ==================== PRODUCT HIERARCHY MANAGEMENT ====================
+
+# Add category to product type
+@api_router.post("/master-data/hierarchy/category")
+async def add_category_to_product_type(request: dict, current_user: dict = Depends(get_current_user)):
+    """Add a category under a product type"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can manage master data")
+    
+    product_type = request.get("product_type", "").strip()
+    category = request.get("category", "").strip()
+    
+    if not product_type or not category:
+        raise HTTPException(status_code=400, detail="Product type and category are required")
+    
+    master_doc = await db.master_data.find_one({"_id": "master_data"})
+    if not master_doc:
+        raise HTTPException(status_code=404, detail="Master data not initialized")
+    
+    hierarchy = master_doc.get("product_hierarchy", {})
+    
+    if product_type not in hierarchy:
+        hierarchy[product_type] = {}
+    
+    if category in hierarchy[product_type]:
+        raise HTTPException(status_code=400, detail=f"Category '{category}' already exists under '{product_type}'")
+    
+    hierarchy[product_type][category] = []
+    
+    await db.master_data.update_one(
+        {"_id": "master_data"},
+        {"$set": {"product_hierarchy": hierarchy}}
+    )
+    
+    return {"message": f"Category '{category}' added to '{product_type}'"}
+
+# Add product name to category
+@api_router.post("/master-data/hierarchy/product-name")
+async def add_product_name_to_category(request: dict, current_user: dict = Depends(get_current_user)):
+    """Add a product name under a category"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can manage master data")
+    
+    product_type = request.get("product_type", "").strip()
+    category = request.get("category", "").strip()
+    product_name = request.get("product_name", "").strip()
+    
+    if not product_type or not category or not product_name:
+        raise HTTPException(status_code=400, detail="Product type, category, and product name are required")
+    
+    master_doc = await db.master_data.find_one({"_id": "master_data"})
+    if not master_doc:
+        raise HTTPException(status_code=404, detail="Master data not initialized")
+    
+    hierarchy = master_doc.get("product_hierarchy", {})
+    
+    if product_type not in hierarchy:
+        raise HTTPException(status_code=400, detail=f"Product type '{product_type}' not found")
+    
+    if category not in hierarchy[product_type]:
+        raise HTTPException(status_code=400, detail=f"Category '{category}' not found under '{product_type}'")
+    
+    if product_name in hierarchy[product_type][category]:
+        raise HTTPException(status_code=400, detail=f"Product name '{product_name}' already exists")
+    
+    hierarchy[product_type][category].append(product_name)
+    
+    await db.master_data.update_one(
+        {"_id": "master_data"},
+        {"$set": {"product_hierarchy": hierarchy}}
+    )
+    
+    return {"message": f"Product name '{product_name}' added to '{category}'"}
+
+# Delete from hierarchy
+@api_router.delete("/master-data/hierarchy/{hierarchy_type}")
+async def delete_from_hierarchy(hierarchy_type: str, request: dict, current_user: dict = Depends(get_current_user)):
+    """Delete category or product name from hierarchy"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can manage master data")
+    
+    product_type = request.get("product_type")
+    category = request.get("category")
+    product_name = request.get("product_name")
+    
+    master_doc = await db.master_data.find_one({"_id": "master_data"})
+    if not master_doc:
+        raise HTTPException(status_code=404, detail="Master data not initialized")
+    
+    hierarchy = master_doc.get("product_hierarchy", {})
+    
+    if hierarchy_type == "category":
+        if product_type in hierarchy and category in hierarchy[product_type]:
+            del hierarchy[product_type][category]
+    elif hierarchy_type == "product_name":
+        if product_type in hierarchy and category in hierarchy[product_type]:
+            if product_name in hierarchy[product_type][category]:
+                hierarchy[product_type][category].remove(product_name)
+    else:
+        raise HTTPException(status_code=400, detail="Invalid hierarchy type")
+    
+    await db.master_data.update_one(
+        {"_id": "master_data"},
+        {"$set": {"product_hierarchy": hierarchy}}
+    )
+    
+    return {"message": "Deleted successfully"}
+
 # Health check
 @api_router.get("/health")
 async def health_check():
