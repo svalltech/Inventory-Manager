@@ -171,6 +171,27 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
         } else if (sortConfig.key === 'selling_price') {
           aValue = Math.min(...a.variants.map(v => v.selling_price));
           bValue = Math.min(...b.variants.map(v => v.selling_price));
+        } else if (sortConfig.key === 'size') {
+          // Sort by size using predefined order
+          const sizeOrder = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)', '2XL(46)'];
+          const aSize = a.variants[0]?.size || '';
+          const bSize = b.variants[0]?.size || '';
+          const aIndex = sizeOrder.indexOf(aSize);
+          const bIndex = sizeOrder.indexOf(bSize);
+          
+          if (aIndex !== -1 && bIndex !== -1) {
+            aValue = aIndex;
+            bValue = bIndex;
+          } else {
+            // Fallback to string comparison
+            return sortConfig.direction === 'asc' 
+              ? aSize.localeCompare(bSize)
+              : bSize.localeCompare(aSize);
+          }
+        } else if (sortConfig.key === 'design') {
+          // Sort by color name (text-based)
+          aValue = (a.color || '').toLowerCase();
+          bValue = (b.color || '').toLowerCase();
         } else {
           aValue = a[sortConfig.key];
           bValue = b[sortConfig.key];
