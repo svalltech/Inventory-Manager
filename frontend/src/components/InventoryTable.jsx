@@ -24,6 +24,10 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
       // Basic colors
       'black': '#000000',
       'white': '#FFFFFF',
+      'off white': '#FAF9F6',
+      'offwhite': '#FAF9F6',
+      'cream': '#FFFDD0',
+      'ivory': '#FFFFF0',
       'red': '#FF0000',
       'blue': '#0000FF',
       'green': '#008000',
