@@ -1082,7 +1082,7 @@ async def get_master_data(current_user: dict = Depends(get_current_user)):
 
 # Add master data value
 @api_router.post("/master-data/{field_name}")
-async def add_master_data(field_name: str, request: dict, current_user: dict = Depends(verify_token)):
+async def add_master_data(field_name: str, request: dict, current_user: dict = Depends(get_current_user)):
     """Add a new value to master data"""
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Only admins can manage master data")
