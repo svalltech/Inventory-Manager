@@ -833,7 +833,11 @@ def generate_pdf(items: List[dict], fields: List[str]) -> BytesIO:
                 value = item.get("fabric_specs", {}).get("weight", "")
             elif field == "composition":
                 value = item.get("fabric_specs", {}).get("composition", "")
-            row.append(str(value) if value else "")
+            # Convert to string, but handle None and 0 properly
+            if value is None or value == "":
+                row.append("")
+            else:
+                row.append(str(value))
         table_data.append(row)
     
     # Create table
