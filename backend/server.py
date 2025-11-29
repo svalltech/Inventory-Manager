@@ -775,7 +775,11 @@ def generate_word(items: List[dict], fields: List[str]) -> BytesIO:
                 value = item.get("fabric_specs", {}).get("weight", "")
             elif field == "composition":
                 value = item.get("fabric_specs", {}).get("composition", "")
-            row_cells[idx].text = str(value) if value else ""
+            # Convert to string, but handle None and 0 properly
+            if value is None or value == "":
+                row_cells[idx].text = ""
+            else:
+                row_cells[idx].text = str(value)
     
     # Save to BytesIO
     output = BytesIO()
