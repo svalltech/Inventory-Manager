@@ -290,6 +290,8 @@ const Settings = ({ user, onLogout, onNavigateToDashboard }) => {
                   </div>
                 )}
               </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
