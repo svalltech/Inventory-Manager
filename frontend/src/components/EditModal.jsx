@@ -175,6 +175,17 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
   };
 
+  const handleProductNameChange = (e) => {
+    const value = e.target.value;
+    if (value === '__new__') {
+      setShowNewProductNameInput(true);
+      setFormData(prev => ({ ...prev, name: '' }));
+    } else {
+      setShowNewProductNameInput(false);
+      setFormData(prev => ({ ...prev, name: value }));
+    }
+  };
+
   const handleSizeChange = (e) => {
     const value = e.target.value;
     if (value === '__new__') {
