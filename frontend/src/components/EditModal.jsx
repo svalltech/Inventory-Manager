@@ -98,6 +98,12 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   const [filteredProductNames, setFilteredProductNames] = useState([]);
   // Use prop directly instead of local state
   const productHierarchy = propProductHierarchy || {};
+  
+  // Debug: Log state changes
+  console.log('=== RENDER: EditModal ===');
+  console.log('filteredCategories:', filteredCategories);
+  console.log('filteredProductNames:', filteredProductNames);
+  console.log('formData.category:', formData.category);
 
   // Variants modal state
   const [showVariantsModal, setShowVariantsModal] = useState(false);
