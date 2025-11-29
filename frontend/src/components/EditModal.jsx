@@ -191,22 +191,22 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     console.log('=== FILTERING PRODUCT NAMES ===');
     console.log('Product Type:', formData.product_type);
     console.log('Category:', formData.category);
-    console.log('Product Hierarchy:', productHierarchy);
-    console.log('Hierarchy keys:', Object.keys(productHierarchy));
+    console.log('Hierarchy prop:', propProductHierarchy);
     
-    if (formData.product_type && formData.category && productHierarchy[formData.product_type]) {
-      console.log('Categories in', formData.product_type, ':', Object.keys(productHierarchy[formData.product_type]));
-      const productNames = productHierarchy[formData.product_type][formData.category] || [];
-      console.log('Product names for', formData.category, ':', productNames);
+    if (formData.product_type && formData.category && propProductHierarchy && propProductHierarchy[formData.product_type]) {
+      console.log('Looking for products in:', formData.product_type, '→', formData.category);
+      const productNames = propProductHierarchy[formData.product_type][formData.category] || [];
+      console.log('Found product names:', productNames);
       setFilteredProductNames(productNames);
     } else {
-      console.log('Condition not met, resetting filtered product names');
+      console.log('Condition not met, resetting');
       console.log('Has product type?', !!formData.product_type);
       console.log('Has category?', !!formData.category);
-      console.log('Has hierarchy for product type?', !!productHierarchy[formData.product_type]);
+      console.log('Has hierarchy?', !!propProductHierarchy);
+      console.log('Has hierarchy for product type?', propProductHierarchy && !!propProductHierarchy[formData.product_type]);
       setFilteredProductNames([]);
     }
-  }, [formData.category, formData.product_type, productHierarchy]);
+  }, [formData.category, formData.product_type, propProductHierarchy]);
 
   // Legacy code kept for backwards compatibility
   useEffect(() => {
