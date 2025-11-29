@@ -1,5 +1,56 @@
 import { useState, useEffect } from 'react';
 
+// SKU Auto-Generation Function
+const generateSKU = (data) => {
+  const generateComponent = (value, ruleType) => {
+    if (!value || value === 'NA') return 'NA';
+    
+    const val = value.toString().trim().toUpperCase();
+    
+    switch (ruleType) {
+      case 'brand':
+      case 'warehouse': {
+        const words = val.split(/\s+/);
+        return words.length === 1 ? val.slice(0, 3) : words.map(w => w[0]).join('');
+      }
+      case 'product_type':
+        return val.slice(0, 3);
+      case 'category':
+        return val;
+      case 'product_name': {
+        const words = val.split(/\s+/);
+        return words.map(w => w[0]).join('');
+      }
+      case 'material': {
+        const clean = val.replace(/[^A-Z0-9]/g, '').slice(0, 4);
+        return clean || 'NA';
+      }
+      case 'design':
+        return val.slice(0, 3);
+      case 'color':
+        return val;
+      case 'size': {
+        const numbers = val.replace(/[^0-9]/g, '');
+        return numbers || val;
+      }
+      default:
+        return val;
+    }
+  };
+
+  const brand = generateComponent(data.brand, 'brand');
+  const warehouse = generateComponent(data.warehouse, 'warehouse');
+  const ptype = generateComponent(data.product_type, 'product_type');
+  const category = generateComponent(data.category, 'category');
+  const name = generateComponent(data.name, 'product_name');
+  const material = generateComponent(data.fabric_specs?.material || 'NA', 'material');
+  const design = generateComponent(data.design, 'design');
+  const color = generateComponent(data.color, 'color');
+  const size = generateComponent(data.size, 'size');
+
+  return `${brand}-${warehouse}-${ptype}-${category}-${name}-${material}-${design}-${color}-${size}`;
+};
+
 const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categories, sizes, colors, materials, designs, weights, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     id: '',
