@@ -55,26 +55,17 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
       const inventoryRes = await axios.get(`${API}/inventory`, { headers });
       setInventory(inventoryRes.data);
 
-      // Fetch filter options
-      const optionsRes = await axios.get(`${API}/inventory/filter-options`, { headers });
-      setBrands(optionsRes.data.brands || []);
-      setWarehouses(optionsRes.data.warehouses || []);
-      setProductTypes(optionsRes.data.product_types || []);
-      
-      // Extract unique values from inventory data
-      const uniqueCategories = [...new Set(inventoryRes.data.map(item => item.category))].filter(Boolean);
-      const uniqueSizes = [...new Set(inventoryRes.data.map(item => item.size))].filter(Boolean);
-      const uniqueColors = [...new Set(inventoryRes.data.map(item => item.color))].filter(Boolean);
-      const uniqueMaterials = [...new Set(inventoryRes.data.map(item => item.fabric_specs?.material))].filter(Boolean);
-      const uniqueDesigns = [...new Set(inventoryRes.data.map(item => item.design))].filter(Boolean);
-      const uniqueWeights = [...new Set(inventoryRes.data.map(item => item.fabric_specs?.weight))].filter(Boolean);
-      
-      setCategories(uniqueCategories);
-      setSizes(uniqueSizes);
-      setColors(uniqueColors);
-      setMaterials(uniqueMaterials);
-      setDesigns(uniqueDesigns);
-      setWeights(uniqueWeights);
+      // Fetch master data from new endpoint
+      const masterDataRes = await axios.get(`${API}/master-data`, { headers });
+      setBrands(masterDataRes.data.brands || []);
+      setWarehouses(masterDataRes.data.warehouses || []);
+      setProductTypes(masterDataRes.data.product_types || []);
+      setCategories(masterDataRes.data.categories || []);
+      setSizes(masterDataRes.data.sizes || []);
+      setColors(masterDataRes.data.colors || []);
+      setMaterials(masterDataRes.data.materials || []);
+      setDesigns(masterDataRes.data.designs || []);
+      setWeights(masterDataRes.data.weights || []);
 
       setLoading(false);
     } catch (error) {
