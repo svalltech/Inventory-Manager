@@ -1051,31 +1051,38 @@ async def export_inventory(
 async def get_master_data(current_user: dict = Depends(get_current_user)):
     """Get all master data for dropdowns"""
     try:
-        # Get unique values from inventory
-        inventory_items = await db.inventory.find({}, {"_id": 0}).to_list(None)
+        # Get master data from dedicated collection
+        master_doc = await db.master_data.find_one({"_id": "master_data"})
         
-        brands = sorted(set(item.get("brand") for item in inventory_items if item.get("brand")))
-        warehouses = sorted(set(item.get("warehouse") for item in inventory_items if item.get("warehouse")))
-        product_types = sorted(set(item.get("product_type") for item in inventory_items if item.get("product_type")))
-        categories = sorted(set(item.get("category") for item in inventory_items if item.get("category")))
-        product_names = sorted(set(item.get("name") for item in inventory_items if item.get("name")))
-        designs = sorted(set(item.get("design") for item in inventory_items if item.get("design")))
-        colors = sorted(set(item.get("color") for item in inventory_items if item.get("color")))
-        sizes = sorted(set(item.get("size") for item in inventory_items if item.get("size")))
-        materials = sorted(set(item.get("fabric_specs", {}).get("material") for item in inventory_items if item.get("fabric_specs", {}).get("material")))
-        weights = sorted(set(item.get("fabric_specs", {}).get("weight") for item in inventory_items if item.get("fabric_specs", {}).get("weight")))
+        if not master_doc:
+            # Initialize with default values if not exists
+            default_data = {
+                "_id": "master_data",
+                "brands": [],
+                "warehouses": [],
+                "product_types": [],
+                "categories": [],
+                "product_names": [],
+                "designs": [],
+                "colors": [],
+                "sizes": ["XS(36)", "S(38)", "M(40)", "L(42)", "XL(44)", "2XL(46)"],
+                "materials": [],
+                "weights": []
+            }
+            await db.master_data.insert_one(default_data)
+            master_doc = default_data
         
         return {
-            "brands": brands,
-            "warehouses": warehouses,
-            "product_types": product_types,
-            "categories": categories,
-            "product_names": product_names,
-            "designs": designs,
-            "colors": colors,
-            "sizes": sizes,
-            "materials": materials,
-            "weights": weights
+            "brands": master_doc.get("brands", []),
+            "warehouses": master_doc.get("warehouses", []),
+            "product_types": master_doc.get("product_types", []),
+            "categories": master_doc.get("categories", []),
+            "product_names": master_doc.get("product_names", []),
+            "designs": master_doc.get("designs", []),
+            "colors": master_doc.get("colors", []),
+            "sizes": master_doc.get("sizes", ["XS(36)", "S(38)", "M(40)", "L(42)", "XL(44)", "2XL(46)"]),
+            "materials": master_doc.get("materials", []),
+            "weights": master_doc.get("weights", [])
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -1091,12 +1098,32 @@ async def add_master_data(field_name: str, request: dict, current_user: dict = D
     if not value:
         raise HTTPException(status_code=400, detail="Value cannot be empty")
     
-    # Note: Since we're deriving master data from inventory, 
-    # adding here means we need to track it separately or just return success
-    # For now, we'll just validate that it's a valid field
     valid_fields = ["brands", "warehouses", "product_types", "categories", "product_names", "designs", "colors", "sizes", "materials", "weights"]
     if field_name not in valid_fields:
         raise HTTPException(status_code=400, detail=f"Invalid field name. Must be one of: {', '.join(valid_fields)}")
+    
+    # Get current master data
+    master_doc = await db.master_data.find_one({"_id": "master_data"})
+    if not master_doc:
+        master_doc = {
+            "_id": "master_data",
+            "brands": [], "warehouses": [], "product_types": [], "categories": [],
+            "product_names": [], "designs": [], "colors": [], 
+            "sizes": ["XS(36)", "S(38)", "M(40)", "L(42)", "XL(44)", "2XL(46)"],
+            "materials": [], "weights": []
+        }
+        await db.master_data.insert_one(master_doc)
+    
+    # Check if value already exists
+    current_values = master_doc.get(field_name, [])
+    if value in current_values:
+        raise HTTPException(status_code=400, detail=f"'{value}' already exists in {field_name}")
+    
+    # Add the new value
+    await db.master_data.update_one(
+        {"_id": "master_data"},
+        {"$push": {field_name: value}}
+    )
     
     return {"message": f"Value '{value}' added to {field_name}", "value": value}
 
