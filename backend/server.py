@@ -1138,7 +1138,30 @@ async def update_master_data(field_name: str, old_value: str, request: dict, cur
     if not new_value:
         raise HTTPException(status_code=400, detail="New value cannot be empty")
     
-    # Map field names to inventory fields
+    valid_fields = ["brands", "warehouses", "product_types", "categories", "product_names", "designs", "colors", "sizes", "materials", "weights"]
+    if field_name not in valid_fields:
+        raise HTTPException(status_code=400, detail="Invalid field name")
+    
+    # Update in master data collection
+    master_doc = await db.master_data.find_one({"_id": "master_data"})
+    if master_doc:
+        current_values = master_doc.get(field_name, [])
+        if old_value in current_values:
+            # Remove old value and add new value
+            await db.master_data.update_one(
+                {"_id": "master_data"},
+                {
+                    "$pull": {field_name: old_value},
+                }
+            )
+            await db.master_data.update_one(
+                {"_id": "master_data"},
+                {
+                    "$push": {field_name: new_value}
+                }
+            )
+    
+    # Also update all inventory items with the old value
     field_mapping = {
         "brands": "brand",
         "warehouses": "warehouse",
@@ -1152,14 +1175,9 @@ async def update_master_data(field_name: str, old_value: str, request: dict, cur
         "weights": "fabric_specs.weight"
     }
     
-    if field_name not in field_mapping:
-        raise HTTPException(status_code=400, detail="Invalid field name")
-    
     db_field = field_mapping[field_name]
     
-    # Update all inventory items with the old value
     if field_name in ["materials", "weights"]:
-        # Handle nested fields
         field_key = db_field.split(".")[1]
         result = await db.inventory.update_many(
             {f"fabric_specs.{field_key}": old_value},
@@ -1171,7 +1189,7 @@ async def update_master_data(field_name: str, old_value: str, request: dict, cur
             {"$set": {db_field: new_value}}
         )
     
-    return {"message": f"Updated {result.modified_count} items", "modified_count": result.modified_count}
+    return {"message": f"Updated successfully", "modified_count": result.modified_count}
 
 # Delete master data value
 @api_router.delete("/master-data/{field_name}/{value}")
