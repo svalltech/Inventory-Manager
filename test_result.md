@@ -193,15 +193,18 @@ frontend:
 
   - task: "+ Inventory button for new SKU entry"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/Dashboard.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added button in header (top right) that opens modal in create mode. Only visible for admin/staff roles."
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: '+ Inventory' button visible in header for admin users. Button correctly positioned in top right of dashboard header alongside Export and Import buttons."
 
   - task: "Export data functionality (Excel, PDF, Word)"
     implemented: true
