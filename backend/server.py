@@ -709,9 +709,14 @@ def generate_excel(items: List[dict], fields: List[str]) -> BytesIO:
     for row_idx, item in enumerate(items, 2):
         for col_idx, field in enumerate(fields, 1):
             value = item.get(field, "")
-            if field == "fabric_specs":
+            # Handle nested fabric_specs fields
+            if field == "material":
                 value = item.get("fabric_specs", {}).get("material", "")
-            ws.cell(row=row_idx, column=col_idx, value=str(value))
+            elif field == "weight":
+                value = item.get("fabric_specs", {}).get("weight", "")
+            elif field == "composition":
+                value = item.get("fabric_specs", {}).get("composition", "")
+            ws.cell(row=row_idx, column=col_idx, value=str(value) if value else "")
     
     # Auto-adjust column widths
     for col in ws.columns:
