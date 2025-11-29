@@ -8,8 +8,8 @@ const API = `${BACKEND_URL}/api`;
 const ExportModal = ({ onClose, onExport }) => {
   const [selectedFormat, setSelectedFormat] = useState('excel');
   const [selectedFields, setSelectedFields] = useState([
-    'sku', 'name', 'brand', 'warehouse', 'category', 'gender', 
-    'size', 'design', 'color', 'mrp', 'selling_price', 'quantity'
+    'sku', 'name', 'brand', 'warehouse', 'product_type', 'category', 'gender', 
+    'size', 'design', 'color', 'material', 'mrp', 'selling_price', 'cost_price', 'quantity'
   ]);
   
   // Template management
