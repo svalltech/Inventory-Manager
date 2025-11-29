@@ -95,6 +95,27 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   const [existingVariants, setExistingVariants] = useState([]);
   const [newVariants, setNewVariants] = useState([]);
 
+  // Auto-generate SKU whenever relevant fields change
+  useEffect(() => {
+    // Only auto-generate if all required fields are filled
+    if (formData.brand && formData.warehouse && formData.product_type && 
+        formData.category && formData.name && formData.design && 
+        formData.color && formData.size) {
+      const autoSku = generateSKU(formData);
+      setFormData(prev => ({ ...prev, sku: autoSku }));
+    }
+  }, [
+    formData.brand,
+    formData.warehouse,
+    formData.product_type,
+    formData.category,
+    formData.name,
+    formData.fabric_specs.material,
+    formData.design,
+    formData.color,
+    formData.size
+  ]);
+
   // Predefined size options
   const sizeOptions = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)', '2XL(46)'];
   
