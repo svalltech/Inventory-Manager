@@ -24,20 +24,26 @@ const ExportModal = ({ onClose, onExport }) => {
     { key: 'name', label: 'Product Name' },
     { key: 'brand', label: 'Brand' },
     { key: 'warehouse', label: 'Warehouse' },
+    { key: 'product_type', label: 'Product Type' },
     { key: 'category', label: 'Category' },
     { key: 'gender', label: 'Gender' },
     { key: 'size', label: 'Size' },
     { key: 'design', label: 'Design' },
     { key: 'color', label: 'Color' },
+    { key: 'color_code', label: 'Color Code' },
+    { key: 'material', label: 'Material' },
+    { key: 'weight', label: 'Weight' },
+    { key: 'composition', label: 'Fabric Composition' },
     { key: 'mrp', label: 'MRP' },
     { key: 'selling_price', label: 'Selling Price' },
     { key: 'cost_price', label: 'Cost Price' },
     { key: 'quantity', label: 'Quantity' },
-    { key: 'material', label: 'Material' },
-    { key: 'weight', label: 'Weight' },
+    { key: 'low_stock_threshold', label: 'Low Stock Threshold' },
     { key: 'status', label: 'Status' },
     { key: 'created_at', label: 'Created Date' },
-    { key: 'updated_at', label: 'Updated Date' }
+    { key: 'updated_at', label: 'Updated Date' },
+    { key: 'created_by', label: 'Created By' },
+    { key: 'last_modified_by', label: 'Last Modified By' }
   ];
 
   useEffect(() => {
