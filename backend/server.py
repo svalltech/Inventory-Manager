@@ -818,9 +818,14 @@ def generate_pdf(items: List[dict], fields: List[str]) -> BytesIO:
         row = []
         for field in fields:
             value = item.get(field, "")
-            if field == "fabric_specs":
+            # Handle nested fabric_specs fields
+            if field == "material":
                 value = item.get("fabric_specs", {}).get("material", "")
-            row.append(str(value))
+            elif field == "weight":
+                value = item.get("fabric_specs", {}).get("weight", "")
+            elif field == "composition":
+                value = item.get("fabric_specs", {}).get("composition", "")
+            row.append(str(value) if value else "")
         table_data.append(row)
     
     # Create table
