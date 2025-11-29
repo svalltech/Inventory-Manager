@@ -503,44 +503,19 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     try {
       // Only create NEW variants
       const promises = newVariants.map(variant => {
-        // Generate unique SKU using a comprehensive approach
-        // Extract the base SKU by removing only known size patterns from the END
-        let baseSku = formData.sku;
+        // Create variant data with the selected size and warehouse
+        const variantData = {
+          ...formData,
+          size: variant.size,
+          warehouse: variant.warehouse
+        };
         
-        // Remove size patterns from the end: -XS36, -S38, -M40, -L42, -XL44, -2XL46
-        baseSku = baseSku.replace(/-XS\(?36\)?$/i, '');
-        baseSku = baseSku.replace(/-S\(?38\)?$/i, '');
-        baseSku = baseSku.replace(/-M\(?40\)?$/i, '');
-        baseSku = baseSku.replace(/-L\(?42\)?$/i, '');
-        baseSku = baseSku.replace(/-XL\(?44\)?$/i, '');
-        baseSku = baseSku.replace(/-2XL\(?46\)?$/i, '');
+        // Auto-generate SKU for this variant
+        const uniqueSku = generateSKU(variantData);
         
-        // Also handle patterns with dashes: -M-40, -L-42, etc.
-        baseSku = baseSku.replace(/-XS-36$/i, '');
-        baseSku = baseSku.replace(/-S-38$/i, '');
-        baseSku = baseSku.replace(/-M-40$/i, '');
-        baseSku = baseSku.replace(/-L-42$/i, '');
-        baseSku = baseSku.replace(/-XL-44$/i, '');
-        baseSku = baseSku.replace(/-2XL-46$/i, '');
-        
-        // Also remove standalone size codes at the end
-        baseSku = baseSku.replace(/-XS$/i, '');
-        baseSku = baseSku.replace(/-S$/i, '');
-        baseSku = baseSku.replace(/-M$/i, '');
-        baseSku = baseSku.replace(/-L$/i, '');
-        baseSku = baseSku.replace(/-XL$/i, '');
-        baseSku = baseSku.replace(/-2XL$/i, '');
-        
-        // Generate size code from the selected size
-        const sizeCode = variant.size.replace(/[()]/g, '').replace(/\s+/g, '');
-        
-        // Create unique SKU: BaseSKU-SizeCode
-        // E.g., "UB-Shorts" + "L42" = "UB-Shorts-L42"
-        const uniqueSku = `${baseSku}-${sizeCode}`;
-        
-        console.log('Original SKU:', formData.sku);
-        console.log('Base SKU:', baseSku);
+        console.log('Generating variant SKU:');
         console.log('Size:', variant.size);
+        console.log('Warehouse:', variant.warehouse);
         console.log('Generated SKU:', uniqueSku);
         
         const dataToSave = {
