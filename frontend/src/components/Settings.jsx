@@ -192,14 +192,24 @@ const Settings = ({ user, onLogout, onNavigateToDashboard }) => {
 
             {/* Content Area */}
             <div className="flex-1 p-6">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                  {tabs.find(t => t.key === activeTab)?.label}
-                </h2>
-                <p className="text-sm text-slate-600">
-                  Manage {tabs.find(t => t.key === activeTab)?.label.toLowerCase()} master data
-                </p>
-              </div>
+              {activeTab === 'hierarchy' ? (
+                <div>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-slate-800 mb-2">Product Hierarchy</h2>
+                    <p className="text-sm text-slate-600">Manage Product Type → Category → Product Name relationships</p>
+                  </div>
+                  <ProductHierarchy />
+                </div>
+              ) : (
+                <div>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-slate-800 mb-2">
+                      {tabs.find(t => t.key === activeTab)?.label}
+                    </h2>
+                    <p className="text-sm text-slate-600">
+                      Manage {tabs.find(t => t.key === activeTab)?.label.toLowerCase()} master data
+                    </p>
+                  </div>
 
               {/* Add New Form */}
               <div className="mb-6 flex space-x-3">
