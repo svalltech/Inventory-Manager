@@ -109,19 +109,24 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
     return filtered;
   }, [groupedData, columnFilters, sortConfig]);
 
+  // Flatten filtered groups for pagination and totals
+  const flattenedData = useMemo(() => {
+    return filteredGroups.flatMap(group => group.variants);
+  }, [filteredGroups]);
+
   // Pagination
-  const totalPages = Math.ceil(filteredAndSortedData.length / entriesPerPage);
+  const totalPages = Math.ceil(flattenedData.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
   const endIndex = startIndex + entriesPerPage;
-  const currentData = filteredAndSortedData.slice(startIndex, endIndex);
+  const currentData = flattenedData.slice(startIndex, endIndex);
 
   // Calculate totals
   const totals = useMemo(() => {
-    const totalCount = filteredAndSortedData.length;
-    const totalValue = filteredAndSortedData.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
-    const totalQuantity = filteredAndSortedData.reduce((sum, item) => sum + item.quantity, 0);
+    const totalCount = flattenedData.length;
+    const totalValue = flattenedData.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
+    const totalQuantity = flattenedData.reduce((sum, item) => sum + item.quantity, 0);
     return { totalCount, totalValue, totalQuantity };
-  }, [filteredAndSortedData]);
+  }, [flattenedData]);
 
   const handleColumnFilterChange = (column, value) => {
     setColumnFilters(prev => ({
