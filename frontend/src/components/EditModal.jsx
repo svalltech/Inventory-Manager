@@ -130,25 +130,13 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   // Gender options (added Unisex)
   const genderOptions = ['male', 'female', 'unisex'];
 
-  // Fetch product hierarchy on mount
+  // Use product hierarchy from props
   useEffect(() => {
-    const fetchHierarchy = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-        const response = await fetch(`${BACKEND_URL}/api/master-data`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setProductHierarchy(data.product_hierarchy || {});
-        }
-      } catch (error) {
-        console.error('Failed to fetch hierarchy:', error);
-      }
-    };
-    fetchHierarchy();
-  }, []);
+    if (propProductHierarchy) {
+      console.log('Setting product hierarchy from props:', propProductHierarchy);
+      setProductHierarchy(propProductHierarchy);
+    }
+  }, [propProductHierarchy]);
 
   useEffect(() => {
     if (item && !isCreateMode) {
