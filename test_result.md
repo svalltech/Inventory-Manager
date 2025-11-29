@@ -232,15 +232,18 @@ frontend:
 
   - task: "Modal dual mode (create/edit)"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/EditModal.jsx, /app/frontend/src/components/Dashboard.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Modal now supports both create and edit modes via isCreateMode prop. Different title and button text based on mode."
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Modal dual mode working correctly. Edit mode shows 'Edit Inventory Item' title with populated form fields. Modal supports both create and edit operations with appropriate form behavior."
 
 metadata:
   created_by: "main_agent"
