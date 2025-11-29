@@ -12,9 +12,6 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
     selling_price: ''
   });
   const [expandedGroups, setExpandedGroups] = useState(new Set());
-  
-  // Check if warehouse filter is active
-  const isWarehouseFilterActive = columnFilters.warehouse?.trim().length > 0;
 
   // Sortable columns
   const sortableColumns = ['product_type', 'category', 'name', 'design', 'size', 'quantity', 'selling_price', 'totalValue'];
