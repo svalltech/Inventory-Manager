@@ -52,32 +52,45 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
     return Object.values(groups);
   }, [data]);
 
-  // Apply column filters first, then sort
-  const filteredAndSortedData = useMemo(() => {
-    // First, filter the data based on column filters
-    let filtered = [...data];
+  // Apply column filters to groups
+  const filteredGroups = useMemo(() => {
+    let filtered = [...groupedData];
     
     Object.keys(columnFilters).forEach(key => {
       const filterValue = columnFilters[key].toLowerCase().trim();
       if (filterValue) {
-        filtered = filtered.filter(item => {
-          const itemValue = item[key]?.toString().toLowerCase() || '';
-          return itemValue.includes(filterValue);
-        });
+        if (key === 'size' || key === 'quantity' || key === 'selling_price') {
+          // For variant-specific fields, filter groups that have matching variants
+          filtered = filtered.filter(group => 
+            group.variants.some(variant => {
+              const itemValue = variant[key]?.toString().toLowerCase() || '';
+              return itemValue.includes(filterValue);
+            })
+          );
+        } else {
+          // For group-level fields
+          filtered = filtered.filter(group => {
+            const itemValue = group[key]?.toString().toLowerCase() || '';
+            return itemValue.includes(filterValue);
+          });
+        }
       }
     });
 
-    // Then, sort the filtered data
+    // Sort groups
     if (sortConfig.key) {
       filtered.sort((a, b) => {
         let aValue, bValue;
 
         if (sortConfig.key === 'totalValue') {
-          aValue = a.selling_price * a.quantity;
-          bValue = b.selling_price * b.quantity;
-        } else if (sortConfig.key === 'name') {
-          aValue = a.name;
-          bValue = b.name;
+          aValue = a.variants.reduce((sum, v) => sum + (v.selling_price * v.quantity), 0);
+          bValue = b.variants.reduce((sum, v) => sum + (v.selling_price * v.quantity), 0);
+        } else if (sortConfig.key === 'quantity') {
+          aValue = a.variants.reduce((sum, v) => sum + v.quantity, 0);
+          bValue = b.variants.reduce((sum, v) => sum + v.quantity, 0);
+        } else if (sortConfig.key === 'selling_price') {
+          aValue = Math.min(...a.variants.map(v => v.selling_price));
+          bValue = Math.min(...b.variants.map(v => v.selling_price));
         } else {
           aValue = a[sortConfig.key];
           bValue = b[sortConfig.key];
@@ -94,7 +107,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
     }
 
     return filtered;
-  }, [data, sortConfig, columnFilters]);
+  }, [groupedData, columnFilters, sortConfig]);
 
   // Pagination
   const totalPages = Math.ceil(filteredAndSortedData.length / entriesPerPage);
