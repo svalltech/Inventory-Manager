@@ -355,6 +355,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   const addNewVariantRow = () => {
     setNewVariants(prev => [...prev, {
       size: '',
+      warehouse: formData.warehouse || '', // Default to current item's warehouse
       quantity: formData.quantity || '',
       selling_price: formData.selling_price || '',
       mrp: formData.mrp || '',
