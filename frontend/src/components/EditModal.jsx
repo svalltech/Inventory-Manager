@@ -57,7 +57,7 @@ const generateSKU = (data) => {
   return `${brand}-${warehouse}-${ptype}-${category}-${name}-${material}-${design}-${color}-${size}`;
 };
 
-const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categories, sizes, colors, materials, designs, weights, onClose, onSave }) => {
+const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categories, sizes, colors, materials, designs, weights, productHierarchy: propProductHierarchy, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     id: '',
     warehouse: '',
