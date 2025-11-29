@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import Settings from './components/Settings';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState('dashboard'); // 'dashboard' or 'settings'
 
   useEffect(() => {
     checkAuth();
