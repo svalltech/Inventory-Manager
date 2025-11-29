@@ -367,3 +367,31 @@ agent_communication:
       10. ✅ Help text explains "Same size can exist in different warehouses"
       
       🎉 CONCLUSION: All frontend features are production-ready. The Add Size Variants feature perfectly implements dynamic size disabling based on warehouse selection as specified in the review requirements.
+  - agent: "testing"
+    message: |
+      🎯 CORRECTED GLOBAL SIZE DISABLING TESTING COMPLETE - ALL TESTS PASSED (100% SUCCESS RATE)
+      
+      ✅ Comprehensive testing of the CORRECTED "Add Size Variants" feature with global size disabling completed successfully:
+      
+      CORRECTED IMPLEMENTATION VERIFIED:
+      1. ✅ Add Size Variants modal opens with existing variants from ALL warehouses
+      2. ✅ Existing variants table shows "(All Warehouses)" title and warehouse column
+      3. ✅ M(40) exists in "Secondary Warehouse" as shown in existing variants
+      4. ✅ GLOBAL DISABLING CONFIRMED: M(40) is disabled across ALL warehouses (Hutty bazaar, PP, Secondary Warehouse)
+      5. ✅ Size dropdown shows M(40) with "(Already exists)" text in ALL warehouses
+      6. ✅ Warehouse selection only determines WHERE new variant will be stored
+      7. ✅ Help text correctly states "Sizes that already exist in any warehouse are disabled"
+      8. ✅ All UI elements comply with corrected requirements
+      
+      KEY CORRECTION VERIFIED:
+      - ❌ OLD BEHAVIOR: Size disabling was warehouse-dependent (M(40) disabled in Secondary Warehouse, enabled in Hutty bazaar)
+      - ✅ NEW BEHAVIOR: Size disabling is GLOBAL (M(40) disabled in ALL warehouses if it exists anywhere)
+      
+      DETAILED TEST RESULTS:
+      - M(40) status in Hutty bazaar: DISABLED with "(Already exists)" text
+      - M(40) status in PP: DISABLED with "(Already exists)" text  
+      - M(40) status in Secondary Warehouse: DISABLED with "(Already exists)" text
+      - Available sizes: XS(36), S(38), L(42), XL(44), 2XL(46) - all enabled across warehouses
+      - Total warehouses tested: 3 (Hutty bazaar, PP, Secondary Warehouse)
+      
+      🎉 CONCLUSION: The corrected implementation successfully implements GLOBAL size disabling where sizes are disabled if they exist in ANY warehouse, exactly as specified in the review requirements.
