@@ -905,7 +905,9 @@ async def import_inventory(
                 
                 # Validate required fields
                 for field in required_fields:
-                    if not item_data.get(field):
+                    # Check if field exists in item_data and is not None or empty string
+                    # Note: Allow 0 as valid value for numeric fields like quantity
+                    if field not in item_data or item_data[field] is None or item_data[field] == '':
                         raise ValueError(f"Missing required field: {field}")
                 
                 # Handle fabric_specs
