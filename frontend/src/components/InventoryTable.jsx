@@ -16,6 +16,42 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
   // Sortable columns
   const sortableColumns = ['product_type', 'category', 'name', 'design', 'size', 'quantity', 'selling_price', 'totalValue'];
 
+  // Group data by product (everything except size)
+  const groupedData = useMemo(() => {
+    const groups = {};
+    
+    data.forEach(item => {
+      // Create a unique key for each product group (excluding size)
+      const groupKey = `${item.product_type || 'Clothing'}-${item.category}-${item.name}-${item.design}`;
+      
+      if (!groups[groupKey]) {
+        groups[groupKey] = {
+          key: groupKey,
+          product_type: item.product_type || 'Clothing',
+          category: item.category,
+          name: item.name,
+          design: item.design,
+          variants: []
+        };
+      }
+      
+      groups[groupKey].variants.push(item);
+    });
+    
+    // Sort variants within each group by size
+    Object.values(groups).forEach(group => {
+      group.variants.sort((a, b) => {
+        const sizeOrder = ['XS(36)', 'S(38)', 'M(40)', 'L(42)', 'XL(44)', '2XL(46)'];
+        const aIndex = sizeOrder.indexOf(a.size);
+        const bIndex = sizeOrder.indexOf(b.size);
+        if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+        return a.size.localeCompare(b.size);
+      });
+    });
+    
+    return Object.values(groups);
+  }, [data]);
+
   // Apply column filters first, then sort
   const filteredAndSortedData = useMemo(() => {
     // First, filter the data based on column filters
