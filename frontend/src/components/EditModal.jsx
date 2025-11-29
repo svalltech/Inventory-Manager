@@ -183,12 +183,12 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     if (formData.product_type && productHierarchy[formData.product_type]) {
       const categories = Object.keys(productHierarchy[formData.product_type]);
       setFilteredCategories(categories);
+      // Only reset if in create mode or if categories have actually changed
+      if (isCreateMode && formData.category && !categories.includes(formData.category)) {
+        setFormData(prev => ({ ...prev, category: '', name: '' }));
+      }
     } else {
       setFilteredCategories([]);
-    }
-    // Reset category and product name when product type changes
-    if (formData.product_type) {
-      setFormData(prev => ({ ...prev, category: '', name: '' }));
     }
   }, [formData.product_type, productHierarchy]);
 
