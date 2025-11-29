@@ -178,7 +178,35 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
   }, [item, isCreateMode]);
 
-  // Fetch filtered product names when product type or category changes
+  // Update filtered categories when product type changes
+  useEffect(() => {
+    if (formData.product_type && productHierarchy[formData.product_type]) {
+      const categories = Object.keys(productHierarchy[formData.product_type]);
+      setFilteredCategories(categories);
+    } else {
+      setFilteredCategories([]);
+    }
+    // Reset category and product name when product type changes
+    if (formData.product_type) {
+      setFormData(prev => ({ ...prev, category: '', name: '' }));
+    }
+  }, [formData.product_type, productHierarchy]);
+
+  // Update filtered product names when category changes
+  useEffect(() => {
+    if (formData.product_type && formData.category && productHierarchy[formData.product_type]) {
+      const productNames = productHierarchy[formData.product_type][formData.category] || [];
+      setFilteredProductNames(productNames);
+    } else {
+      setFilteredProductNames([]);
+    }
+    // Reset product name when category changes
+    if (formData.category) {
+      setFormData(prev => ({ ...prev, name: '' }));
+    }
+  }, [formData.category, formData.product_type, productHierarchy]);
+
+  // Legacy code kept for backwards compatibility
   useEffect(() => {
     const fetchFilteredProductNames = async () => {
       if (formData.product_type && formData.category) {
