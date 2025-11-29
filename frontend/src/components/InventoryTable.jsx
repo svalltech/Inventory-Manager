@@ -16,6 +16,77 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
   // Sortable columns
   const sortableColumns = ['product_type', 'category', 'name', 'design', 'size', 'quantity', 'selling_price', 'totalValue'];
 
+  // Color name to CSS color mapping
+  const getColorCode = (colorName) => {
+    if (!colorName) return '#cccccc';
+    
+    const colorMap = {
+      // Basic colors
+      'black': '#000000',
+      'white': '#FFFFFF',
+      'red': '#FF0000',
+      'blue': '#0000FF',
+      'green': '#008000',
+      'yellow': '#FFFF00',
+      'orange': '#FFA500',
+      'purple': '#800080',
+      'pink': '#FFC0CB',
+      'brown': '#A52A2A',
+      'gray': '#808080',
+      'grey': '#808080',
+      
+      // Extended colors
+      'navy': '#000080',
+      'navy blue': '#000080',
+      'maroon': '#800000',
+      'olive': '#808000',
+      'olive green': '#556B2F',
+      'lime': '#00FF00',
+      'aqua': '#00FFFF',
+      'teal': '#008080',
+      'silver': '#C0C0C0',
+      'gold': '#FFD700',
+      'beige': '#F5F5DC',
+      'tan': '#D2B48C',
+      'khaki': '#F0E68C',
+      'cyan': '#00FFFF',
+      'magenta': '#FF00FF',
+      'indigo': '#4B0082',
+      'violet': '#EE82EE',
+      'turquoise': '#40E0D0',
+      'coral': '#FF7F50',
+      'salmon': '#FA8072',
+      'peach': '#FFE5B4',
+      'mint': '#98FF98',
+      'lavender': '#E6E6FA',
+      'crimson': '#DC143C',
+      'burgundy': '#800020',
+      
+      // Light shades
+      'light blue': '#ADD8E6',
+      'light green': '#90EE90',
+      'light gray': '#D3D3D3',
+      'light grey': '#D3D3D3',
+      'light pink': '#FFB6C1',
+      'light yellow': '#FFFFE0',
+      'light orange': '#FFE4B5',
+      'light purple': '#DDA0DD',
+      
+      // Dark shades
+      'dark blue': '#00008B',
+      'dark green': '#006400',
+      'dark red': '#8B0000',
+      'dark gray': '#A9A9A9',
+      'dark grey': '#A9A9A9',
+      'dark brown': '#654321',
+      'dark purple': '#301934',
+      'dark orange': '#FF8C00'
+    };
+    
+    const normalizedColor = colorName.toLowerCase().trim();
+    return colorMap[normalizedColor] || colorName;
+  };
+
   // Group data by product (everything except size, warehouse, selling_price, mrp)
   const groupedData = useMemo(() => {
     const groups = {};
