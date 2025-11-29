@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const Settings = ({ user, onLogout }) => {
+const Settings = ({ user, onLogout, onNavigateToDashboard }) => {
   const [activeTab, setActiveTab] = useState('brands');
   const [masterData, setMasterData] = useState({
     brands: [],
