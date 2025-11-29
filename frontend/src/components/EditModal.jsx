@@ -264,15 +264,26 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
       
       if (response.ok) {
         const allItems = await response.json();
-        // Filter items that match the base SKU and same warehouse
+        // Filter items that match: same brand, category, warehouse, and product name
         const warehouseVariants = allItems.filter(item => {
-          // Check if item's SKU starts with base SKU and is from same warehouse
-          return item.sku.startsWith(baseSku) && 
+          // Extract base SKU from each item for comparison
+          const itemBaseSku = item.sku.split('-')[0];
+          
+          // Items are variants if they share:
+          // 1. Same base SKU pattern (first part before dash)
+          // 2. Same warehouse
+          // 3. Same brand
+          // 4. Same category
+          // 5. Same product name
+          return itemBaseSku === baseSku && 
                  item.warehouse === formData.warehouse &&
+                 item.brand === formData.brand &&
+                 item.category === formData.category &&
                  item.name === formData.name;
         });
         
         console.log('Found variants:', warehouseVariants.length);
+        console.log('Variants:', warehouseVariants.map(v => `${v.sku} (${v.size})`));
         setExistingVariants(warehouseVariants);
       } else {
         setExistingVariants([]);
