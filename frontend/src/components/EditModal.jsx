@@ -425,11 +425,17 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
           // 2. Same brand
           // 3. Same category
           // 4. Same product name
-          // Note: We're NOT filtering by warehouse anymore to show all variants
+          // 5. Same color (color is a product attribute, not a variant)
+          // 6. Same design
+          // 7. Same material
+          // Note: Size and warehouse can differ (those make it a variant)
           return itemBaseSku === baseSku && 
                  item.brand === formData.brand &&
                  item.category === formData.category &&
-                 item.name === formData.name;
+                 item.name === formData.name &&
+                 item.color === formData.color &&
+                 item.design === formData.design &&
+                 item.fabric_specs?.material === formData.fabric_specs?.material;
         });
         
         console.log('Found variants across all warehouses:', allVariants.length);
