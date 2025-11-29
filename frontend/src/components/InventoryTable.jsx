@@ -16,13 +16,19 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
   // Sortable columns
   const sortableColumns = ['product_type', 'category', 'name', 'design', 'size', 'quantity', 'selling_price', 'totalValue'];
 
-  // Group data by product (everything except size)
+  // Group data by product (everything except size, warehouse, selling_price, mrp)
   const groupedData = useMemo(() => {
     const groups = {};
     
     data.forEach(item => {
-      // Create a unique key for each product group (excluding size)
-      const groupKey = `${item.product_type || 'Clothing'}-${item.category}-${item.name}-${item.design}`;
+      // Create a unique key for each product group
+      // Include: product_type, category, name, design, color, material, gender
+      // Exclude: size, warehouse, selling_price, mrp (these create variants)
+      const material = item.fabric_specs?.material || '';
+      const color = item.color || '';
+      const gender = item.gender || '';
+      
+      const groupKey = `${item.product_type || 'Clothing'}-${item.category}-${item.name}-${item.design}-${color}-${material}-${gender}`;
       
       if (!groups[groupKey]) {
         groups[groupKey] = {
@@ -31,6 +37,9 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
           category: item.category,
           name: item.name,
           design: item.design,
+          color: color,
+          material: material,
+          gender: gender,
           variants: []
         };
       }
