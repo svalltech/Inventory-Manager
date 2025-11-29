@@ -214,43 +214,6 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
   }, [formData.category, formData.product_type, propProductHierarchy]);
 
-  // Legacy code kept for backwards compatibility
-  useEffect(() => {
-    const fetchFilteredProductNames = async () => {
-      if (formData.product_type && formData.category) {
-        try {
-          const token = localStorage.getItem('authToken');
-          const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-          const response = await fetch(`${BACKEND_URL}/api/inventory`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          
-          if (response.ok) {
-            const allItems = await response.json();
-            // Filter and get unique product names for this product_type and category
-            const names = [...new Set(
-              allItems
-                .filter(item => 
-                  item.product_type === formData.product_type && 
-                  item.category === formData.category
-                )
-                .map(item => item.name)
-            )].sort();
-            
-            setFilteredProductNames(names);
-          }
-        } catch (error) {
-          console.error('Error fetching product names:', error);
-          setFilteredProductNames([]);
-        }
-      } else {
-        setFilteredProductNames([]);
-      }
-    };
-
-    fetchFilteredProductNames();
-  }, [formData.product_type, formData.category]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name.startsWith('fabric_')) {
