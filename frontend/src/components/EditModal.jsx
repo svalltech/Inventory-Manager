@@ -474,6 +474,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
         const dataToSave = {
           ...formData,
           id: undefined, // Ensure new item creation
+          warehouse: variant.warehouse, // Use the selected warehouse for this variant
           sku: uniqueSku,
           size: variant.size,
           quantity: parseInt(variant.quantity),
