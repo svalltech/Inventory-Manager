@@ -242,19 +242,19 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
               <td colSpan="5" className="px-4 py-3 text-sm font-bold text-slate-800 text-right">
                 TOTALS:
               </td>
-              <td className="px-6 py-4 text-sm font-bold text-slate-900">
+              <td className="px-4 py-3 text-sm font-bold text-slate-900">
                 {totals.totalQuantity.toLocaleString('en-IN')}
               </td>
-              <td className="px-6 py-4 text-sm font-bold text-slate-500">
+              <td className="px-4 py-3 text-sm font-bold text-slate-500">
                 -
               </td>
-              <td className="px-6 py-4 text-sm font-bold text-blue-600">
+              <td className="px-4 py-3 text-sm font-bold text-blue-600">
                 ₹{Math.round(totals.totalValue).toLocaleString('en-IN')}
               </td>
-              <td className="px-6 py-4"></td>
+              <td className="px-4 py-3"></td>
             </tr>
             <tr>
-              <td colSpan="12" className="px-6 py-3 text-sm text-slate-600 bg-slate-50">
+              <td colSpan="9" className="px-4 py-3 text-sm text-slate-600 bg-slate-50">
                 Showing <span className="font-semibold">{startIndex + 1}</span> to{' '}
                 <span className="font-semibold">{Math.min(endIndex, filteredAndSortedData.length)}</span> of{' '}
                 <span className="font-semibold">{filteredAndSortedData.length}</span> entries
