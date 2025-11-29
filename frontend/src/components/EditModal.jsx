@@ -182,23 +182,24 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
 
   // Update filtered product names when category changes
   useEffect(() => {
-    console.log('Filtering product names:', {
-      product_type: formData.product_type,
-      category: formData.category,
-      hierarchy: productHierarchy,
-      hasProductType: !!productHierarchy[formData.product_type],
-      hasCategory: productHierarchy[formData.product_type]?.[formData.category]
-    });
+    console.log('=== FILTERING PRODUCT NAMES ===');
+    console.log('Product Type:', formData.product_type);
+    console.log('Category:', formData.category);
+    console.log('Product Hierarchy:', productHierarchy);
+    console.log('Hierarchy keys:', Object.keys(productHierarchy));
     
     if (formData.product_type && formData.category && productHierarchy[formData.product_type]) {
+      console.log('Categories in', formData.product_type, ':', Object.keys(productHierarchy[formData.product_type]));
       const productNames = productHierarchy[formData.product_type][formData.category] || [];
-      console.log('Setting filtered product names:', productNames);
+      console.log('Product names for', formData.category, ':', productNames);
       setFilteredProductNames(productNames);
     } else {
-      console.log('Resetting filtered product names');
+      console.log('Condition not met, resetting filtered product names');
+      console.log('Has product type?', !!formData.product_type);
+      console.log('Has category?', !!formData.category);
+      console.log('Has hierarchy for product type?', !!productHierarchy[formData.product_type]);
       setFilteredProductNames([]);
     }
-    // Reset product name when category changes (but only if we're changing it, not on first render)
   }, [formData.category, formData.product_type, productHierarchy]);
 
   // Legacy code kept for backwards compatibility
