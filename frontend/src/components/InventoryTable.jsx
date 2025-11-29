@@ -278,7 +278,22 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                       <td className="px-3 py-3 text-sm text-slate-600">{group.product_type}</td>
                       <td className="px-3 py-3 text-sm text-slate-900">{group.category}</td>
                       <td className="px-3 py-3 text-sm font-medium text-slate-900">{group.name}</td>
-                      <td className="px-3 py-3 text-sm text-slate-600">{group.design}</td>
+                      <td className="px-3 py-3 text-sm text-slate-600">
+                        <div className="flex items-center gap-2">
+                          {group.color && (
+                            <div className="relative group/color">
+                              <div 
+                                className="w-5 h-5 rounded border-2 border-slate-300 shadow-sm cursor-help"
+                                style={{ backgroundColor: group.color.toLowerCase() }}
+                              />
+                              <div className="invisible group-hover/color:visible absolute left-0 top-7 z-50 px-2 py-1 bg-slate-800 text-white text-xs rounded shadow-lg whitespace-nowrap">
+                                {group.color}
+                              </div>
+                            </div>
+                          )}
+                          <span>{group.design}</span>
+                        </div>
+                      </td>
                       <td className="px-3 py-3 text-sm text-slate-600">
                         <button
                           onClick={() => setExpandedGroups(prev => new Set([...prev, group.key]))}
