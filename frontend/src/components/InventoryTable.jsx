@@ -116,8 +116,8 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
+      <div className="overflow-hidden">
+        <table className="w-full table-fixed">
           <thead className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200">
             {/* Header Row with Sort Icons */}
             <tr>
