@@ -29,11 +29,15 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   const [showNewWarehouseInput, setShowNewWarehouseInput] = useState(false);
   const [showNewProductTypeInput, setShowNewProductTypeInput] = useState(false);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [showNewProductNameInput, setShowNewProductNameInput] = useState(false);
   const [showNewSizeInput, setShowNewSizeInput] = useState(false);
   const [showNewColorInput, setShowNewColorInput] = useState(false);
   const [showNewMaterialInput, setShowNewMaterialInput] = useState(false);
   const [showNewDesignInput, setShowNewDesignInput] = useState(false);
   const [showNewWeightInput, setShowNewWeightInput] = useState(false);
+  
+  // Filtered product names based on product type and category
+  const [filteredProductNames, setFilteredProductNames] = useState([]);
 
   // Variants modal state
   const [showVariantsModal, setShowVariantsModal] = useState(false);
