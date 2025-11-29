@@ -1211,8 +1211,8 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                 </h3>
                 <p className="text-sm text-slate-600 mb-4">
                   {existingVariants.length > 0 
-                    ? 'Add new sizes below. Already existing sizes are disabled in the dropdown.'
-                    : 'Add size variants for this product. All fields are pre-filled but can be edited.'}
+                    ? 'Add new size variants below. You can select a different warehouse for each variant. Same size can exist in different warehouses.'
+                    : 'Add size variants for this product. All fields are pre-filled but can be edited. You can select a different warehouse for each variant.'}
                 </p>
                 
                 {newVariants.length > 0 && (
@@ -1221,6 +1221,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                       <thead className="bg-blue-50">
                         <tr>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Size *</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Warehouse *</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Quantity *</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">Selling Price (₹) *</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700">MRP (₹) *</th>
@@ -1231,10 +1232,6 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                       </thead>
                       <tbody>
                         {newVariants.map((row, index) => {
-                          const existingSizes = existingVariants.map(v => v.size);
-                          const usedSizes = newVariants.slice(0, index).map(v => v.size).filter(Boolean);
-                          const disabledSizes = [...existingSizes, ...usedSizes];
-                          
                           return (
                             <tr key={index} className="border-t border-slate-200">
                               <td className="px-4 py-3">
@@ -1249,9 +1246,23 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                                     <option 
                                       key={size} 
                                       value={size}
-                                      disabled={disabledSizes.includes(size)}
                                     >
-                                      {size} {disabledSizes.includes(size) ? '(Already exists)' : ''}
+                                      {size}
+                                    </option>
+                                  ))}
+                                </select>
+                              </td>
+                              <td className="px-4 py-3">
+                                <select
+                                  value={row.warehouse}
+                                  onChange={(e) => handleNewVariantChange(index, 'warehouse', e.target.value)}
+                                  required
+                                  className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                                >
+                                  <option value="">-- Select Warehouse --</option>
+                                  {warehouses.map(warehouse => (
+                                    <option key={warehouse} value={warehouse}>
+                                      {warehouse}
                                     </option>
                                   ))}
                                 </select>
