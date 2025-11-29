@@ -378,6 +378,7 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
           materials={materials}
           designs={designs}
           weights={weights}
+          productHierarchy={productHierarchy}
           onClose={() => setShowModal(false)}
           onSave={handleSaveItem}
         />
