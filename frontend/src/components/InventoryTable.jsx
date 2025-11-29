@@ -460,7 +460,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                               <div className="relative group/color">
                                 <div 
                                   className="w-5 h-5 rounded border-2 border-slate-300 shadow-sm cursor-help"
-                                  style={{ backgroundColor: item.color.toLowerCase() }}
+                                  style={{ backgroundColor: getColorCode(item.color) }}
                                 />
                                 <div className="invisible group-hover/color:visible absolute left-0 top-7 z-50 px-2 py-1 bg-slate-800 text-white text-xs rounded shadow-lg whitespace-nowrap">
                                   {item.color}
