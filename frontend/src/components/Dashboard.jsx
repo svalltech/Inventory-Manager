@@ -9,7 +9,7 @@ import ImportModal from './ImportModal';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const Dashboard = ({ user, onLogout }) => {
+const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
   const [inventory, setInventory] = useState([]);
   const [filteredInventory, setFilteredInventory] = useState([]);
   const [brands, setBrands] = useState([]);
