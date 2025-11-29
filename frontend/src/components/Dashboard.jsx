@@ -223,14 +223,33 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
         }
       );
 
-      toast.success(
-        `Import complete! Inserted: ${response.data.inserted}, Updated: ${response.data.updated}, Failed: ${response.data.failed}`
-      );
+      const { inserted, updated, failed, errors, total_rows } = response.data;
+
+      // Show detailed results
+      if (failed > 0) {
+        // Show error details
+        const errorMessages = errors.slice(0, 5).map(err => 
+          `Row ${err.row}: ${err.error}`
+        ).join('\n');
+        
+        const moreErrors = errors.length > 5 ? `\n... and ${errors.length - 5} more errors` : '';
+        
+        toast.error(
+          `Import partially completed!\n✅ Inserted: ${inserted}, Updated: ${updated}\n❌ Failed: ${failed} out of ${total_rows}\n\nFirst errors:\n${errorMessages}${moreErrors}`,
+          { duration: 10000 }
+        );
+      } else {
+        toast.success(
+          `Import successful! 🎉\n✅ Inserted: ${inserted}\n✅ Updated: ${updated}\n📊 Total: ${total_rows} rows processed`,
+          { duration: 5000 }
+        );
+      }
       
       setShowImportModal(false);
       fetchData(); // Refresh data
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Import failed');
+      console.error('Import error:', error);
+      toast.error(error.response?.data?.detail || 'Import failed. Please check the file format and try again.');
     }
   };
 
