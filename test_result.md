@@ -163,15 +163,18 @@ backend:
 frontend:
   - task: "Inline search in table columns"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/InventoryTable.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added search inputs in each column header with client-side filtering. Uses columnFilters state to filter data locally."
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Inline search functionality working correctly. Table displays inventory items with search inputs in column headers (Product Type, Category, Product Name, Design, Size, Quantity, Selling Price). Client-side filtering implemented and functional."
 
   - task: "Enhanced EditModal with all dropdowns"
     implemented: true
