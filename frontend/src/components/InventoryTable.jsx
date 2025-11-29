@@ -13,7 +13,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
   });
 
   // Sortable columns
-  const sortableColumns = ['product_type', 'category', 'name', 'sku', 'brand', 'warehouse', 'design', 'size', 'quantity', 'selling_price', 'totalValue'];
+  const sortableColumns = ['product_type', 'category', 'name', 'design', 'size', 'quantity', 'selling_price', 'totalValue'];
 
   // Apply column filters first, then sort
   const filteredAndSortedData = useMemo(() => {
