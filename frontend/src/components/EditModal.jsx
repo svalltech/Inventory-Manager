@@ -30,6 +30,12 @@ const generateSKU = (data) => {
       case 'color':
         return val;
       case 'size': {
+        // Extract number from parentheses first (e.g., "2XL(46)" -> "46")
+        const match = val.match(/\((\d+)\)/);
+        if (match) {
+          return match[1];
+        }
+        // If no parentheses, extract all numbers
         const numbers = val.replace(/[^0-9]/g, '');
         return numbers || val;
       }
