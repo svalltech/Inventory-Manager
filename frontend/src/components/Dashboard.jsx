@@ -21,6 +21,7 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
   const [materials, setMaterials] = useState([]);
   const [designs, setDesigns] = useState([]);
   const [weights, setWeights] = useState([]);
+  const [productHierarchy, setProductHierarchy] = useState({});
   const [loading, setLoading] = useState(true);
   
   // Filters
