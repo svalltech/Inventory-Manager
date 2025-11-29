@@ -210,20 +210,22 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
     }
     
     try {
-      // Extract base SKU by removing size suffix
-      // SKU format: "MESH TRACKPANT-M40" -> base: "MESH TRACKPANT"
-      // Remove patterns like -XS36, -S38, -M40, -L42, -XL44, -2XL46, -M-40, -L-42, etc.
+      // Extract base SKU by removing size suffix and any descriptive suffix
+      // Examples:
+      // "UB-Shorts" -> "UB"
+      // "UB-L42" -> "UB"
+      // "MESH TRACKPANT-M40" -> "MESH TRACKPANT"
+      // "MT-M40" -> "MT"
+      
       let baseSku = formData.sku;
       
-      // Remove size patterns: -XS36, -S38, -M40, -L42, -XL44, -2XL46
+      // First, remove known size patterns from the end
       baseSku = baseSku.replace(/-XS\(?36\)?$/i, '');
       baseSku = baseSku.replace(/-S\(?38\)?$/i, '');
       baseSku = baseSku.replace(/-M\(?40\)?$/i, '');
       baseSku = baseSku.replace(/-L\(?42\)?$/i, '');
       baseSku = baseSku.replace(/-XL\(?44\)?$/i, '');
       baseSku = baseSku.replace(/-2XL\(?46\)?$/i, '');
-      
-      // Also handle patterns with dashes: -M-40, -L-42, -XL-44, -2XL-46, -XS-36, -S-38
       baseSku = baseSku.replace(/-XS-36$/i, '');
       baseSku = baseSku.replace(/-S-38$/i, '');
       baseSku = baseSku.replace(/-M-40$/i, '');
@@ -231,8 +233,27 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
       baseSku = baseSku.replace(/-XL-44$/i, '');
       baseSku = baseSku.replace(/-2XL-46$/i, '');
       
+      // If SKU still has dashes, check if it's a descriptive part or brand code
+      // For SKUs like "UB-Shorts", we want base as "UB"
+      // For SKUs like "NIKE-TS-M40", we want base as "NIKE-TS"
+      // Strategy: If there's only ONE dash left and the part after is a word (not a size code),
+      // it's likely a category/description that should be part of the base
+      
+      // However, we should use Brand + Category as the real identifier
+      // So let's create a more robust base using multiple fields
+      const brand = formData.brand.replace(/\s+/g, '-').toUpperCase();
+      const category = formData.category.replace(/\s+/g, '-').toUpperCase();
+      
+      // Use first part of SKU (before first dash) if it matches brand initial or use brand
+      const skuFirstPart = baseSku.split('-')[0];
+      
+      // Create a standardized base: use SKU first part or Brand initial
+      baseSku = skuFirstPart;
+      
       console.log('Original SKU:', formData.sku);
-      console.log('Base SKU:', baseSku);
+      console.log('Extracted Base SKU:', baseSku);
+      console.log('Brand:', formData.brand);
+      console.log('Category:', formData.category);
       
       // Fetch all inventory items and filter by base SKU pattern
       const token = localStorage.getItem('authToken');
