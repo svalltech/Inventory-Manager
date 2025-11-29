@@ -1189,53 +1189,6 @@ async def update_master_data(field_name: str, old_value: str, request: dict, cur
     
     return {"message": f"Updated successfully", "modified_count": result.modified_count}
 
-# Delete master data value
-@api_router.delete("/master-data/{field_name}/{value}")
-async def delete_master_data(field_name: str, value: str, current_user: dict = Depends(get_current_user)):
-    """Delete a master data value"""
-    if current_user["role"] != "admin":
-        raise HTTPException(status_code=403, detail="Only admins can manage master data")
-    
-    valid_fields = ["brands", "warehouses", "product_types", "categories", "product_names", "designs", "colors", "sizes", "materials", "weights"]
-    if field_name not in valid_fields:
-        raise HTTPException(status_code=400, detail="Invalid field name")
-    
-    # Check if value is used in inventory
-    field_mapping = {
-        "brands": "brand",
-        "warehouses": "warehouse",
-        "product_types": "product_type",
-        "categories": "category",
-        "product_names": "name",
-        "designs": "design",
-        "colors": "color",
-        "sizes": "size",
-        "materials": "fabric_specs.material",
-        "weights": "fabric_specs.weight"
-    }
-    
-    db_field = field_mapping[field_name]
-    
-    if field_name in ["materials", "weights"]:
-        field_key = db_field.split(".")[1]
-        count = await db.inventory.count_documents({f"fabric_specs.{field_key}": value})
-    else:
-        count = await db.inventory.count_documents({db_field: value})
-    
-    if count > 0:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Cannot delete '{value}' as it is used by {count} inventory item(s). Please update or delete those items first."
-        )
-    
-    # Remove from master data
-    await db.master_data.update_one(
-        {"_id": "master_data"},
-        {"$pull": {field_name: value}}
-    )
-    
-    return {"message": f"Value '{value}' deleted successfully"}
-
 # ==================== PRODUCT HIERARCHY MANAGEMENT ====================
 
 # Add category to product type
@@ -1351,6 +1304,53 @@ async def delete_from_hierarchy(
     )
     
     return {"message": "Deleted successfully"}
+# Delete master data value
+@api_router.delete("/master-data/{field_name}/{value}")
+async def delete_master_data(field_name: str, value: str, current_user: dict = Depends(get_current_user)):
+    """Delete a master data value"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can manage master data")
+    
+    valid_fields = ["brands", "warehouses", "product_types", "categories", "product_names", "designs", "colors", "sizes", "materials", "weights"]
+    if field_name not in valid_fields:
+        raise HTTPException(status_code=400, detail="Invalid field name")
+    
+    # Check if value is used in inventory
+    field_mapping = {
+        "brands": "brand",
+        "warehouses": "warehouse",
+        "product_types": "product_type",
+        "categories": "category",
+        "product_names": "name",
+        "designs": "design",
+        "colors": "color",
+        "sizes": "size",
+        "materials": "fabric_specs.material",
+        "weights": "fabric_specs.weight"
+    }
+    
+    db_field = field_mapping[field_name]
+    
+    if field_name in ["materials", "weights"]:
+        field_key = db_field.split(".")[1]
+        count = await db.inventory.count_documents({f"fabric_specs.{field_key}": value})
+    else:
+        count = await db.inventory.count_documents({db_field: value})
+    
+    if count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot delete '{value}' as it is used by {count} inventory item(s). Please update or delete those items first."
+        )
+    
+    # Remove from master data
+    await db.master_data.update_one(
+        {"_id": "master_data"},
+        {"$pull": {field_name: value}}
+    )
+    
+    return {"message": f"Value '{value}' deleted successfully"}
+
 
 # Health check
 @api_router.get("/health")
