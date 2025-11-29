@@ -58,6 +58,9 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
 
       // Fetch master data from new endpoint
       const masterDataRes = await axios.get(`${API}/master-data`, { headers });
+      console.log('=== DASHBOARD: Fetched master data ===');
+      console.log('Product Hierarchy from API:', masterDataRes.data.product_hierarchy);
+      
       setBrands(masterDataRes.data.brands || []);
       setWarehouses(masterDataRes.data.warehouses || []);
       setProductTypes(masterDataRes.data.product_types || []);
@@ -67,7 +70,12 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
       setMaterials(masterDataRes.data.materials || []);
       setDesigns(masterDataRes.data.designs || []);
       setWeights(masterDataRes.data.weights || []);
-      setProductHierarchy(masterDataRes.data.product_hierarchy || {});
+      
+      const hierarchy = masterDataRes.data.product_hierarchy || {};
+      console.log('=== DASHBOARD: Setting product hierarchy ===');
+      console.log('Hierarchy to set:', hierarchy);
+      console.log('Hierarchy keys:', Object.keys(hierarchy));
+      setProductHierarchy(hierarchy);
 
       setLoading(false);
     } catch (error) {
