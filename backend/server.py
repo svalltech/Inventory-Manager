@@ -1048,7 +1048,7 @@ async def export_inventory(
 
 # Get all master data
 @api_router.get("/master-data")
-async def get_master_data(current_user: dict = Depends(verify_token)):
+async def get_master_data(current_user: dict = Depends(get_current_user)):
     """Get all master data for dropdowns"""
     try:
         # Get unique values from inventory
