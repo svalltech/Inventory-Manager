@@ -67,6 +67,7 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
       setMaterials(masterDataRes.data.materials || []);
       setDesigns(masterDataRes.data.designs || []);
       setWeights(masterDataRes.data.weights || []);
+      setProductHierarchy(masterDataRes.data.product_hierarchy || {});
 
       setLoading(false);
     } catch (error) {
