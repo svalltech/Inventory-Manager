@@ -362,7 +362,22 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                             <span className="ml-2 text-xs text-slate-500">({group.variants.length} variants)</span>
                           )}
                         </td>
-                        <td className="px-3 py-3 text-sm text-slate-600">{item.design}</td>
+                        <td className="px-3 py-3 text-sm text-slate-600">
+                          <div className="flex items-center gap-2">
+                            {item.color && (
+                              <div className="relative group/color">
+                                <div 
+                                  className="w-5 h-5 rounded border-2 border-slate-300 shadow-sm cursor-help"
+                                  style={{ backgroundColor: item.color.toLowerCase() }}
+                                />
+                                <div className="invisible group-hover/color:visible absolute left-0 top-7 z-50 px-2 py-1 bg-slate-800 text-white text-xs rounded shadow-lg whitespace-nowrap">
+                                  {item.color}
+                                </div>
+                              </div>
+                            )}
+                            <span>{item.design}</span>
+                          </div>
+                        </td>
                         <td className="px-3 py-3 text-sm text-slate-600">
                           {hasMultipleVariants && isFirstVariant ? (
                             <button
