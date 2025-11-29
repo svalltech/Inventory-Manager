@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 # Configuration
-BASE_URL = "https://gear-inventory-hub.preview.emergentagent.com/api"
+BASE_URL = "https://sportswear-inventory.preview.emergentagent.com/api"
 TEST_CREDENTIALS = {
     "email": "admin@inventory.com",
     "password": "admin123"
