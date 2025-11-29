@@ -239,7 +239,7 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
           {/* Totals Footer */}
           <tfoot className="bg-slate-100 border-t-2 border-slate-300">
             <tr>
-              <td colSpan="8" className="px-6 py-4 text-sm font-bold text-slate-800 text-right">
+              <td colSpan="5" className="px-4 py-3 text-sm font-bold text-slate-800 text-right">
                 TOTALS:
               </td>
               <td className="px-6 py-4 text-sm font-bold text-slate-900">
