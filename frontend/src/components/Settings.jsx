@@ -25,11 +25,10 @@ const Settings = ({ user, onLogout, onNavigateToDashboard }) => {
   const [editingItem, setEditingItem] = useState(null);
 
   const tabs = [
+    { key: 'hierarchy', label: 'Product Hierarchy', icon: '🌳' },
     { key: 'brands', label: 'Brands', icon: '🏷️' },
     { key: 'warehouses', label: 'Warehouses', icon: '🏭' },
     { key: 'product_types', label: 'Product Types', icon: '📦' },
-    { key: 'categories', label: 'Categories', icon: '📂' },
-    { key: 'product_names', label: 'Product Names', icon: '🏷️' },
     { key: 'designs', label: 'Designs', icon: '🎨' },
     { key: 'colors', label: 'Colors', icon: '🌈' },
     { key: 'sizes', label: 'Sizes', icon: '📏' },
