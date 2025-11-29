@@ -1148,7 +1148,7 @@ async def update_master_data(field_name: str, old_value: str, request: dict, cur
 
 # Delete master data value
 @api_router.delete("/master-data/{field_name}/{value}")
-async def delete_master_data(field_name: str, value: str, current_user: dict = Depends(verify_token)):
+async def delete_master_data(field_name: str, value: str, current_user: dict = Depends(get_current_user)):
     """Delete a master data value (marks items as inactive)"""
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Only admins can manage master data")
