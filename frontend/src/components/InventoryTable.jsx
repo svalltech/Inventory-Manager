@@ -230,64 +230,153 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
-            {currentData.length === 0 ? (
+            {filteredGroups.length === 0 ? (
               <tr>
                 <td colSpan="9" className="px-4 py-12 text-center text-slate-500">
                   No inventory items found
                 </td>
               </tr>
             ) : (
-              currentData.map((item, index) => {
-                const isLowStock = item.quantity <= (item.low_stock_threshold || 10);
-                return (
-                  <tr 
-                    key={item.id} 
-                    className={`transition ${
-                      isLowStock 
-                        ? 'bg-orange-50 hover:bg-orange-100' 
-                        : 'hover:bg-slate-50'
-                    }`}
-                  >
-                    <td className="px-3 py-3 text-sm text-slate-600">{item.product_type || 'Clothing'}</td>
-                    <td className="px-3 py-3 text-sm text-slate-900">{item.category}</td>
-                    <td className="px-3 py-3 text-sm font-medium text-slate-900">{item.name}</td>
-                    <td className="px-3 py-3 text-sm text-slate-600">{item.design}</td>
-                    <td className="px-3 py-3 text-sm text-slate-600">{item.size}</td>
-                    <td className="px-3 py-3 text-sm">
-                      <span className={`font-semibold ${isLowStock ? 'text-orange-700' : 'text-slate-900'}`}>
-                        {item.quantity}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 text-sm text-slate-900 font-medium">
-                      ₹{item.selling_price.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                    </td>
-                    <td className="px-3 py-3 text-sm text-slate-900 font-bold">
-                      ₹{(item.quantity * item.selling_price).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex space-x-1">
+              filteredGroups.map((group, groupIndex) => {
+                const isExpanded = expandedGroups.has(group.key);
+                const hasMultipleVariants = group.variants.length > 1;
+                
+                // Calculate aggregated values
+                const totalQuantity = group.variants.reduce((sum, v) => sum + v.quantity, 0);
+                const minPrice = Math.min(...group.variants.map(v => v.selling_price));
+                const maxPrice = Math.max(...group.variants.map(v => v.selling_price));
+                const totalValue = group.variants.reduce((sum, v) => sum + (v.quantity * v.selling_price), 0);
+                const hasLowStock = group.variants.some(v => v.quantity <= (v.low_stock_threshold || 10));
+                
+                // Color scheme for grouped items
+                const groupColors = [
+                  'bg-blue-50 hover:bg-blue-100',
+                  'bg-purple-50 hover:bg-purple-100',
+                  'bg-green-50 hover:bg-green-100',
+                  'bg-yellow-50 hover:bg-yellow-100',
+                  'bg-pink-50 hover:bg-pink-100',
+                  'bg-indigo-50 hover:bg-indigo-100'
+                ];
+                const groupColor = groupColors[groupIndex % groupColors.length];
+                
+                if (!isExpanded && hasMultipleVariants) {
+                  // Collapsed view - show aggregated data
+                  return (
+                    <tr 
+                      key={group.key}
+                      className={`transition ${hasLowStock ? 'bg-orange-50 hover:bg-orange-100' : groupColor}`}
+                    >
+                      <td className="px-3 py-3 text-sm text-slate-600">{group.product_type}</td>
+                      <td className="px-3 py-3 text-sm text-slate-900">{group.category}</td>
+                      <td className="px-3 py-3 text-sm font-medium text-slate-900">{group.name}</td>
+                      <td className="px-3 py-3 text-sm text-slate-600">{group.design}</td>
+                      <td className="px-3 py-3 text-sm text-slate-600">
                         <button
-                          onClick={() => onEdit(item)}
-                          title="Edit item"
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                          onClick={() => setExpandedGroups(prev => new Set([...prev, group.key]))}
+                          className="flex items-center space-x-1 hover:text-blue-600 transition"
                         >
+                          <span className="font-medium">{group.variants[0].size}</span>
+                          <span className="text-xs text-slate-500">+{group.variants.length - 1}</span>
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </button>
-                        <button
-                          onClick={() => onDelete(item)}
-                          title="Delete item"
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
+                      </td>
+                      <td className="px-3 py-3 text-sm">
+                        <span className={`font-semibold ${hasLowStock ? 'text-orange-700' : 'text-slate-900'}`}>
+                          {totalQuantity}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-sm text-slate-900 font-medium">
+                        {minPrice === maxPrice 
+                          ? `₹${minPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+                          : `₹${minPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} - ₹${maxPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+                        }
+                      </td>
+                      <td className="px-3 py-3 text-sm text-slate-900 font-bold">
+                        ₹{totalValue.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="text-xs text-slate-500">{group.variants.length} items</span>
+                      </td>
+                    </tr>
+                  );
+                } else {
+                  // Expanded view or single variant - show individual rows
+                  return group.variants.map((item, variantIndex) => {
+                    const isLowStock = item.quantity <= (item.low_stock_threshold || 10);
+                    const isFirstVariant = variantIndex === 0;
+                    
+                    return (
+                      <tr 
+                        key={item.id}
+                        className={`transition ${hasLowStock ? 'bg-orange-50 hover:bg-orange-100' : groupColor}`}
+                      >
+                        <td className="px-3 py-3 text-sm text-slate-600">{item.product_type || 'Clothing'}</td>
+                        <td className="px-3 py-3 text-sm text-slate-900">{item.category}</td>
+                        <td className="px-3 py-3 text-sm font-medium text-slate-900">
+                          {item.name}
+                          {hasMultipleVariants && isFirstVariant && (
+                            <span className="ml-2 text-xs text-slate-500">({group.variants.length} variants)</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 text-sm text-slate-600">{item.design}</td>
+                        <td className="px-3 py-3 text-sm text-slate-600">
+                          {hasMultipleVariants && isFirstVariant ? (
+                            <button
+                              onClick={() => setExpandedGroups(prev => {
+                                const newSet = new Set(prev);
+                                newSet.delete(group.key);
+                                return newSet;
+                              })}
+                              className="flex items-center space-x-1 hover:text-blue-600 transition"
+                            >
+                              <span className="font-medium">{item.size}</span>
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                              </svg>
+                            </button>
+                          ) : (
+                            <span>{item.size}</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 text-sm">
+                          <span className={`font-semibold ${isLowStock ? 'text-orange-700' : 'text-slate-900'}`}>
+                            {item.quantity}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 text-sm text-slate-900 font-medium">
+                          ₹{item.selling_price.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </td>
+                        <td className="px-3 py-3 text-sm text-slate-900 font-bold">
+                          ₹{(item.quantity * item.selling_price).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </td>
+                        <td className="px-3 py-3">
+                          <div className="flex space-x-1">
+                            <button
+                              onClick={() => onEdit(item)}
+                              title="Edit item"
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => onDelete(item)}
+                              title="Delete item"
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  });
+                }
               })
             )}
           </tbody>
