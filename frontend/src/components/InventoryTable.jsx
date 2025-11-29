@@ -283,9 +283,27 @@ const InventoryTable = ({ data, entriesPerPage, currentPage, setCurrentPage, onE
                         </button>
                       </td>
                       <td className="px-3 py-3 text-sm">
-                        <span className={`font-semibold ${hasLowStock ? 'text-orange-700' : 'text-slate-900'}`}>
-                          {totalQuantity}
-                        </span>
+                        <div className="flex items-center space-x-1">
+                          <span className={`font-semibold ${hasLowStock ? 'text-orange-700' : 'text-slate-900'}`}>
+                            {totalQuantity}
+                          </span>
+                          {group.variants.length > 1 && (
+                            <div className="relative group/tooltip">
+                              <svg className="w-3.5 h-3.5 text-slate-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                              </svg>
+                              <div className="invisible group-hover/tooltip:visible absolute left-0 top-6 z-50 w-48 p-2 bg-slate-800 text-white text-xs rounded shadow-lg">
+                                <div className="font-semibold mb-1">Warehouses:</div>
+                                {group.variants.map((v, i) => (
+                                  <div key={i} className="flex justify-between py-0.5">
+                                    <span className="text-slate-300">{v.size}:</span>
+                                    <span>{v.warehouse}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-3 py-3 text-sm text-slate-900 font-medium">
                         {minPrice === maxPrice 
