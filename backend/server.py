@@ -1314,9 +1314,9 @@ async def add_product_name_to_category(request: dict, current_user: dict = Depen
 @api_router.delete("/master-data/hierarchy/{hierarchy_type}")
 async def delete_from_hierarchy(
     hierarchy_type: str, 
-    product_type: str = None,
-    category: str = None, 
-    product_name: str = None,
+    product_type: str = Query(None),
+    category: str = Query(None), 
+    product_name: str = Query(None),
     current_user: dict = Depends(get_current_user)
 ):
     """Delete category or product name from hierarchy"""
