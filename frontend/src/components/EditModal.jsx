@@ -93,8 +93,10 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
   const [showNewDesignInput, setShowNewDesignInput] = useState(false);
   const [showNewWeightInput, setShowNewWeightInput] = useState(false);
   
-  // Filtered product names based on product type and category
+  // Filtered data based on hierarchy
+  const [filteredCategories, setFilteredCategories] = useState([]);
   const [filteredProductNames, setFilteredProductNames] = useState([]);
+  const [productHierarchy, setProductHierarchy] = useState({});
 
   // Variants modal state
   const [showVariantsModal, setShowVariantsModal] = useState(false);
