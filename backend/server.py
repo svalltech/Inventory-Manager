@@ -1006,6 +1006,9 @@ async def import_inventory(
             updated=updated
         )
         
+    except HTTPException:
+        # Re-raise HTTP exceptions (like missing columns)
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to process Excel file: {str(e)}")
 
