@@ -9,7 +9,8 @@ const ExportModal = ({ onClose, onExport }) => {
   const [selectedFormat, setSelectedFormat] = useState('excel');
   const [selectedFields, setSelectedFields] = useState([
     'sku', 'name', 'brand', 'warehouse', 'product_type', 'category', 'gender', 
-    'size', 'design', 'color', 'material', 'mrp', 'selling_price', 'cost_price', 'quantity'
+    'size', 'design', 'color', 'color_code', 'material', 'weight', 'composition', 
+    'mrp', 'selling_price', 'cost_price', 'quantity', 'low_stock_threshold'
   ]);
   
   // Template management
