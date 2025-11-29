@@ -844,47 +844,6 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                 )}
               </div>
 
-              {/* OLD CODE - KEPT FOR BACKWARDS COMPATIBILITY */}
-              {false && showNewProductNameInput && (
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Enter new product name"
-                      required
-                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
-                    />
-                    {filteredProductNames.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowNewProductNameInput(false);
-                          setFormData(prev => ({ ...prev, name: '' }));
-                        }}
-                        className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-                      >
-                        ← Select from existing products
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <select
-                    value={formData.name}
-                    onChange={handleProductNameChange}
-                    required
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">-- Select Product Name --</option>
-                    {filteredProductNames.map(name => (
-                      <option key={name} value={name}>{name}</option>
-                    ))}
-                    <option value="__new__" className="font-semibold text-blue-600">➕ Add New Product</option>
-                  </select>
-                )}
-              </div>
-
               {/* 6. SKU - Auto-Generated */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
