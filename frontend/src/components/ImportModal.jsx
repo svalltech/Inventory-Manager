@@ -47,13 +47,13 @@ const ImportModal = ({ onClose, onImport }) => {
   };
 
   const requiredColumns = [
-    'sku', 'name', 'brand', 'warehouse', 'category', 'gender', 
+    'sku', 'name', 'brand', 'warehouse', 'product_type', 'category', 'gender', 
     'size', 'design', 'mrp', 'selling_price', 'quantity'
   ];
 
   const optionalColumns = [
     'color', 'color_code', 'material', 'weight', 'composition', 
-    'cost_price', 'low_stock_threshold', 'status'
+    'cost_price', 'low_stock_threshold', 'status', 'created_at', 'updated_at'
   ];
 
   return (
