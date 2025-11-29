@@ -1312,14 +1312,16 @@ async def add_product_name_to_category(request: dict, current_user: dict = Depen
 
 # Delete from hierarchy
 @api_router.delete("/master-data/hierarchy/{hierarchy_type}")
-async def delete_from_hierarchy(hierarchy_type: str, request: dict, current_user: dict = Depends(get_current_user)):
+async def delete_from_hierarchy(
+    hierarchy_type: str, 
+    product_type: str = None,
+    category: str = None, 
+    product_name: str = None,
+    current_user: dict = Depends(get_current_user)
+):
     """Delete category or product name from hierarchy"""
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Only admins can manage master data")
-    
-    product_type = request.get("product_type")
-    category = request.get("category")
-    product_name = request.get("product_name")
     
     master_doc = await db.master_data.find_one({"_id": "master_data"})
     if not master_doc:
@@ -1328,12 +1330,18 @@ async def delete_from_hierarchy(hierarchy_type: str, request: dict, current_user
     hierarchy = master_doc.get("product_hierarchy", {})
     
     if hierarchy_type == "category":
-        if product_type in hierarchy and category in hierarchy[product_type]:
+        if product_type and product_type in hierarchy and category and category in hierarchy[product_type]:
             del hierarchy[product_type][category]
+        else:
+            raise HTTPException(status_code=404, detail=f"Category '{category}' not found in '{product_type}'")
     elif hierarchy_type == "product_name":
-        if product_type in hierarchy and category in hierarchy[product_type]:
-            if product_name in hierarchy[product_type][category]:
+        if product_type and product_type in hierarchy and category and category in hierarchy[product_type]:
+            if product_name and product_name in hierarchy[product_type][category]:
                 hierarchy[product_type][category].remove(product_name)
+            else:
+                raise HTTPException(status_code=404, detail=f"Product '{product_name}' not found")
+        else:
+            raise HTTPException(status_code=404, detail=f"Category '{category}' not found in '{product_type}'")
     else:
         raise HTTPException(status_code=400, detail="Invalid hierarchy type")
     
