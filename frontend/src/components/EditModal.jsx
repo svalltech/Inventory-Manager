@@ -986,7 +986,9 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
 
               {/* 10. Material */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Material</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Material <span className="text-red-500">*</span>
+                </label>
                 {showNewMaterialInput || (materials.length === 0 && isCreateMode) ? (
                   <div className="space-y-2">
                     <input
@@ -995,6 +997,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                       value={formData.fabric_specs.material}
                       onChange={handleChange}
                       placeholder="Enter material"
+                      required
                       className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
                     />
                     {materials.length > 0 && (
