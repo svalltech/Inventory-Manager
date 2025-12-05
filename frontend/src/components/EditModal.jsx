@@ -889,7 +889,9 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
 
               {/* 8. Color */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Color</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Color <span className="text-red-500">*</span>
+                </label>
                 {showNewColorInput || (colors.length === 0 && isCreateMode) ? (
                   <div className="space-y-2">
                     <input
@@ -898,6 +900,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                       value={formData.color}
                       onChange={handleChange}
                       placeholder="Enter color"
+                      required
                       className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
                     />
                     {colors.length > 0 && (
