@@ -1053,7 +1053,9 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
 
               {/* 12. Weight (grams) */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Weight (grams)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Weight (grams) <span className="text-red-500">*</span>
+                </label>
                 {showNewWeightInput || (weights.length === 0 && isCreateMode) ? (
                   <div className="space-y-2">
                     <input
@@ -1062,6 +1064,7 @@ const EditModal = ({ item, isCreateMode, brands, warehouses, productTypes, categ
                       value={formData.fabric_specs.weight}
                       onChange={handleChange}
                       placeholder="Enter weight"
+                      required
                       className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
                     />
                     {weights.length > 0 && (
