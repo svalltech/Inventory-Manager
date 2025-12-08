@@ -472,6 +472,95 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
         />
       )}
 
+      {/* Quick Add Quantity Modal */}
+      {showQuickAddModal && quickAddItem && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-t-xl flex justify-between items-center">
+              <h2 className="text-xl font-bold flex items-center space-x-2">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span>Add Inventory</span>
+              </h2>
+              <button
+                onClick={() => setShowQuickAddModal(false)}
+                className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              <div className="bg-slate-50 p-4 rounded-lg space-y-2">
+                <div className="text-sm text-slate-600">
+                  <span className="font-semibold">Product:</span> {quickAddItem.name}
+                </div>
+                <div className="text-sm text-slate-600">
+                  <span className="font-semibold">Size:</span> {quickAddItem.size} | 
+                  <span className="font-semibold"> Color:</span> {quickAddItem.color}
+                </div>
+                <div className="text-sm text-slate-600">
+                  <span className="font-semibold">Current Quantity:</span> 
+                  <span className="text-lg font-bold text-slate-900 ml-2">{quickAddItem.quantity}</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Quantity to Add <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={quickAddQuantity}
+                  onChange={(e) => setQuickAddQuantity(e.target.value)}
+                  placeholder="Enter quantity to add"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+                  autoFocus
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleQuickAddSubmit();
+                    }
+                  }}
+                />
+              </div>
+
+              {quickAddQuantity && parseInt(quickAddQuantity) > 0 && (
+                <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                  <div className="text-sm text-green-700">
+                    New quantity will be: 
+                    <span className="text-xl font-bold text-green-800 ml-2">
+                      {quickAddItem.quantity + parseInt(quickAddQuantity)}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-slate-50 rounded-b-xl flex justify-end space-x-3">
+              <button
+                onClick={() => setShowQuickAddModal(false)}
+                className="px-4 py-2 text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleQuickAddSubmit}
+                className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:shadow-lg transition"
+              >
+                Add Inventory
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Fixed Settings Button - Bottom Left */}
       {user?.role === 'admin' && (
         <button
