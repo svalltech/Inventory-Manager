@@ -167,6 +167,40 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
     }
   };
 
+  const handleQuickAdd = (item) => {
+    setQuickAddItem(item);
+    setQuickAddQuantity('');
+    setShowQuickAddModal(true);
+  };
+
+  const handleQuickAddSubmit = async () => {
+    const addQty = parseInt(quickAddQuantity);
+    
+    if (isNaN(addQty) || addQty <= 0) {
+      toast.error('Please enter a valid positive number');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const newQuantity = quickAddItem.quantity + addQty;
+      
+      await axios.put(
+        `${API}/inventory/${quickAddItem.id}`,
+        { ...quickAddItem, quantity: newQuantity },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      toast.success(`Added ${addQty} units. New quantity: ${newQuantity}`);
+      setShowQuickAddModal(false);
+      setQuickAddItem(null);
+      setQuickAddQuantity('');
+      fetchData(); // Refresh data
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to update quantity');
+    }
+  };
+
   const handleBrandChange = (brand) => {
     setSelectedBrand(brand);
     // Reset warehouse if changing brand
