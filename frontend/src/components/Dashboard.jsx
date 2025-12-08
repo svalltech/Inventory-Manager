@@ -35,6 +35,11 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
   const [showModal, setShowModal] = useState(false);
   const [isCreateMode, setIsCreateMode] = useState(false);
   
+  // Quick Add Quantity Modal
+  const [showQuickAddModal, setShowQuickAddModal] = useState(false);
+  const [quickAddItem, setQuickAddItem] = useState(null);
+  const [quickAddQuantity, setQuickAddQuantity] = useState('');
+  
   // Import/Export
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
