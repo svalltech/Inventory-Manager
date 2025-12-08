@@ -427,6 +427,7 @@ const Dashboard = ({ user, onLogout, onNavigateToSettings }) => {
           setCurrentPage={setCurrentPage}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onQuickAdd={handleQuickAdd}
         />
       </main>
 
