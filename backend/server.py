@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -47,7 +48,7 @@ JWT_EXPIRATION_HOURS = 24
 # Create the main app without a prefix
 app = FastAPI(title="Inventory Management API", version="1.0.0")
 # Add CORS middleware
-from fastapi.middleware.cors import CORSMiddleware
+
 
 app.add_middleware(
     CORSMiddleware,
