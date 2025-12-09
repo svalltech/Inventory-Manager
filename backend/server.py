@@ -46,6 +46,16 @@ JWT_EXPIRATION_HOURS = 24
 
 # Create the main app without a prefix
 app = FastAPI(title="Inventory Management API", version="1.0.0")
+# Add CORS middleware
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://coachvilla.com", "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
