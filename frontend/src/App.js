@@ -21,7 +21,7 @@ function App() {
     
     if (token && userData) {
       setIsAuthenticated(true);
-      setUser(JSON.parse(userData));
+      setUser(userData ? JSON.parse(userData) : null);
     }
     setLoading(false);
   };
